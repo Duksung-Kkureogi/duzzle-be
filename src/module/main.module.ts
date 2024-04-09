@@ -10,6 +10,7 @@ import { DatabaseConfigService } from './database/database.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from './config/config.service';
+import { SupportModule } from './support/support.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ConfigService } from './config/config.service';
     },
     RepositoryModule,
     AuthModule,
+    SupportModule,
   ],
   controllers: [HealthController],
 })
