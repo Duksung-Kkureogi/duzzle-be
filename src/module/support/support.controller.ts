@@ -21,7 +21,11 @@ import {
 import { AuthGuard } from 'src/module/auth/auth.guard';
 import { SupportService } from './support.service';
 import { ResponseList } from 'src/decorator/response-list.decorators';
-import { FaqResponse, PostQuestionRequest } from './dto/support.dto';
+import {
+  FaqResponse,
+  PostQuestionRequest,
+  QnaResponse,
+} from './dto/support.dto';
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
@@ -63,5 +67,22 @@ export class SupportController {
     await this.supportService.postQuestion(user.id, dto);
 
     return new ResponsesDataDto(true);
+  }
+
+  @ApiTags('Support')
+  @ApiOperation({
+    summary: '1:1 문의 목록',
+    description: '유저가 등록한 1:1 문의 목록, 마지막 수정 시간 내림차순 정렬',
+  })
+  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ResponseList(QnaResponse)
+  @Get('qna')
+  async getQnas(): Promise<ResponsesListDto<QnaResponse>> {
+    const { user } = this.req;
+    const result = await this.supportService.getQnasByUserId(user.id);
+
+    return new ResponsesListDto(result);
   }
 }

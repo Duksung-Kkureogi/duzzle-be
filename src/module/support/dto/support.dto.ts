@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, plainToInstance } from 'class-transformer';
 import { IsEmail, IsEnum, IsString, MaxLength } from 'class-validator';
 import { FaqEntity } from 'src/module/repository/entity/faq.entity';
+import { QnaEntity } from 'src/module/repository/entity/qna.entity';
 
 export class FaqResponse {
   @ApiProperty()
@@ -33,8 +34,48 @@ export class PostQuestionRequest {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ description: '질문 내용 최대 500자' })
+  @ApiProperty({ description: '문의 내용 최대 500자' })
   @IsString()
   @MaxLength(500)
   question: string;
+}
+
+export class QnaResponse {
+  @ApiProperty()
+  @Expose()
+  category: QuestionCategory;
+
+  @ApiProperty({ description: '문의 내용 마지막 수정 일시' })
+  @Expose()
+  createdAt: Date;
+
+  @ApiProperty({ description: '문의 내용' })
+  @Expose()
+  question: string;
+
+  @ApiProperty({ description: '답변 내용' })
+  @Expose()
+  answer: string;
+
+  @ApiProperty({ description: '답변 상태(true = 답변완료, false = 답변대기)' })
+  @Expose()
+  isAnswered: boolean;
+
+  @ApiProperty({ description: '답변 일시' })
+  @Expose()
+  answeredAt: Date;
+
+  static from(entity: QnaEntity) {
+    return plainToInstance(
+      this,
+      {
+        ...entity,
+        isAnswered: !!entity?.answer,
+        createdAt: entity.updatedAt,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
+  }
 }

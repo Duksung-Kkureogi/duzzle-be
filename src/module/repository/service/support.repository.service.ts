@@ -31,4 +31,17 @@ export class SupportRepositoryService {
 
     return qnaEntity;
   }
+
+  async getQnaList(userId: number): Promise<QnaEntity[]> {
+    const qnas = await this.qnaRepository.find({
+      where: {
+        userId,
+      },
+      order: {
+        updatedAt: 'DESC',
+      },
+    });
+
+    return qnas;
+  }
 }

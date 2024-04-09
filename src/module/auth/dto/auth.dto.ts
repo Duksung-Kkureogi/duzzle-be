@@ -52,7 +52,7 @@ export class LoginRequest {
   @IsEthereumAddress()
   walletAddress: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsEmail()
   email?: string;

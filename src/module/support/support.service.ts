@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
 import { SupportRepositoryService } from '../repository/service/support.repository.service';
-import { FaqResponse, PostQuestionRequest } from './dto/support.dto';
+import {
+  FaqResponse,
+  PostQuestionRequest,
+  QnaResponse,
+} from './dto/support.dto';
 
 @Injectable()
 export class SupportService {
@@ -27,5 +31,12 @@ export class SupportService {
       email,
       question,
     });
+  }
+
+  async getQnasByUserId(userId: number): Promise<QnaResponse[]> {
+    const qnas = await this.supportRepositoryService.getQnaList(userId);
+    const result = qnas.map((e) => QnaResponse.from(e));
+
+    return result;
   }
 }
