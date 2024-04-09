@@ -29,7 +29,7 @@ export class PostQuestionRequest {
   @IsEnum(QuestionCategory)
   category: QuestionCategory;
 
-  @ApiProperty()
+  @ApiProperty({ description: '답변 받을 이메일 주소' })
   @IsEmail()
   email: string;
 

@@ -11,6 +11,12 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from './config/config.service';
 import { SupportModule } from './support/support.module';
+import { UserModule } from './user/user.module';
+import { APP_FILTER } from '@nestjs/core';
+import { InternalServerErrorFilter } from 'src/filter/internal-server-exception.filter';
+import { ValidationExceptionFilter } from 'src/filter/parameter-validator-exception.filter';
+import { NotFoundExceptionFilter } from 'src/filter/not-found-exception.filter';
+import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 
 @Module({
   imports: [
@@ -35,7 +41,26 @@ import { SupportModule } from './support/support.module';
     RepositoryModule,
     AuthModule,
     SupportModule,
+    UserModule,
   ],
   controllers: [HealthController],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: InternalServerErrorFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ValidationExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: NotFoundExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class MainModule {}

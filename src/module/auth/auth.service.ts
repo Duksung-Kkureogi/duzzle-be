@@ -4,7 +4,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from 'src/module/config/config.service';
 
 import { UserRepositoryService } from '../repository/service/user.repository.service';
-import { UserEntity } from '../repository/entity/user.entity';
 import {
   JWT,
   LoginJwtPayload,
@@ -21,12 +20,6 @@ export class AuthService {
     @Inject(JwtService)
     private readonly jwtService: JwtService,
   ) {}
-
-  async updateUser(user: UserEntity): Promise<UserEntity> {
-    const result = await this.userRepositoryService.saveUser(user);
-
-    return result;
-  }
 
   private async generateLoginJwt(dto: LoginJwtPayload): Promise<JWT> {
     const payload = JSON.parse(

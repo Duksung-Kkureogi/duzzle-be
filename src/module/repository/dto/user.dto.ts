@@ -5,3 +5,8 @@ export class InsertUserDto {
   walletAddress: string;
   email?: string;
 }
+
+export class UpdateUserDto {
+  id: number;
+  name?: string;
+}

@@ -32,7 +32,7 @@ export class UserEntity {
   @Column('varchar', { length: 100, nullable: true })
   email: string;
 
-  @Column('varchar', { length: 20, nullable: true })
+  @Column('varchar', { length: 20, nullable: true, unique: true })
   name: string;
 
   @Column('enum', {
