@@ -6,6 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\"",
     "start": "DEBUG=app*,error*,debug* node ./node_modules/pm2/bin/pm2 start process.json && npm run poststart",
     "start:local": "NODE_ENV=local nest start --watch",
     "start:localdebug": "NODE_ENV=local nest start --debug --watch",
