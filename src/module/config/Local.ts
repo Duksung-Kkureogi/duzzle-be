@@ -12,14 +12,14 @@ const config: Configuration = {
 
   // DB
   DB_INFO: {
-    host: 'loocalhost',
+    host: 'localhost',
     port: 5432,
     max: 50,
     database: 'duzzle',
     user: 'local',
     password: '1q2w3e',
   },
-  USE_SYNCHRONIZE: false,
+  USE_SYNCHRONIZE: true,
 
   // JWT
   JWT_SECRET: 'ns0s9xcuv0=^alg0xtrtw7o=we9k_#ko%q*tx@an3z-x-3b@u=',
