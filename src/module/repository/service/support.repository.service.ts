@@ -2,12 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FaqEntity } from '../entity/faq.entity';
+import { QnaEntity } from '../entity/qna.entity';
+import { PostQuestionDto } from '../dto/support.dto';
 
 @Injectable()
 export class SupportRepositoryService {
   constructor(
     @InjectRepository(FaqEntity)
     private faqRepository: Repository<FaqEntity>,
+
+    @InjectRepository(QnaEntity)
+    private qnaRepository: Repository<QnaEntity>,
   ) {}
 
   async getFaqList(): Promise<FaqEntity[]> {
@@ -18,5 +23,12 @@ export class SupportRepositoryService {
     });
 
     return faqs;
+  }
+
+  async postQuestion(dto: PostQuestionDto): Promise<QnaEntity> {
+    const qnaEntity = this.qnaRepository.create(dto);
+    await this.qnaRepository.insert(qnaEntity);
+
+    return qnaEntity;
   }
 }

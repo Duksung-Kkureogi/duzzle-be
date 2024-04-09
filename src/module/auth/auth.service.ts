@@ -3,7 +3,6 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { ConfigService } from 'src/module/config/config.service';
 
-import { LoginType } from '../repository/enum/user.enum';
 import { UserRepositoryService } from '../repository/service/user.repository.service';
 import { UserEntity } from '../repository/entity/user.entity';
 import {
@@ -22,19 +21,6 @@ export class AuthService {
     @Inject(JwtService)
     private readonly jwtService: JwtService,
   ) {}
-
-  async getUserByWalletAddress(walletAddress: string): Promise<UserEntity> {
-    console.log('getUserByWalletAddress');
-    return null;
-  }
-
-  async insertUser(
-    loginType: LoginType,
-    walletAddres: string,
-    email: string,
-  ): Promise<UserEntity> {
-    return;
-  }
 
   async updateUser(user: UserEntity): Promise<UserEntity> {
     const result = await this.userRepositoryService.saveUser(user);
@@ -67,10 +53,16 @@ export class AuthService {
   }
 
   async login(params: LoginRequest): Promise<LoginResponse> {
+    // 로그인 요청 유저 유효성 검증
     const { walletAddress, email, loginType } = params;
-    let user = await this.getUserByWalletAddress(walletAddress);
+    let user =
+      await this.userRepositoryService.findUserByWalletAddress(walletAddress);
     if (!user) {
-      user = await this.insertUser(loginType, walletAddress, email);
+      user = await this.userRepositoryService.insertUser({
+        loginType,
+        walletAddress,
+        email,
+      });
     }
 
     const jwt: JWT = await this.generateLoginJwt({

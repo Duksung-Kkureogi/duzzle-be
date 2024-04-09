@@ -33,7 +33,7 @@ export class UserEntity {
   email: string;
 
   @Column('varchar', { length: 20, nullable: true })
-  username: string;
+  name: string;
 
   @Column('enum', {
     enum: UserStatus,

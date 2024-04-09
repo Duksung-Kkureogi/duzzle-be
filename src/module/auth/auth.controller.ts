@@ -36,7 +36,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ResponseData(LoginResponse)
   @Post()
-  async loginNaver(
+  async login(
     @Body() params: LoginRequest,
   ): Promise<ResponsesDataDto<LoginResponse>> {
     const result: LoginResponse = await this.authService.login(params);
@@ -49,8 +49,6 @@ export class AuthController {
   @Get('login-test')
   @Render('index')
   async loginPageTest(@Res() res: Response) {
-    // return { message: 'Hello world!' };
-    await this.authService.getUserByWalletAddress(null);
     const message = 'hello';
     return {
       message,
