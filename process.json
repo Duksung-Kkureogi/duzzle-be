@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "Duzzle API Server",
-      "script": "dist/main.js",
+      "script": "dist/src/main.js",
       "kill_timeout": 12000,
       "instances": 1,
       "exec_mode": "cluster",
