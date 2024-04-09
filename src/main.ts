@@ -6,9 +6,19 @@ import { IncomingMessage, ServerResponse } from 'http';
 import morganBody from 'morgan-body';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
+import {
+  ExpressAdapter,
+  NestExpressApplication,
+} from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(MainModule, { cors: true });
+  const app = await NestFactory.create<NestExpressApplication>(
+    MainModule,
+    new ExpressAdapter(),
+    {
+      cors: true,
+    },
+  );
   // useContainer(app.select(MainModule), { fallbackOnErrors: true });
   const isProduction = ConfigService.isProduction();
   const port = ConfigService.getConfig().PORT;
@@ -47,23 +57,23 @@ async function bootstrap() {
     }),
   );
 
-  morganBody(app.getHttpAdapter().getInstance(), {
-    noColors: true,
-    prettify: false,
-    includeNewLine: false,
-    skip(_req: IncomingMessage, res: ServerResponse) {
-      if (_req.url === '/health') {
-        return true;
-      }
-      return isProduction ? res.statusCode < 400 : false;
-    },
-    stream: {
-      write: (message: string) => {
-        Logger.log(message.replace('\n', ''), 'Http');
-        return true;
-      },
-    },
-  });
+  // morganBody(app.getHttpAdapter().getInstance(), {
+  //   noColors: true,
+  //   prettify: false,
+  //   includeNewLine: false,
+  //   skip(_req: IncomingMessage, res: ServerResponse) {
+  //     if (_req.url === '/health') {
+  //       return true;
+  //     }
+  //     return isProduction ? res.statusCode < 400 : false;
+  //   },
+  //   stream: {
+  //     write: (message: string) => {
+  //       Logger.log(message.replace('\n', ''), 'Http');
+  //       return true;
+  //     },
+  //   },
+  // });
   // const reflector = app.get(Reflector);
 
   // app.useGlobalInterceptors(
