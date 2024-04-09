@@ -12,7 +12,7 @@ const config: Configuration = {
 
   // DB
   DB_INFO: {
-    host: 'duzzle.croia0wi0ych.ap-northeast-2.rds.amazonaws.com',
+    host: 'duzzle-dev.croia0wi0ych.ap-northeast-2.rds.amazonaws.com',
     port: 5432,
     max: 50,
     database: 'duzzle',
