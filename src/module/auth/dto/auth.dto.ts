@@ -56,6 +56,7 @@ export class LoginRequest {
   @IsOptional()
   @IsEmail()
   email?: string;
+  gg: number;
 }
 
 export class LoginResponse {
