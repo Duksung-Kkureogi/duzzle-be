@@ -5,6 +5,7 @@ import {
   IsEmail,
   IsEnum,
   IsEthereumAddress,
+  IsJWT,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -47,6 +48,10 @@ export class LoginRequest {
   @ApiProperty({ type: 'enum', enum: LoginType })
   @IsEnum(LoginType)
   loginType: LoginType;
+
+  @ApiProperty()
+  @IsJWT()
+  idToken: string;
 
   @ApiProperty()
   @IsEthereumAddress()
