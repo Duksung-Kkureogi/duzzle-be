@@ -29,4 +29,8 @@ export interface Configuration {
   readonly JWT_SECRET: string;
   readonly JWT_ACCESS_EXPIRES_IN: string;
   readonly JWT_REFRESH_EXPIRES_IN: string;
+  readonly WEB3AUTH_JWKS_ENDPOINT: {
+    SOCIAL_LOGIN: string;
+    EXTERNAL_WALLET: string;
+  };
 }

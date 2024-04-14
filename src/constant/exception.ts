@@ -11,6 +11,8 @@ export enum ExceptionCode {
   MissingAuthToken = 'MISSING_AUTHENTICATION_TOKEN',
   InvalidAccessToken = 'INVLID_ACCESS_TOKEN',
   TokenExpired = 'TOKEN_EXPIRED',
+  InvalidAddress = 'INVALID_ADDRESS',
+  InvalidLoginInfo = 'INVALID_LOGIN_INFO',
 
   // 404 (Not Found)
   NotFound = 'NOT_FOUND',
@@ -39,6 +41,7 @@ export const ExceptionMessage: {
     'Access token is missing in the request header.',
 
   [ExceptionCode.InvalidAccessToken]: 'Invalid Access Token',
+  [ExceptionCode.InvalidAddress]: 'Wallet Address Different',
 
   // jwt verify fail
   [ExceptionCode.TokenExpired]: 'Token expired',
@@ -70,4 +73,6 @@ export const CodeToStatus: {
   [ExceptionCode.DuplicateValues]: HttpStatus.CONFLICT,
   [ExceptionCode.InternalServerError]: HttpStatus.INTERNAL_SERVER_ERROR,
   [ExceptionCode.InvalidDate]: HttpStatus.BAD_REQUEST,
+  [ExceptionCode.InvalidAddress]: HttpStatus.UNAUTHORIZED,
+  [ExceptionCode.InvalidLoginInfo]: HttpStatus.UNAUTHORIZED,
 };

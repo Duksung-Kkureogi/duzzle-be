@@ -19,6 +19,17 @@ export function setupSwagger(app: INestApplication): void {
       },
       AuthorizationToken.BearerUserToken,
     )
+    .addBearerAuth(
+      {
+        name: 'Authorization',
+        in: 'header',
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Web3Auth Id Token',
+      },
+      AuthorizationToken.BearerLoginIdToken,
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, options);

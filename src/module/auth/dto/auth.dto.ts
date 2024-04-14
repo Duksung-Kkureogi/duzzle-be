@@ -50,10 +50,6 @@ export class LoginRequest {
   loginType: LoginType;
 
   @ApiProperty()
-  @IsJWT()
-  idToken: string;
-
-  @ApiProperty()
   @IsEthereumAddress()
   walletAddress: string;
 

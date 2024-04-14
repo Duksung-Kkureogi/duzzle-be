@@ -1,4 +1,6 @@
 export enum LoginType {
-  Google = 'google',
-  Metamask = 'metamask',
+  Google = 'GOOGLE',
+  Metamask = 'METAMASK',
+  Sms = 'SMS',
+  Kakao = 'KAKAO',
 }
