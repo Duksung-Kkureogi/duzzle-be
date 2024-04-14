@@ -54,9 +54,7 @@ export class AuthController {
       );
     }
 
-    await this.authService.verifyLoginIdToken(idToken, params);
-
-    const result: LoginResponse = await this.authService.login(params);
+    const result: LoginResponse = await this.authService.login(idToken, params);
 
     return new ResponsesDataDto(result);
   }

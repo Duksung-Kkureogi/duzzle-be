@@ -42,12 +42,12 @@ export class AuthService {
     return publicKey;
   }
 
-  async verifyLoginIdToken(
+  private async verifyLoginIdToken(
     idToken: string,
     params: LoginRequest,
-  ): Promise<void> {
+  ): Promise<any> {
     const isWalletLogin: boolean = params.loginType === LoginType.Metamask;
-    let payload;
+    let payload: any;
     try {
       const secret = await this.getKey(
         isWalletLogin,
@@ -69,12 +69,12 @@ export class AuthService {
       throw new ServiceError(ExceptionCode.InvalidAddress);
     }
 
-    if (!payload?.aggregateVerifier.includes(params.loginType.toLowerCase())) {
-      console.log(payload?.aggregateVerifier);
-      console.log(params?.loginType);
-
+    const loginProvider: string = payload?.aggregateVerifier || payload?.iss;
+    if (!loginProvider.includes(params.loginType.toLowerCase())) {
       throw new ServiceError(ExceptionCode.InvalidLoginInfo);
     }
+
+    return payload;
   }
 
   private async generateLoginJwt(dto: LoginJwtPayload): Promise<JWT> {
@@ -101,8 +101,9 @@ export class AuthService {
     return result;
   }
 
-  async login(params: LoginRequest): Promise<LoginResponse> {
-    const { walletAddress, email, loginType } = params;
+  async login(idToken: string, params: LoginRequest): Promise<LoginResponse> {
+    const payload = await this.verifyLoginIdToken(idToken, params);
+    const { walletAddress, loginType } = params;
     const checksummedAddresses = Web3.utils.toChecksumAddress(walletAddress);
     let user =
       await this.userRepositoryService.findUserByWalletAddress(
@@ -114,10 +115,24 @@ export class AuthService {
       throw new ServiceError(ExceptionCode.InvalidLoginInfo);
     }
     if (!user) {
+      let name: string;
+      switch (params.loginType) {
+        case LoginType.Apple:
+        case LoginType.Email:
+          name = (payload?.name as string)?.split('@')[0];
+          break;
+        case LoginType.Sms:
+          name = null;
+          break;
+        default:
+          name = payload?.name;
+      }
+
       user = await this.userRepositoryService.insertUser({
         loginType,
         walletAddress: checksummedAddresses,
-        email,
+        email: payload?.email,
+        name,
       });
     }
 
