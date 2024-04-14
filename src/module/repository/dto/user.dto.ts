@@ -4,7 +4,6 @@ export class InsertUserDto {
   loginType: LoginType;
   walletAddress: string;
   email?: string;
-  name?: string;
 }
 
 export class UpdateUserDto {

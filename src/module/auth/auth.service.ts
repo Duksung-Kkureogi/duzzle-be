@@ -115,24 +115,10 @@ export class AuthService {
       throw new ServiceError(ExceptionCode.InvalidLoginInfo);
     }
     if (!user) {
-      let name: string;
-      switch (params.loginType) {
-        case LoginType.Apple:
-        case LoginType.Email:
-          name = (payload?.name as string)?.split('@')[0];
-          break;
-        case LoginType.Sms:
-          name = null;
-          break;
-        default:
-          name = payload?.name;
-      }
-
       user = await this.userRepositoryService.insertUser({
         loginType,
         walletAddress: checksummedAddresses,
         email: payload?.email,
-        name,
       });
     }
 
