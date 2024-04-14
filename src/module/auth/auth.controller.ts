@@ -21,6 +21,7 @@ import { ResponseData } from 'src/decorator/response-data.decorator';
 import { AuthorizationToken } from 'src/constant/authorization-token';
 import { HttpError } from 'src/types/http-exceptions';
 import { ExceptionCode } from 'src/constant/exception';
+import { ResponseException } from 'src/decorator/response-exception.decorator';
 
 @Controller({
   path: 'auth',
@@ -39,6 +40,12 @@ export class AuthController {
   @ApiBearerAuth(AuthorizationToken.BearerLoginIdToken)
   @HttpCode(HttpStatus.OK)
   @ResponseData(LoginResponse)
+  @ResponseException(HttpStatus.UNAUTHORIZED, [
+    ExceptionCode.MissingAuthToken,
+    ExceptionCode.InvalidLoginInfo,
+    ExceptionCode.InvalidAddress,
+    ExceptionCode.InvalidAccessToken,
+  ])
   @Post()
   async login(
     @Body() params: LoginRequest,
@@ -57,16 +64,5 @@ export class AuthController {
     const result: LoginResponse = await this.authService.login(idToken, params);
 
     return new ResponsesDataDto(result);
-  }
-
-  @ApiTags('tmp')
-  @ApiOperation({ summary: '테스트용 로그인 페이지' })
-  @Get('login-test')
-  @Render('index')
-  async loginPageTest(@Res() res: Response) {
-    const message = 'hello';
-    return {
-      message,
-    };
   }
 }
