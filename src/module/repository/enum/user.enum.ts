@@ -4,5 +4,6 @@ export enum LoginType {
   Sms = 'SMS',
   Email = 'EMAIL',
   Kakao = 'KAKAO',
-  Apple = 'APPLE'
+  Apple = 'APPLE',
+  Facebook = 'FACEBOOK',
 }
