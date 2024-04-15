@@ -23,16 +23,13 @@ export class UserEntity {
   @Column('enum', { enum: LoginType })
   loginType: LoginType;
 
-  @Column('varchar', { length: 200, nullable: true })
-  externalLoginId: string;
-
   @Column('varchar', { length: 44, unique: true })
   walletAddress: string;
 
   @Column('varchar', { length: 100, nullable: true })
   email: string;
 
-  @Column('varchar', { length: 20, nullable: true, unique: true })
+  @Column('varchar', { length: 40, nullable: true, unique: true })
   name: string;
 
   @Column('enum', {

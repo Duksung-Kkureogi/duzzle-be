@@ -50,17 +50,8 @@ export class LoginRequest {
   loginType: LoginType;
 
   @ApiProperty()
-  @IsJWT()
-  idToken: string;
-
-  @ApiProperty()
   @IsEthereumAddress()
   walletAddress: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsEmail()
-  email?: string;
 }
 
 export class LoginResponse {

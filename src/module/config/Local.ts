@@ -25,6 +25,10 @@ const config: Configuration = {
   JWT_SECRET: 'ns0s9xcuv0=^alg0xtrtw7o=we9k_#ko%q*tx@an3z-x-3b@u=',
   JWT_ACCESS_EXPIRES_IN: '30m',
   JWT_REFRESH_EXPIRES_IN: '30d',
+  WEB3AUTH_JWKS_ENDPOINT: {
+    SOCIAL_LOGIN: 'https://api-auth.web3auth.io/jwks',
+    EXTERNAL_WALLET: 'https://authjs.web3auth.io/jwks',
+  },
 };
 
 export default config;
