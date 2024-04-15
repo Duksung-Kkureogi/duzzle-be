@@ -33,6 +33,30 @@ export class SupportService {
     });
   }
 
+  async updateQuestion(
+    userId: number,
+    questionId: number,
+    params: PostQuestionRequest, // UpdateQuestionRequest ???
+  ): Promise<void> {
+    const { category, email, question } = params
+    await this.supportRepositoryService.updateQuestion(questionId, {
+      userId,
+      category,
+      email,
+      question,
+    })
+  }
+
+  async deleteQuestion(
+    userId: number, // => delete 요청자
+    questionId: number,
+  ): Promise<void> {
+    // const question = await this.supportRepositoryService.getQuestionById(questionId)
+    // if (!question) {} // Question not found
+    // if (question.userId != userId) {}// question.userId => 글 작성자, not authorized to delete question
+    await this.supportRepositoryService.deleteQuestion(questionId)
+  }
+
   async getQnasByUserId(userId: number): Promise<QnaResponse[]> {
     const qnas = await this.supportRepositoryService.getQnaList(userId);
     const result = qnas.map((e) => QnaResponse.from(e));

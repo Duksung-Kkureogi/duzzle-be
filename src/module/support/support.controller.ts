@@ -7,6 +7,9 @@ import {
   Post,
   Body,
   UseGuards,
+  Delete,
+  Param,
+  Put,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -29,6 +32,8 @@ import {
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
+import { ResponseException } from 'src/decorator/response-exception.decorator';
+import { ExceptionCode } from 'src/constant/exception';
 
 @Controller({
   path: 'support',
@@ -67,6 +72,52 @@ export class SupportController {
     await this.supportService.postQuestion(user.id, dto);
 
     return new ResponsesDataDto(true);
+  }
+
+  // id, questionId => 통일할 것!!!
+
+  @ApiTags('Support')
+  @ApiOperation({ summary: '1:1 문의 수정' })
+  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse()
+  @Put('qna/:id')
+  async updateQuestion(
+    @Param('id') id: number, // qnaId
+    @Body() dto: PostQuestionRequest, // UpdateQuestionRequest ???
+  ): Promise<ResponsesDataDto<boolean>> {
+    const { user } = this.req
+    // 1. question id로 조회 => Question not found
+    // 2. question 작성자 조회 및 비교 => Not authorized to delete question
+    await this.supportService.updateQuestion(user.id, id, dto)
+
+    return new ResponsesDataDto(true)
+  }
+
+  @ApiTags('Support')
+  @ApiOperation({ summary: '1:1 문의 삭제' })
+  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  // @ApiOkResponse() => Swagger API 문서에서 성공적인 응답에 대한 설명 제공. 엔드포인트의 응답 형식 및 내용 제공
+  // @ResponseException() ???
+  @Delete('qna/:questionId')
+  async deleteQuestion(
+    @Param('questionId') questionId: number,
+  ): Promise<void> {
+    const { user } = this.req
+    // 1. question id로 조회 => Question not found
+    // const question = await this.supportService.getQuestionById(questionId)
+    // if(!question) {
+    //   throw new HttpError(
+    //     HttpStatus.NOT_FOUND,
+    //     ExceptionCode.NotFound
+    //   )
+    // }
+    // 2. question 작성자 조회 및 비교 => Not authorized to delete question
+    // if (question.userId != user.id) { throw new HttpError()}
+    await this.supportService.deleteQuestion(user.id, questionId)
   }
 
   @ApiTags('Support')
