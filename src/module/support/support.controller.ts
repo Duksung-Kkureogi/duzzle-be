@@ -74,8 +74,6 @@ export class SupportController {
     return new ResponsesDataDto(true);
   }
 
-  // id, questionId => 통일할 것!!!
-
   @ApiTags('Support')
   @ApiOperation({ summary: '1:1 문의 수정' })
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
@@ -83,13 +81,13 @@ export class SupportController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
   @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
-  @Put('qna/:id')
+  @Put('qna/:questionId')
   async updateQuestion(
-    @Param('id') id: number, // qnaId
+    @Param('questionId') questionId: number, 
     @Body() dto: PostQuestionRequest,
   ): Promise<ResponsesDataDto<boolean>> {
     const { user } = this.req
-    await this.supportService.updateQuestion(user.id, id, dto)
+    await this.supportService.updateQuestion(user.id, questionId, dto)
 
     return new ResponsesDataDto(true)
   }
@@ -99,7 +97,7 @@ export class SupportController {
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse() // => Swagger API 문서에서 성공적인 응답에 대한 설명 제공. 엔드포인트의 응답 형식 및 내용 제공
+  @ApiOkResponse()
   @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
   @Delete('qna/:questionId')
   async deleteQuestion(

@@ -38,12 +38,9 @@ export class SupportService {
     questionId: number,
     params: PostQuestionRequest, // UpdateQuestionRequest ???
   ): Promise<void> {
-    // 1. question 존재 여부
     const question = await this.supportRepositoryService.getQuestionById(questionId)
-    // 2. user의 권한 확인
     await this.supportRepositoryService.checkPermission(userId, question.userId)
 
-    // 3. 수정
     const postQuestion = {
       userId: userId,
       category: params.category,
@@ -54,15 +51,12 @@ export class SupportService {
   }
 
   async deleteQuestion(
-    userId: number, // => delete 요청자
+    userId: number,
     questionId: number,
   ): Promise<void> {
-    // 1. question 존재 여부
     const question = await this.supportRepositoryService.getQuestionById(questionId)
-    // 2. user의 권한 확인
     await this.supportRepositoryService.checkPermission(userId, question.userId)
     
-    // 3. 삭제
     await this.supportRepositoryService.deleteQuestion(questionId)
   }
 

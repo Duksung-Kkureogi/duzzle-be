@@ -14,7 +14,7 @@ export class UserRepositoryService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async getUserById(id: number): Promise<UserEntity> { // get : 무조건 결과를 얻어냄. 오류 발생 시, 에러를 던짐
+  async getUserById(id: number): Promise<UserEntity> { 
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
       throw new ServiceError(ExceptionCode.NotFound);
@@ -23,7 +23,7 @@ export class UserRepositoryService {
     return user;
   }
 
-  async findUserById(id: number): Promise<UserEntity> { // find : 결과값 유무에 관계없이 값을 보냄. 상위 단계에서 핸들링
+  async findUserById(id: number): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id });
 
     return user;
