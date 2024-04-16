@@ -43,6 +43,10 @@ export class PostQuestionRequest {
 export class QnaResponse {
   @ApiProperty()
   @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
   category: QuestionCategory;
 
   @ApiProperty({ description: '문의 내용 마지막 수정 일시' })

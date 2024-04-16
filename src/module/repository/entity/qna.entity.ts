@@ -20,6 +20,9 @@ export class QnaEntity {
   userId: number;
 
   @Column('varchar')
+  category: string;
+
+  @Column('varchar')
   question: string;
 
   @Column('varchar', { nullable: true })
