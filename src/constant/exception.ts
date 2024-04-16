@@ -14,6 +14,8 @@ export enum ExceptionCode {
   InvalidAddress = 'INVALID_ADDRESS',
   InvalidLoginInfo = 'INVALID_LOGIN_INFO',
 
+  // 403 (FORBIDDEN)
+
   // 404 (Not Found)
   NotFound = 'NOT_FOUND',
 

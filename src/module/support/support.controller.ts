@@ -82,14 +82,13 @@ export class SupportController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
+  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
   @Put('qna/:id')
   async updateQuestion(
     @Param('id') id: number, // qnaId
-    @Body() dto: PostQuestionRequest, // UpdateQuestionRequest ???
+    @Body() dto: PostQuestionRequest,
   ): Promise<ResponsesDataDto<boolean>> {
     const { user } = this.req
-    // 1. question id로 조회 => Question not found
-    // 2. question 작성자 조회 및 비교 => Not authorized to delete question
     await this.supportService.updateQuestion(user.id, id, dto)
 
     return new ResponsesDataDto(true)
@@ -100,23 +99,13 @@ export class SupportController {
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  // @ApiOkResponse() => Swagger API 문서에서 성공적인 응답에 대한 설명 제공. 엔드포인트의 응답 형식 및 내용 제공
-  // @ResponseException() ???
+  @ApiOkResponse() // => Swagger API 문서에서 성공적인 응답에 대한 설명 제공. 엔드포인트의 응답 형식 및 내용 제공
+  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
   @Delete('qna/:questionId')
   async deleteQuestion(
     @Param('questionId') questionId: number,
   ): Promise<void> {
     const { user } = this.req
-    // 1. question id로 조회 => Question not found
-    // const question = await this.supportService.getQuestionById(questionId)
-    // if(!question) {
-    //   throw new HttpError(
-    //     HttpStatus.NOT_FOUND,
-    //     ExceptionCode.NotFound
-    //   )
-    // }
-    // 2. question 작성자 조회 및 비교 => Not authorized to delete question
-    // if (question.userId != user.id) { throw new HttpError()}
     await this.supportService.deleteQuestion(user.id, questionId)
   }
 
