@@ -55,15 +55,6 @@ export class SupportRepositoryService {
     return question
   }
 
-  async checkPermission(
-    userId: number,
-    author: number,
-  ): Promise<void> {
-    if (userId !== author) {
-      throw new ServiceError(ExceptionCode.NotFound)
-    }
-  }
-
   async getQnaList(userId: number): Promise<QnaEntity[]> {
     const qnas = await this.qnaRepository.find({
       where: {

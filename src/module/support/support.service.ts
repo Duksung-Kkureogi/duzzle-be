@@ -6,6 +6,8 @@ import {
   PostQuestionRequest,
   QnaResponse,
 } from './dto/support.dto';
+import { ServiceError } from 'src/types/exception';
+import { ExceptionCode } from 'src/constant/exception';
 
 @Injectable()
 export class SupportService {
@@ -36,16 +38,16 @@ export class SupportService {
   async updateQuestion(
     userId: number,
     questionId: number,
-    params: PostQuestionRequest, // UpdateQuestionRequest ???
+    params: PostQuestionRequest,
   ): Promise<void> {
     const question = await this.supportRepositoryService.getQuestionById(questionId)
-    await this.supportRepositoryService.checkPermission(userId, question.userId)
+    if (userId !== question.userId) {
+      throw new ServiceError(ExceptionCode.NotFound)
+    }
 
     const postQuestion = {
+      ...params,
       userId: userId,
-      category: params.category,
-      email: params.category,
-      question: params.question
     }
     await this.supportRepositoryService.updateQuestion(questionId, postQuestion)
   }
@@ -55,7 +57,9 @@ export class SupportService {
     questionId: number,
   ): Promise<void> {
     const question = await this.supportRepositoryService.getQuestionById(questionId)
-    await this.supportRepositoryService.checkPermission(userId, question.userId)
+    if (userId !== question.userId) {
+      throw new ServiceError(ExceptionCode.NotFound)
+    }
     
     await this.supportRepositoryService.deleteQuestion(questionId)
   }
