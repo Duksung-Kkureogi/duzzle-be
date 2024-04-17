@@ -1,4 +1,4 @@
-import { QuestionCategory } from 'src/module/support/dto/support.dto';
+import { QuestionCategory } from "../enum/support.enum";
 
 export class PostQuestionDto {
   userId: number;
