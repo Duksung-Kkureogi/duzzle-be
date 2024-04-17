@@ -3,6 +3,7 @@ import { Expose, plainToInstance } from 'class-transformer';
 import { IsEmail, IsEnum, IsString, MaxLength } from 'class-validator';
 import { FaqEntity } from 'src/module/repository/entity/faq.entity';
 import { QnaEntity } from 'src/module/repository/entity/qna.entity';
+import { QuestionCategory } from 'src/module/repository/enum/support.enum';
 
 export class FaqResponse {
   @ApiProperty()
@@ -18,13 +19,6 @@ export class FaqResponse {
   }
 }
 
-export enum QuestionCategory {
-  Account = 'ACCOUNT',
-  Market = 'MARKET',
-  Quest = 'QUEST',
-  Story = 'STORY',
-  Etc = 'ETC',
-}
 export class PostQuestionRequest {
   @ApiProperty({ type: 'enum', enum: QuestionCategory })
   @IsEnum(QuestionCategory)
@@ -41,6 +35,10 @@ export class PostQuestionRequest {
 }
 
 export class QnaResponse {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
   @ApiProperty()
   @Expose()
   category: QuestionCategory;

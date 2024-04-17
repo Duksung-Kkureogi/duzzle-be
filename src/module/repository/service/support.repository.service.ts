@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { FaqEntity } from '../entity/faq.entity';
 import { QnaEntity } from '../entity/qna.entity';
 import { PostQuestionDto } from '../dto/support.dto';
+import { ExceptionCode } from 'src/constant/exception';
+import { ServiceError } from 'src/types/exception';
 
 @Injectable()
 export class SupportRepositoryService {
@@ -30,6 +32,27 @@ export class SupportRepositoryService {
     await this.qnaRepository.insert(qnaEntity);
 
     return qnaEntity;
+  }
+
+  async updateQuestion(
+    questionId: number,
+    dto: PostQuestionDto,
+  ): Promise<void>  {
+    await this.qnaRepository.update({ id: questionId, userId: dto.userId }, dto ) 
+  }
+
+  async deleteQuestion(questionId): Promise<void> {
+    await this.qnaRepository.delete(questionId)
+  }
+
+  async getQuestionById(questionId: number): Promise<QnaEntity> {
+    const question = this.qnaRepository.findOneBy({ id: questionId })
+
+    if (!question) {
+      throw new ServiceError(ExceptionCode.NotFound)
+    }
+
+    return question
   }
 
   async getQnaList(userId: number): Promise<QnaEntity[]> {

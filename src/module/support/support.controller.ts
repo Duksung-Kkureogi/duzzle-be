@@ -7,6 +7,9 @@ import {
   Post,
   Body,
   UseGuards,
+  Delete,
+  Param,
+  Put,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -29,6 +32,8 @@ import {
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
+import { ResponseException } from 'src/decorator/response-exception.decorator';
+import { ExceptionCode } from 'src/constant/exception';
 
 @Controller({
   path: 'support',
@@ -67,6 +72,39 @@ export class SupportController {
     await this.supportService.postQuestion(user.id, dto);
 
     return new ResponsesDataDto(true);
+  }
+
+  @ApiTags('Support')
+  @ApiOperation({ summary: '1:1 문의 수정' })
+  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse()
+  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
+  @Put('qna/:questionId')
+  async updateQuestion(
+    @Param('questionId') questionId: number, 
+    @Body() dto: PostQuestionRequest,
+  ): Promise<ResponsesDataDto<boolean>> {
+    const { user } = this.req
+    await this.supportService.updateQuestion(user.id, questionId, dto)
+
+    return new ResponsesDataDto(true)
+  }
+
+  @ApiTags('Support')
+  @ApiOperation({ summary: '1:1 문의 삭제' })
+  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse()
+  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
+  @Delete('qna/:questionId')
+  async deleteQuestion(
+    @Param('questionId') questionId: number,
+  ): Promise<void> {
+    const { user } = this.req
+    await this.supportService.deleteQuestion(user.id, questionId)
   }
 
   @ApiTags('Support')
