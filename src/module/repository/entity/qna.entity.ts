@@ -8,6 +8,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { QuestionCategory } from '../enum/support.enum';
 
 // TODO: 추후에 컬럼 추가
 // - 답변한 관리자: answered_by
@@ -19,8 +20,9 @@ export class QnaEntity {
   @Column('int')
   userId: number;
 
-  @Column('varchar')
-  category: string;
+  @Column('enum', { enum: QuestionCategory })
+  category: QuestionCategory;
+
 
   @Column('varchar')
   question: string;
