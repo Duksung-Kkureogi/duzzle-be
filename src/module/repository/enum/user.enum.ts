@@ -6,4 +6,5 @@ export enum LoginType {
   Kakao = 'KAKAO',
   Apple = 'APPLE',
   Facebook = 'FACEBOOK',
+  Twitter = 'TWITTER',
 }
