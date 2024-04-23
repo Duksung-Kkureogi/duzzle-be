@@ -40,28 +40,30 @@ export class SupportService {
     questionId: number,
     params: PostQuestionRequest,
   ): Promise<void> {
-    const question = await this.supportRepositoryService.getQuestionById(questionId)
+    const question =
+      await this.supportRepositoryService.getQuestionById(questionId);
     if (userId !== question.userId) {
-      throw new ServiceError(ExceptionCode.NotFound)
+      throw new ServiceError(ExceptionCode.NotFound);
     }
 
     const postQuestion = {
       ...params,
       userId: userId,
-    }
-    await this.supportRepositoryService.updateQuestion(questionId, postQuestion)
+    };
+    await this.supportRepositoryService.updateQuestion(
+      questionId,
+      postQuestion,
+    );
   }
 
-  async deleteQuestion(
-    userId: number,
-    questionId: number,
-  ): Promise<void> {
-    const question = await this.supportRepositoryService.getQuestionById(questionId)
+  async deleteQuestion(userId: number, questionId: number): Promise<void> {
+    const question =
+      await this.supportRepositoryService.getQuestionById(questionId);
     if (userId !== question.userId) {
-      throw new ServiceError(ExceptionCode.NotFound)
+      throw new ServiceError(ExceptionCode.NotFound);
     }
-    
-    await this.supportRepositoryService.deleteQuestion(questionId)
+
+    await this.supportRepositoryService.deleteQuestion(questionId);
   }
 
   async getQnasByUserId(userId: number): Promise<QnaResponse[]> {

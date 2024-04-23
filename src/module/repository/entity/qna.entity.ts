@@ -23,7 +23,6 @@ export class QnaEntity {
   @Column('enum', { enum: QuestionCategory })
   category: QuestionCategory;
 
-
   @Column('varchar')
   question: string;
 
