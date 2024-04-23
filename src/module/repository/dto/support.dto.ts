@@ -1,4 +1,4 @@
-import { QuestionCategory } from "../enum/support.enum";
+import { QuestionCategory } from '../enum/support.enum';
 
 export class PostQuestionDto {
   userId: number;

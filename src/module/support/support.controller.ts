@@ -83,13 +83,13 @@ export class SupportController {
   @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
   @Put('qna/:questionId')
   async updateQuestion(
-    @Param('questionId') questionId: number, 
+    @Param('questionId') questionId: number,
     @Body() dto: PostQuestionRequest,
   ): Promise<ResponsesDataDto<boolean>> {
-    const { user } = this.req
-    await this.supportService.updateQuestion(user.id, questionId, dto)
+    const { user } = this.req;
+    await this.supportService.updateQuestion(user.id, questionId, dto);
 
-    return new ResponsesDataDto(true)
+    return new ResponsesDataDto(true);
   }
 
   @ApiTags('Support')
@@ -100,11 +100,9 @@ export class SupportController {
   @ApiOkResponse()
   @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
   @Delete('qna/:questionId')
-  async deleteQuestion(
-    @Param('questionId') questionId: number,
-  ): Promise<void> {
-    const { user } = this.req
-    await this.supportService.deleteQuestion(user.id, questionId)
+  async deleteQuestion(@Param('questionId') questionId: number): Promise<void> {
+    const { user } = this.req;
+    await this.supportService.deleteQuestion(user.id, questionId);
   }
 
   @ApiTags('Support')

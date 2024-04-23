@@ -37,22 +37,25 @@ export class SupportRepositoryService {
   async updateQuestion(
     questionId: number,
     dto: PostQuestionDto,
-  ): Promise<void>  {
-    await this.qnaRepository.update({ id: questionId, userId: dto.userId }, dto ) 
+  ): Promise<void> {
+    await this.qnaRepository.update(
+      { id: questionId, userId: dto.userId },
+      dto,
+    );
   }
 
   async deleteQuestion(questionId): Promise<void> {
-    await this.qnaRepository.delete(questionId)
+    await this.qnaRepository.delete(questionId);
   }
 
   async getQuestionById(questionId: number): Promise<QnaEntity> {
-    const question = this.qnaRepository.findOneBy({ id: questionId })
+    const question = this.qnaRepository.findOneBy({ id: questionId });
 
     if (!question) {
-      throw new ServiceError(ExceptionCode.NotFound)
+      throw new ServiceError(ExceptionCode.NotFound);
     }
 
-    return question
+    return question;
   }
 
   async getQnaList(userId: number): Promise<QnaEntity[]> {
