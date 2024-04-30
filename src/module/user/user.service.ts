@@ -3,10 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { UserRepositoryService } from '../repository/service/user.repository.service';
 import { UserInfoResponse } from './dto/user.dto';
 import { UserEntity } from '../repository/entity/user.entity';
+import { ConfigService } from '../config/config.service';
+import { CacheService } from './../cache/cache.service';
+import { EditUserNameKey } from '../cache/dto/cache.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepositoryService: UserRepositoryService) {}
+  constructor(
+    private readonly userRepositoryService: UserRepositoryService,
+    private readonly cacheService: CacheService,
+  ) {}
 
   async getUserInfo(userId: number): Promise<UserInfoResponse> {
     const result = await this.userRepositoryService.getUserById(userId);
@@ -21,6 +27,13 @@ export class UserService {
     await this.userRepositoryService.updateUser({ id: userId, name });
     const result = await this.userRepositoryService.getUserById(userId);
 
+    // 이름 변경 시간 제한 설정
+    await this.cacheService.set(
+      EditUserNameKey.get(userId),
+      name,
+      ConfigService.getConfig().REDIS_TTL.EDIT_NAME,
+    );
+
     return UserInfoResponse.from(result);
   }
 
@@ -29,5 +42,11 @@ export class UserService {
     const users = await this.userRepositoryService.getUsers();
 
     return users;
+  }
+
+  async canEditName(userId: number): Promise<boolean> {
+    const value = await this.cacheService.find(EditUserNameKey.get(userId));
+
+    return !!!value;
   }
 }
