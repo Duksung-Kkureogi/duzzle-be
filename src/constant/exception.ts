@@ -15,6 +15,7 @@ export enum ExceptionCode {
   InvalidLoginInfo = 'INVALID_LOGIN_INFO',
 
   // 403 (FORBIDDEN)
+  Forbidden = "FORBIDDEN",
 
   // 404 (Not Found)
   NotFound = 'NOT_FOUND',
@@ -69,6 +70,7 @@ export const CodeToStatus: {
   [ExceptionCode.MissingAuthToken]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.InvalidAccessToken]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.TokenExpired]: HttpStatus.UNAUTHORIZED,
+  [ExceptionCode.Forbidden]: HttpStatus.FORBIDDEN,
   [ExceptionCode.NotFound]: HttpStatus.NOT_FOUND,
   [ExceptionCode.AlreadyExists]: HttpStatus.CONFLICT,
   [ExceptionCode.AlreadyBlocked]: HttpStatus.CONFLICT,
