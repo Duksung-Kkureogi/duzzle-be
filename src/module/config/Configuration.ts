@@ -33,4 +33,8 @@ export interface Configuration {
     SOCIAL_LOGIN: string;
     EXTERNAL_WALLET: string;
   };
+
+  // In-momory DB
+  REDIS_HOST: string;
+  REDIS_PORT: number;
 }

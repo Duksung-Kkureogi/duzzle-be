@@ -17,6 +17,7 @@ import { InternalServerErrorFilter } from 'src/filter/internal-server-exception.
 import { ValidationExceptionFilter } from 'src/filter/parameter-validator-exception.filter';
 import { NotFoundExceptionFilter } from 'src/filter/not-found-exception.filter';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
+import { CacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
     AuthModule,
     SupportModule,
     UserModule,
+    CacheModule,
   ],
   controllers: [HealthController],
   providers: [

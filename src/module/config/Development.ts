@@ -29,6 +29,10 @@ const config: Configuration = {
     SOCIAL_LOGIN: 'https://api-auth.web3auth.io/jwks',
     EXTERNAL_WALLET: 'https://authjs.web3auth.io/jwks',
   },
+
+  // In-momory DB
+  REDIS_HOST: 'localhost',
+  REDIS_PORT: 6379,
 };
 
 export default config;
