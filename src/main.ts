@@ -4,7 +4,6 @@ import {
   BadRequestException,
   ClassSerializerInterceptor,
   HttpStatus,
-  Logger,
   RequestMethod,
   ValidationPipe,
   VersioningType,
@@ -12,8 +11,9 @@ import {
 import { ConfigService } from './module/config/config.service';
 import { ServerResponse } from 'http';
 import morganBody from 'morgan-body';
-import { json, urlencoded, Request } from 'express';
+import { json, urlencoded, Request, NextFunction } from 'express';
 import helmet from 'helmet';
+import { v4 as uuidV4 } from 'uuid';
 import {
   ExpressAdapter,
   NestExpressApplication,
@@ -21,6 +21,7 @@ import {
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { setupSwagger } from './setup-swagger';
 import { ZoneService } from './module/zone/zone.service';
+import { LogProvider } from './provider/log.provider';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -47,6 +48,10 @@ async function bootstrap() {
       { path: '/version', method: RequestMethod.GET },
     ],
   });
+
+  app.use((_req: Request, _res: Response, next: NextFunction) =>
+    LogProvider.scope(uuidV4(), next),
+  );
 
   app.enableVersioning({
     type: VersioningType.URI,
@@ -83,7 +88,7 @@ async function bootstrap() {
     },
     stream: {
       write: (message: string) => {
-        Logger.log(message, 'Http');
+        LogProvider.info(message, 'Http');
         return true;
       },
     },
