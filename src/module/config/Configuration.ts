@@ -55,4 +55,7 @@ export interface Configuration {
   readonly AWS_S3_ACCESS_KEY: string;
   readonly AWS_S3_SECRET_ACCESS_KEY: string;
   readonly AWS_S3_BUCKET_NAME: string;
+  // In-momory DB
+  REDIS_HOST: string;
+  REDIS_PORT: number;
 }

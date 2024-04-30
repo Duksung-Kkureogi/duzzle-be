@@ -52,6 +52,9 @@ const config: Configuration = {
   AWS_S3_ACCESS_KEY: 'AKIASPFPKRIKHEFEBZGD',
   AWS_S3_SECRET_ACCESS_KEY: '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',
   AWS_S3_BUCKET_NAME: 'duzzle-s3-bucket',
+  // In-momory DB
+  REDIS_HOST: 'localhost',
+  REDIS_PORT: 6379,
 };
 
 export default config;
