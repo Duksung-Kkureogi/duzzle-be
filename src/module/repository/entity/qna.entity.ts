@@ -1,19 +1,18 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { QuestionCategory } from '../enum/support.enum';
+import { BaseEntity } from './base.entity';
 
 // TODO: 추후에 컬럼 추가
 // - 답변한 관리자: answered_by
 @Entity('qna')
-export class QnaEntity {
+export class QnaEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -35,12 +34,6 @@ export class QnaEntity {
 
   @Column({ nullable: true, type: 'timestamptz' })
   answeredAt: Date;
-
-  @CreateDateColumn({ nullable: true, type: 'timestamptz' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ nullable: true, type: 'timestamptz' })
-  updatedAt: Date;
 
   @ManyToOne(() => UserEntity, {
     onDelete: 'CASCADE',
