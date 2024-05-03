@@ -48,8 +48,14 @@ export class SupportRepositoryService {
     await this.qnaRepository.delete(questionId);
   }
 
-  async getQuestionById(questionId: number): Promise<QnaEntity> {
-    const question = this.qnaRepository.findOneBy({ id: questionId });
+  async getQuestionById(
+    userId: number,
+    questionId: number,
+  ): Promise<QnaEntity> {
+    const question = await this.qnaRepository.findOneBy({
+      id: questionId,
+      userId,
+    });
 
     if (!question) {
       throw new ServiceError(ExceptionCode.NotFound);
