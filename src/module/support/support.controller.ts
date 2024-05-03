@@ -34,6 +34,7 @@ import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { ExceptionCode } from 'src/constant/exception';
+import { ResponseData } from 'src/decorator/response-data.decorator';
 
 @Controller({
   path: 'support',
@@ -120,5 +121,23 @@ export class SupportController {
     const result = await this.supportService.getQnasByUserId(user.id);
 
     return new ResponsesListDto(result);
+  }
+
+  @ApiTags('Support')
+  @ApiOperation({
+    summary: '특정 1:1 문의 조회',
+  })
+  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ResponseData(QnaResponse)
+  @Get('qna/:id')
+  async getQnaById(
+    @Param('id') id: number,
+  ): Promise<ResponsesDataDto<QnaResponse>> {
+    const { user } = this.req;
+    const result = await this.supportService.getQnaById(user.id, id);
+
+    return new ResponsesDataDto(result);
   }
 }
