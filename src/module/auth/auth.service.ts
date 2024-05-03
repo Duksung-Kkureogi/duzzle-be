@@ -16,11 +16,15 @@ import {
 import { ServiceError } from 'src/types/exception';
 import { ExceptionCode } from 'src/constant/exception';
 import { LoginType } from '../repository/enum/user.enum';
+import { WelcomeMailData } from 'src/types/mail-data';
+import { MailService } from '../email/email.service';
+import { MailTemplate } from '../repository/enum/mail.enum';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userRepositoryService: UserRepositoryService,
+    private readonly mailService: MailService,
 
     @Inject(JwtService)
     private readonly jwtService: JwtService,
@@ -120,6 +124,21 @@ export class AuthService {
         walletAddress: checksummedAddresses,
         email: payload?.email,
       });
+
+      const mailData: WelcomeMailData = {
+        email: user.email,
+      };
+
+      try {
+        await this.mailService.sendMail(
+          user.email,
+          MailTemplate.Welcome,
+          mailData,
+        );
+      } catch (err) {
+        // TODO: 에러 알림 발송
+        Logger.error(err.message, err.stack);
+      }
     }
 
     const jwt: JWT = await this.generateLoginJwt({

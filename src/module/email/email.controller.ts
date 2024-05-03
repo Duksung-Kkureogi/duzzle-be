@@ -8,8 +8,9 @@ import {
 } from '@nestjs/common';
 import { MailService } from './email.service';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MailgunMessageData } from 'nestjs-mailgun';
+import { WelcomeMailData } from 'src/types/mail-data';
 import { SendMailRequest } from './dto/email.dto';
+import { MailTemplate } from '../repository/enum/mail.enum';
 
 @Controller({
   path: 'email',
@@ -21,17 +22,15 @@ export class MailController {
   ) {}
 
   @ApiTags('Mail')
-  @ApiOperation({ summary: '가입 환영 메일 발송' })
+  @ApiOperation({ summary: '가입 환영 메일 발송 테스트용' })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
   @Post('mail')
   async sendWelcomeMail(@Body() dto: SendMailRequest) {
-    const option: MailgunMessageData = {
-      to: dto.email,
-      template: 'welcometemplate',
-      'h:X-Mailgun-Variables': `{"email":"${dto.email}"}`,
+    const mailData: WelcomeMailData = {
+      email: dto.email,
     };
 
-    await this.mailService.sendMail(option);
+    await this.mailService.sendMail(dto.email, MailTemplate.Welcome, mailData);
   }
 }
