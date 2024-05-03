@@ -19,7 +19,7 @@ export class MailService {
         'h:X-Mailgun-Variables': JSON.stringify(mailData),
       });
     } catch (e) {
-      throw new ServiceError(ExceptionCode.InternalServerError, e);
+      throw new ServiceError(ExceptionCode.InternalServerError, new Error(e));
     }
   }
 }
