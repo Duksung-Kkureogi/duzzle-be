@@ -25,9 +25,7 @@ export class MailController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
   @Post('mail')
-  async sendWelcomeMail(
-    @Body() dto: SendMailRequest,
-  ) {
+  async sendWelcomeMail(@Body() dto: SendMailRequest) {
     const option: MailgunMessageData = {
       to: dto.email,
       template: 'welcometemplate',

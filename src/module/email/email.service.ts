@@ -13,8 +13,8 @@ export class MailService {
         'sandboxc24a5da340d24fb88c51452c411b9dcc.mailgun.org',
         option,
       );
-    } catch(e) {
-        throw new ServiceError(ExceptionCode.Forbidden);
+    } catch (e) {
+      throw new ServiceError(ExceptionCode.Forbidden);
     }
   }
 }
