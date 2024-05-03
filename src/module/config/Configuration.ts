@@ -58,4 +58,7 @@ export interface Configuration {
   // In-momory DB
   REDIS_HOST: string;
   REDIS_PORT: number;
+  REDIS_TTL: {
+    EDIT_NAME: number;
+  };
 }

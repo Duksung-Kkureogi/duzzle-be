@@ -55,6 +55,9 @@ const config: Configuration = {
   // In-momory DB
   REDIS_HOST: 'localhost',
   REDIS_PORT: 6379,
+  REDIS_TTL: {
+    EDIT_NAME: 10 * 60 * 1000, // 10분
+  },
 };
 
 export default config;
