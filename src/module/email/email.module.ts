@@ -3,7 +3,6 @@ import { MailgunModule } from 'nestjs-mailgun';
 import { MailService } from './email.service';
 import { MailController } from './email.controller';
 import { ConfigService } from '../config/config.service';
-
 @Module({
   imports: [
     MailgunModule.forRoot({
