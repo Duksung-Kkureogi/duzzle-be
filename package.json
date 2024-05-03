@@ -37,6 +37,7 @@
     "helmet": "^7.1.0",
     "jwks-rsa": "^3.1.0",
     "morgan-body": "^2.6.9",
+    "nestjs-mailgun": "^4.0.3",
     "pg": "^8.11.5",
     "pm2": "^5.3.1",
     "reflect-metadata": "^0.1.13",

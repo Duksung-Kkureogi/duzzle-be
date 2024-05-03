@@ -29,6 +29,10 @@ const config: Configuration = {
     SOCIAL_LOGIN: 'https://api-auth.web3auth.io/jwks',
     EXTERNAL_WALLET: 'https://authjs.web3auth.io/jwks',
   },
+
+  // MAILGUN
+  MAILGUN_USERNAME: 'api',
+  MAILGUN_KEY: 'c13873f7570bafb50f7e40bc75447fae-86220e6a-7d295da1',
 };
 
 export default config;

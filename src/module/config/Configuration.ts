@@ -33,4 +33,8 @@ export interface Configuration {
     SOCIAL_LOGIN: string;
     EXTERNAL_WALLET: string;
   };
+
+  // MAILGUN
+  readonly MAILGUN_USERNAME: string;
+  readonly MAILGUN_KEY: string;
 }
