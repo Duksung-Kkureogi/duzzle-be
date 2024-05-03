@@ -3,8 +3,12 @@ import { MailgunModule } from 'nestjs-mailgun';
 import { MailService } from './email.service';
 import { MailController } from './email.controller';
 import { ConfigService } from '../config/config.service';
+import { EnvironmentModule } from '../config/config.module';
+
+@Global()
 @Module({
   imports: [
+    EnvironmentModule,
     MailgunModule.forRoot({
       username: ConfigService.getConfig().MAILGUN_USERNAME,
       key: ConfigService.getConfig().MAILGUN_KEY,
