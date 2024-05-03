@@ -12,14 +12,14 @@ const config: Configuration = {
 
   // DB
   DB_INFO: {
-    host: 'duzzle-dev.croia0wi0ych.ap-northeast-2.rds.amazonaws.com',
+    host: 'duzzle-development.croia0wi0ych.ap-northeast-2.rds.amazonaws.com',
     port: 5432,
     max: 50,
     database: 'duzzle',
     user: 'dskk',
     password: 'MyUQ6yf36FQ1sr9Pl5Yz',
   },
-  USE_SYNCHRONIZE: false,
+  USE_SYNCHRONIZE: true,
 
   // JWT
   JWT_SECRET: '#b1b4!1^+1w=&43^mgvb9h&ia90wq2f2)3&0c^h7pb+!i-5g%q',

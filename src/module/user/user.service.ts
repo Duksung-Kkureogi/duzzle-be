@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { UserRepositoryService } from '../repository/service/user.repository.service';
 import { UserInfoResponse } from './dto/user.dto';
+import { UserEntity } from '../repository/entity/user.entity';
 
 @Injectable()
 export class UserService {
@@ -21,5 +22,12 @@ export class UserService {
     const result = await this.userRepositoryService.getUserById(userId);
 
     return UserInfoResponse.from(result);
+  }
+
+  // TOOD: 개발용(관리자 페이지 생성시 삭제 예정)
+  async getUsers(): Promise<UserEntity[]> {
+    const users = await this.userRepositoryService.getUsers();
+
+    return users;
   }
 }

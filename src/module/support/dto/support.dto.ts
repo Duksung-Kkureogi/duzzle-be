@@ -51,6 +51,10 @@ export class QnaResponse {
   @Expose()
   question: string;
 
+  @ApiProperty({ description: '답변 받을 이메일 주소' })
+  @Expose()
+  email: string;
+
   @ApiProperty({ description: '답변 내용' })
   @Expose()
   answer: string;

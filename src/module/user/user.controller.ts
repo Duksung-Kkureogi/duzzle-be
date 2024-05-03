@@ -21,6 +21,8 @@ import { AuthGuard } from '../auth/auth.guard';
 import { UpdateUserNameRequest, UserInfoResponse } from './dto/user.dto';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { ExceptionCode } from 'src/constant/exception';
+import { ResponsesListDto } from 'src/dto/responses-list.dto';
+import { UserEntity } from '../repository/entity/user.entity';
 
 @Controller({
   path: 'user',
@@ -69,5 +71,16 @@ export class UserController {
     const result = await this.userService.updateUserName(user.id, dto.name);
 
     return new ResponsesDataDto(result);
+  }
+
+  @ApiTags('Tmp')
+  @ApiOperation({
+    summary: '개발용 전체 유저 목록',
+  })
+  @Get('list')
+  async getUsers(): Promise<ResponsesListDto<UserEntity>> {
+    const users = await this.userService.getUsers();
+
+    return new ResponsesListDto(users);
   }
 }
