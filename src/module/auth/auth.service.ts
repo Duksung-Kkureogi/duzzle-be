@@ -125,19 +125,21 @@ export class AuthService {
         email: payload?.email,
       });
 
-      const mailData: WelcomeMailData = {
-        email: user.email,
-      };
+      if (user.email) {
+        const mailData: WelcomeMailData = {
+          email: user.email,
+        };
 
-      try {
-        await this.mailService.sendMail(
-          user.email,
-          MailTemplate.Welcome,
-          mailData,
-        );
-      } catch (err) {
-        // TODO: 에러 알림 발송
-        Logger.error(err.message, err.stack);
+        try {
+          await this.mailService.sendMail(
+            user.email,
+            MailTemplate.Welcome,
+            mailData,
+          );
+        } catch (err) {
+          // TODO: 에러 알림 발송
+          Logger.error(err.message, err.stack);
+        }
       }
     }
 
