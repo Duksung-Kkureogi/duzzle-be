@@ -6,10 +6,10 @@ import { MailTemplate } from '../repository/enum/mail.enum';
 
 @Injectable()
 export class MailService {
-  constructor(
-    private mailgunService: MailgunService,
-    private readonly domain: string = 'sandboxc24a5da340d24fb88c51452c411b9dcc.mailgun.org',
-  ) {}
+  private readonly domain: string =
+    'sandboxc24a5da340d24fb88c51452c411b9dcc.mailgun.org';
+
+  constructor(private mailgunService: MailgunService) {}
 
   async sendMail(to: string, template: MailTemplate, mailData?: any) {
     try {
