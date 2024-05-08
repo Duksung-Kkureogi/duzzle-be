@@ -18,6 +18,7 @@ import { ValidationExceptionFilter } from 'src/filter/parameter-validator-except
 import { NotFoundExceptionFilter } from 'src/filter/not-found-exception.filter';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { MailModule } from './email/email.module';
+import { QuestModule } from './quest/quest.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { MailModule } from './email/email.module';
     SupportModule,
     UserModule,
     MailModule,
+    QuestModule,
   ],
   controllers: [HealthController],
   providers: [

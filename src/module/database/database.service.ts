@@ -18,6 +18,7 @@ export class DatabaseConfigService implements TypeOrmOptionsFactory {
       synchronize: ConfigService.getConfig().USE_SYNCHRONIZE,
       namingStrategy: new SnakeNamingStrategy(),
       logging: true,
+      useUTC: true,
     };
   }
 }
