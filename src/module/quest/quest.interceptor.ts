@@ -13,7 +13,7 @@ import { QuestService } from './quest.service';
 import { HttpError } from 'src/types/http-exceptions';
 
 @Injectable({ scope: Scope.REQUEST })
-export class StartQuestIterceptor implements NestInterceptor {
+export class StartQuestInterceptor implements NestInterceptor {
   constructor(
     @Inject(QuestService)
     private readonly questService: QuestService,

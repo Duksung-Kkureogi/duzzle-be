@@ -26,7 +26,7 @@ import { QuestService } from './quest.service';
 import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
 import { UserGuard } from '../auth/auth.guard';
 import { ApiResponseBooleanTrue } from 'src/constant/api-ok-response-boolean';
-import { StartQuestIterceptor } from './quest.interceptor';
+import { StartQuestInterceptor } from './quest.interceptor';
 
 @Controller({
   path: 'quest',
@@ -46,7 +46,7 @@ export class QuestController {
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @ResponseData(StartRandomQuestResponse)
   @ResponseException(HttpStatus.CONFLICT, [ExceptionCode.LimitExceeded])
-  @UseInterceptors(StartQuestIterceptor)
+  @UseInterceptors(StartQuestInterceptor)
   @UserGuard()
   @Post('start')
   async startRandomQuest(): Promise<
