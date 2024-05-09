@@ -47,9 +47,9 @@ export class QuestService {
   }
 
   async getResult(userId: number, params: GetResultRequest): Promise<boolean> {
-    const { resultId, answer } = params;
+    const { logId, answer } = params;
     const log = await this.questRepositoryService.getLogByIdAndUser(
-      resultId,
+      logId,
       userId,
     );
     if (!log || log.isCompleted) {
@@ -68,6 +68,7 @@ export class QuestService {
     log.isSucceeded = isSucceeded;
 
     await this.questRepositoryService.updateLog(log);
+    // TODO: 블록체인 DAL 토큰 지급하는 비동기 작업 필요
 
     return isSucceeded;
   }

@@ -5,10 +5,6 @@ import { QuestEntity } from 'src/module/repository/entity/quest.entity';
 import { QuestType } from 'src/module/repository/enum/quest.enum';
 
 export class StartRandomQuestResponse {
-  @ApiProperty()
-  @Expose()
-  id: number;
-
   @ApiProperty({ type: 'enum', enum: QuestType })
   @Expose()
   type: QuestType;
@@ -19,7 +15,7 @@ export class StartRandomQuestResponse {
 
   @ApiProperty({ description: '퀘스트 내용' })
   @Expose()
-  content: string;
+  quest: string;
 
   @ApiProperty({ description: '퀘스트 결과 확인을 위한 식별값' })
   @Expose()
@@ -39,7 +35,7 @@ export class StartRandomQuestResponse {
 export class GetResultRequest {
   @ApiProperty()
   @IsPositive()
-  resultId: number;
+  logId: number;
 
   @ApiProperty()
   @IsArray()
