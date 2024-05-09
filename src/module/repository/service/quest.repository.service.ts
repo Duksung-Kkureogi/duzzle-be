@@ -30,9 +30,12 @@ export class QuestRepositoryService {
   }
 
   async findSucceededLogsByUserId(userId: number): Promise<LogQuestEntity[]> {
-    const result = await this.logRepository.findBy({
-      userId,
-      isSucceeded: true,
+    const result = await this.logRepository.find({
+      where: {
+        userId,
+        isSucceeded: true,
+      },
+      relations: { quest: true },
     });
 
     return result;
@@ -46,6 +49,9 @@ export class QuestRepositoryService {
       },
       relations: {
         quest: true,
+      },
+      order: {
+        createdAt: 'DESC',
       },
     });
 
@@ -84,5 +90,14 @@ export class QuestRepositoryService {
 
   async updateLog(log: LogQuestEntity): Promise<void> {
     await this.logRepository.update(log.id, log);
+  }
+
+  async getLogByIdAndUser(id: number, userId: number): Promise<LogQuestEntity> {
+    const log = await this.logRepository.findOne({
+      where: { id, userId },
+      relations: { quest: true },
+    });
+
+    return log;
   }
 }

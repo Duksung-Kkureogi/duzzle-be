@@ -21,17 +21,25 @@ export class StartRandomQuestResponse {
   @Expose()
   content: string;
 
-  static from(entity: QuestEntity) {
-    return plainToInstance(this, entity, {
-      excludeExtraneousValues: true,
-    });
+  @ApiProperty({ description: '퀘스트 결과 확인을 위한 식별값' })
+  @Expose()
+  logId: number;
+
+  static from(entity: QuestEntity, logId: number) {
+    return plainToInstance(
+      this,
+      { ...entity, logId },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
   }
 }
 
 export class GetResultRequest {
   @ApiProperty()
   @IsPositive()
-  questId: number;
+  resultId: number;
 
   @ApiProperty()
   @IsArray()

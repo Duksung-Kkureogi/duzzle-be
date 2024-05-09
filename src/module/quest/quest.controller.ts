@@ -70,11 +70,7 @@ export class QuestController {
     @Body() params: GetResultRequest,
   ): Promise<ResponsesDataDto<boolean>> {
     const { user } = this.req;
-    const result = await this.questService.getResult(
-      user.id,
-      params.questId,
-      params.answer,
-    );
+    const result = await this.questService.getResult(user.id, params);
 
     return new ResponsesDataDto(result);
   }
