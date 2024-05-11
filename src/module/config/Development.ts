@@ -23,7 +23,7 @@ const config: Configuration = {
 
   // JWT
   JWT_SECRET: '#b1b4!1^+1w=&43^mgvb9h&ia90wq2f2)3&0c^h7pb+!i-5g%q',
-  JWT_ACCESS_EXPIRES_IN: '30m',
+  JWT_ACCESS_EXPIRES_IN: '1d',
   JWT_REFRESH_EXPIRES_IN: '30d',
   WEB3AUTH_JWKS_ENDPOINT: {
     SOCIAL_LOGIN: 'https://api-auth.web3auth.io/jwks',
