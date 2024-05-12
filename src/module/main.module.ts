@@ -19,6 +19,7 @@ import { NotFoundExceptionFilter } from 'src/filter/not-found-exception.filter';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { MailModule } from './email/email.module';
 import { QuestModule } from './quest/quest.module';
+import { AwsModule } from './aws/aws.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { QuestModule } from './quest/quest.module';
     UserModule,
     MailModule,
     QuestModule,
+    AwsModule,
   ],
   controllers: [HealthController],
   providers: [
