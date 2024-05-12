@@ -18,6 +18,10 @@ export class UserInfoResponse {
 
   @ApiProperty()
   @Expose()
+  image: string;
+
+  @ApiProperty()
+  @Expose()
   level: number;
 
   @ApiProperty()
@@ -39,4 +43,9 @@ export class UpdateUserNameRequest {
   @ApiProperty()
   @IsNotEmpty()
   name: string;
+}
+
+export class ImageUploadDto {
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  file?: any;
 }
