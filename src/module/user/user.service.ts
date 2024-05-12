@@ -2,10 +2,15 @@ import { Injectable } from '@nestjs/common';
 
 import { UserRepositoryService } from '../repository/service/user.repository.service';
 import { UserInfoResponse } from './dto/user.dto';
+import { AwsService } from '../aws/aws.service';
+import { uuid } from 'uuidv4';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepositoryService: UserRepositoryService) {}
+  constructor(
+    private readonly userRepositoryService: UserRepositoryService,
+    private readonly awsService: AwsService,
+  ) {}
 
   async getUserInfo(userId: number): Promise<UserInfoResponse> {
     const result = await this.userRepositoryService.getUserById(userId);
@@ -18,6 +23,42 @@ export class UserService {
     name: string,
   ): Promise<UserInfoResponse> {
     await this.userRepositoryService.updateUser({ id: userId, name });
+    const result = await this.userRepositoryService.getUserById(userId);
+
+    return UserInfoResponse.from(result);
+  }
+
+  async updateUserImage(
+    userId: number,
+    file: Express.Multer.File,
+  ): Promise<UserInfoResponse> {
+    let imageUrl =
+      'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/default.png';
+
+    if (file) {
+      const imageName = uuid();
+      const ext = file.originalname.split('.').pop();
+      imageUrl = await this.awsService.uploadFile(
+        `${imageName}.${ext}`,
+        file,
+        ext,
+      );
+    }
+
+    const user = await this.userRepositoryService.getUserById(userId);
+    if (
+      user.image &&
+      user.image !==
+        'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/default.png'
+    ) {
+      await this.awsService.deleteFile(user.image.split('/').pop());
+    }
+
+    await this.userRepositoryService.updateUserImage({
+      id: userId,
+      image: imageUrl,
+    });
+
     const result = await this.userRepositoryService.getUserById(userId);
 
     return UserInfoResponse.from(result);

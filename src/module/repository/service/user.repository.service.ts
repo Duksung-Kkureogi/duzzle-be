@@ -57,4 +57,8 @@ export class UserRepositoryService {
       }
     }
   }
+
+  async updateUserImage(dto: UpdateUserDto): Promise<void> {
+    await this.userRepository.update(dto.id, dto);
+  }
 }

@@ -8,19 +8,32 @@ import {
   Body,
   UseGuards,
   Patch,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { ResponseData } from 'src/decorator/response-data.decorator';
 import { AuthorizationToken } from 'src/constant/authorization-token';
 import { AuthGuard } from '../auth/auth.guard';
-import { UpdateUserNameRequest, UserInfoResponse } from './dto/user.dto';
+import {
+  ImageUploadDto,
+  UpdateUserNameRequest,
+  UserInfoResponse,
+} from './dto/user.dto';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { ExceptionCode } from 'src/constant/exception';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller({
   path: 'user',
@@ -67,6 +80,25 @@ export class UserController {
   ): Promise<ResponsesDataDto<UserInfoResponse>> {
     const { user } = this.req;
     const result = await this.userService.updateUserName(user.id, dto.name);
+
+    return new ResponsesDataDto(result);
+  }
+
+  @ApiTags('User')
+  @ApiOperation({ summary: '유저 프로필 이미지 변경' })
+  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @UseGuards(AuthGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: ImageUploadDto })
+  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(HttpStatus.OK)
+  @ResponseData(UserInfoResponse)
+  @Patch('image')
+  async updateUserImage(
+    @UploadedFile() file: Express.Multer.File | null = null,
+  ): Promise<ResponsesDataDto<UserInfoResponse>> {
+    const { user } = this.req;
+    const result = await this.userService.updateUserImage(user.id, file);
 
     return new ResponsesDataDto(result);
   }
