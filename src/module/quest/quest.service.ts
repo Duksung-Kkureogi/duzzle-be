@@ -16,13 +16,16 @@ export class QuestService {
     const logs =
       await this.questRepositoryService.findSucceededLogsByUserId(userId);
 
-    const quest = await this.questRepositoryService.findRandomQuest(
+    const quests = await this.questRepositoryService.findQuests(
       logs.map((e) => e.quest.id),
     );
 
-    if (!quest) {
+    if (quests.length) {
       throw new ServiceError(ExceptionCode.LimitExceeded);
     }
+
+    const randomQuestIndex = Math.floor(Math.random() * quests.length);
+    const quest = quests[randomQuestIndex];
 
     const log = await this.questRepositoryService.insertLog(userId, quest.id);
 
