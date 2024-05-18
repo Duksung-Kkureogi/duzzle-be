@@ -103,13 +103,13 @@ export class UserController {
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: ImageUploadDto })
+  @ApiBody({ type: ImageUploadDto, required: false })
   @UseInterceptors(FileInterceptor('file', multerOptions))
   @HttpCode(HttpStatus.OK)
   @ResponseData(UserInfoResponse)
   @Patch('image')
   async updateUserImage(
-    @UploadedFile() file: Express.Multer.File | null = null,
+    @UploadedFile() file: Express.Multer.File,
   ): Promise<ResponsesDataDto<UserInfoResponse>> {
     const { user } = this.req;
     const result = await this.userService.updateUserImage(user.id, file);

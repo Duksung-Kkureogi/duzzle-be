@@ -47,5 +47,5 @@ export class UpdateUserNameRequest {
 
 export class ImageUploadDto {
   @ApiProperty({ type: 'string', format: 'binary', required: false })
-  file?: any;
+  file: any;
 }
