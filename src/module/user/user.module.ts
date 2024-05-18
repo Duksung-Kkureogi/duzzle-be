@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { RepositoryModule } from 'src/module/repository/repository.module';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { AwsModule } from '../aws/aws.module';
+import { CloudStorageModule } from '../cloudStorage/cloudStorage.module';
 
 @Module({
-  imports: [RepositoryModule, AwsModule],
+  imports: [RepositoryModule, CloudStorageModule],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

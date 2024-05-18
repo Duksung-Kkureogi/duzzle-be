@@ -11,17 +11,17 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
-import { AwsService } from './aws.service';
 import { uuid } from 'uuidv4';
-import { ImageUploadDto } from './dto/aws.dto';
+import { CloudStorageService } from './cloudStorage.service';
+import { ImageUploadDto } from './dto/cloudStorage.dto';
 
 @Controller({
   path: 'aws',
 })
-export class AwsController {
+export class CloudStorageController {
   constructor(
-    @Inject(AwsService)
-    private readonly awsService: AwsService,
+    @Inject(CloudStorageService)
+    private readonly cloudStorageService: CloudStorageService,
   ) {}
 
   @ApiTags('Aws')
@@ -38,7 +38,7 @@ export class AwsController {
     const imageName = uuid();
     const ext = file.originalname.split('.').pop();
 
-    const imageUrl = await this.awsService.uploadFile(
+    const imageUrl = await this.cloudStorageService.uploadFile(
       `${imageName}.${ext}`,
       file,
       ext,
@@ -52,6 +52,6 @@ export class AwsController {
   @HttpCode(HttpStatus.OK)
   @Delete('image/:imageName')
   async deleteImage(@Param('imageName') imageName: string) {
-    await this.awsService.deleteFile(imageName);
+    await this.cloudStorageService.deleteFile(imageName);
   }
 }

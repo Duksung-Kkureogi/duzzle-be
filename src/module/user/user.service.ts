@@ -3,14 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { UserRepositoryService } from '../repository/service/user.repository.service';
 import { UserInfoResponse } from './dto/user.dto';
 import { UserEntity } from '../repository/entity/user.entity';
-import { AwsService } from '../aws/aws.service';
 import { uuid } from 'uuidv4';
+import { CloudStorageService } from '../cloudStorage/cloudStorage.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepositoryService: UserRepositoryService,
-    private readonly awsService: AwsService,
+    private readonly cloudStorageService: CloudStorageService,
   ) {}
 
   async getUserInfo(userId: number): Promise<UserInfoResponse> {
@@ -46,7 +46,7 @@ export class UserService {
     if (file) {
       const imageName = uuid();
       const ext = file.originalname.split('.').pop();
-      imageUrl = await this.awsService.uploadFile(
+      imageUrl = await this.cloudStorageService.uploadFile(
         `${imageName}.${ext}`,
         file,
         ext,
@@ -59,7 +59,7 @@ export class UserService {
       user.image !==
         'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/default.png'
     ) {
-      await this.awsService.deleteFile(user.image.split('/').pop());
+      await this.cloudStorageService.deleteFile(user.image.split('/').pop());
     }
 
     await this.userRepositoryService.updateUserImage({

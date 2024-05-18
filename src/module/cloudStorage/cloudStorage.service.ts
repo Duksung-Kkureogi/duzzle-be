@@ -9,7 +9,7 @@ import { ServiceError } from 'src/types/exception';
 import { ExceptionCode } from 'src/constant/exception';
 
 @Injectable()
-export class AwsService {
+export class CloudStorageService {
   s3Client: S3Client;
 
   constructor() {
