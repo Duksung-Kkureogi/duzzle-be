@@ -14,6 +14,7 @@ import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { uuid } from 'uuidv4';
 import { CloudStorageService } from './cloudStorage.service';
 import { ImageUploadDto } from './dto/cloudStorage.dto';
+import { multerOptions } from 'src/types/file-options';
 
 @Controller({
   path: 'aws',
@@ -31,7 +32,7 @@ export class CloudStorageController {
     description: '업로드할 파일',
     type: ImageUploadDto,
   })
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', multerOptions))
   @HttpCode(HttpStatus.OK)
   @Post('image')
   async uploadImage(@UploadedFile() file: Express.Multer.File) {

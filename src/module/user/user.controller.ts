@@ -36,6 +36,7 @@ import { ExceptionCode } from 'src/constant/exception';
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { UserEntity } from '../repository/entity/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { multerOptions } from 'src/types/file-options';
 
 @Controller({
   path: 'user',
@@ -103,7 +104,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: ImageUploadDto })
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', multerOptions))
   @HttpCode(HttpStatus.OK)
   @ResponseData(UserInfoResponse)
   @Patch('image')
