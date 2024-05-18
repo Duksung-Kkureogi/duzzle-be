@@ -58,6 +58,13 @@ export class UserRepositoryService {
     }
   }
 
+  // TODO: 개발용 메서드(관리자 페이지 작업시 삭제 예정)
+  async getUsers(): Promise<UserEntity[]> {
+    const users = await this.userRepository.find();
+
+    return users;
+  }
+  
   async updateUserImage(dto: UpdateUserDto): Promise<void> {
     await this.userRepository.update(dto.id, dto);
   }

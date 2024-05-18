@@ -4,8 +4,9 @@ import { HttpStatus } from '@nestjs/common';
 export enum ExceptionCode {
   // 400 (Bad Request)
   InvalidParameter = 'INVALID_PARAMETER',
-  RowLimitExceeded = 'ROW_LIMIT_EXCEEDED',
+  LimitExceeded = 'LIMIT_EXCEEDED',
   InvalidDate = 'INVALID_DATE',
+  NoOngoingQuest = 'NO_ONGOING_QUEST',
 
   // 401 (Unauthorized)
   MissingAuthToken = 'MISSING_AUTHENTICATION_TOKEN',
@@ -35,8 +36,7 @@ export const ExceptionMessage: {
 } = {
   // 400 (Bad Request)
   [ExceptionCode.InvalidParameter]: 'Invalid Parameter',
-  [ExceptionCode.RowLimitExceeded]:
-    'Exceeded the maximum download row count 10,000',
+  [ExceptionCode.LimitExceeded]: 'Limit Exceeded',
 
   // 401 (Unauthorized)
   // token is null/undefined
@@ -66,7 +66,7 @@ export const CodeToStatus: {
   [key in ExceptionCode]: HttpStatus;
 } = {
   [ExceptionCode.InvalidParameter]: HttpStatus.BAD_REQUEST,
-  [ExceptionCode.RowLimitExceeded]: HttpStatus.BAD_REQUEST,
+  [ExceptionCode.LimitExceeded]: HttpStatus.CONFLICT,
   [ExceptionCode.MissingAuthToken]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.InvalidAccessToken]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.TokenExpired]: HttpStatus.UNAUTHORIZED,
@@ -79,4 +79,5 @@ export const CodeToStatus: {
   [ExceptionCode.InvalidDate]: HttpStatus.BAD_REQUEST,
   [ExceptionCode.InvalidAddress]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.InvalidLoginInfo]: HttpStatus.UNAUTHORIZED,
+  [ExceptionCode.NoOngoingQuest]: HttpStatus.BAD_REQUEST,
 };

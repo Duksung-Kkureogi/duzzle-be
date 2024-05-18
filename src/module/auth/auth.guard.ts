@@ -4,6 +4,8 @@ import {
   ExecutionContext,
   Inject,
   HttpStatus,
+  applyDecorators,
+  UseGuards,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -11,6 +13,7 @@ import { ExceptionCode } from 'src/constant/exception';
 import { LoginJwtPayload } from './dto/auth.dto';
 import { HttpError } from 'src/types/http-exceptions';
 import { UserRepositoryService } from '../repository/service/user.repository.service';
+import { ResponseExceptionAuth } from 'src/decorator/auth-exception.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -58,4 +61,8 @@ export class AuthGuard implements CanActivate {
 
     return true;
   }
+}
+
+export function UserGuard() {
+  return applyDecorators(UseGuards(AuthGuard), ResponseExceptionAuth());
 }

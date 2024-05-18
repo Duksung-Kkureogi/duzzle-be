@@ -40,11 +40,7 @@ export class SupportService {
     questionId: number,
     params: PostQuestionRequest,
   ): Promise<void> {
-    const question =
-      await this.supportRepositoryService.getQuestionById(questionId);
-    if (userId !== question.userId) {
-      throw new ServiceError(ExceptionCode.NotFound);
-    }
+    await this.supportRepositoryService.getQuestionById(userId, questionId);
 
     const postQuestion = {
       ...params,
@@ -57,11 +53,7 @@ export class SupportService {
   }
 
   async deleteQuestion(userId: number, questionId: number): Promise<void> {
-    const question =
-      await this.supportRepositoryService.getQuestionById(questionId);
-    if (userId !== question.userId) {
-      throw new ServiceError(ExceptionCode.NotFound);
-    }
+    await this.supportRepositoryService.getQuestionById(userId, questionId);
 
     await this.supportRepositoryService.deleteQuestion(questionId);
   }
@@ -71,5 +63,11 @@ export class SupportService {
     const result = qnas.map((e) => QnaResponse.from(e));
 
     return result;
+  }
+
+  async getQnaById(userId: number, id: number): Promise<QnaResponse> {
+    const qna = await this.supportRepositoryService.getQuestionById(userId, id);
+
+    return QnaResponse.from(qna);
   }
 }
