@@ -24,6 +24,9 @@ export class LogQuestEntity {
   isSucceeded: boolean;
 
   @Column('boolean', { nullable: true })
+  rewardReceived: boolean;
+
+  @Column('boolean', { nullable: true })
   isCompleted: boolean;
 
   @UpdateDateColumn({ type: 'timestamptz' })

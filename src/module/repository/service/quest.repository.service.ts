@@ -29,11 +29,13 @@ export class QuestRepositoryService {
     return quests;
   }
 
-  async findSucceededLogsByUserId(userId: number): Promise<LogQuestEntity[]> {
+  async findRewardReceivedLogsByUserId(
+    userId: number,
+  ): Promise<LogQuestEntity[]> {
     const result = await this.logRepository.find({
       where: {
         userId,
-        isSucceeded: true,
+        rewardReceived: true,
       },
       relations: { quest: true },
     });
@@ -95,7 +97,7 @@ export class QuestRepositoryService {
   async getLogByIdAndUser(id: number, userId: number): Promise<LogQuestEntity> {
     const log = await this.logRepository.findOne({
       where: { id, userId },
-      relations: { quest: true },
+      relations: { quest: true, user: true },
     });
 
     return log;

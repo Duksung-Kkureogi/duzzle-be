@@ -1,26 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { BlockchainService } from './../blockchain/blockchain.service';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ServiceError } from 'src/types/exception';
 import { ExceptionCode } from 'src/constant/exception';
 import { QuestRepositoryService } from '../repository/service/quest.repository.service';
 import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
 import dayjs from 'dayjs';
+import { QuestTokenReward } from 'src/constant/quest';
 
 @Injectable()
 export class QuestService {
   private latency: number = 2000; // 퀘스트 응답/처리 등을 고려한 추가 시간, milliseconds
   constructor(
     private readonly questRepositoryService: QuestRepositoryService,
+
+    @Inject(BlockchainService)
+    private readonly blockchainService: BlockchainService,
   ) {}
 
   async getRandomQuest(userId: number): Promise<StartRandomQuestResponse> {
     const logs =
-      await this.questRepositoryService.findSucceededLogsByUserId(userId);
+      await this.questRepositoryService.findRewardReceivedLogsByUserId(userId);
 
     const quests = await this.questRepositoryService.findQuests(
       logs.map((e) => e.quest.id),
     );
 
-    if (quests.length) {
+    if (!quests.length) {
       throw new ServiceError(ExceptionCode.LimitExceeded);
     }
 
@@ -70,8 +75,17 @@ export class QuestService {
     log.isCompleted = true;
     log.isSucceeded = isSucceeded;
 
+    try {
+      await this.blockchainService.mintDalToken(
+        log.user.walletAddress,
+        QuestTokenReward,
+      );
+      log.rewardReceived = true;
+    } catch (err) {
+      Logger.error(err, err.stack);
+      log.rewardReceived = false;
+    }
     await this.questRepositoryService.updateLog(log);
-    // TODO: 블록체인 DAL 토큰 지급하는 비동기 작업 필요
 
     return isSucceeded;
   }
