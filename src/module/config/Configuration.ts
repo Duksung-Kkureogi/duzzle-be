@@ -37,4 +37,16 @@ export interface Configuration {
   // MAILGUN
   readonly MAILGUN_USERNAME: string;
   readonly MAILGUN_KEY: string;
+
+  // RPC URL
+  readonly RPC_URL: {
+    POLYGON: string;
+  };
+
+  readonly CONTRACT_ADDRESS: {
+    PLAY_DUZZLE: string;
+    DAL: string;
+    BLUEPRINT: string;
+    PUZZLE_PIECE: string;
+  };
 }
