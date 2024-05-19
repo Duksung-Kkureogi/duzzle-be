@@ -5,14 +5,15 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { BlockchainNetworks } from '../enum/nft.enum';
 
 @Entity('nft')
 export class NftEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column('varchar')
-  network: string;
+  @Column('enum', { enum: BlockchainNetworks })
+  network: BlockchainNetworks;
 
   @Column('varchar')
   address: string;
