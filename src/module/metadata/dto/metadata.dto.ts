@@ -17,7 +17,7 @@ export class OpenseaStandardMetadata {
 export class GetMetadataRequest {
   @IsNumber()
   @Type(() => Number)
-  public nftId: number;
+  public contractId: number;
 
   @IsNumber()
   @Type(() => Number)

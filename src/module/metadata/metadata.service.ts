@@ -3,22 +3,26 @@ import {
   GetMetadataRequest,
   OpenseaStandardMetadata,
 } from './dto/metadata.dto';
-import { NftMetadataRepositoryService } from './../repository/service/nft-metadata.repository.service';
+import { NftRepositoryService } from './../repository/service/nft.repository.service';
 
 @Injectable()
 export class MetadataService {
-  constructor(
-    private readonly nftMetadataRepositoryService: NftMetadataRepositoryService,
-  ) {}
+  constructor(private readonly nftRepositoryService: NftRepositoryService) {}
 
   async getMetadata(
     dto: GetMetadataRequest,
   ): Promise<OpenseaStandardMetadata | null> {
-    const metadata =
-      await this.nftMetadataRepositoryService.findMetadataByTokenId(
-        dto.nftId,
-        dto.tokenId,
-      );
+    const { contractId, tokenId } = dto;
+    const contract =
+      await this.nftRepositoryService.findNftContractById(contractId);
+
+    const metadata: OpenseaStandardMetadata = contract.isTokenIdAutoIncremented
+      ? await this.nftRepositoryService.findMetadataByContractId(contractId)
+      : await this.nftRepositoryService.findMetadataByTokenId(
+          contractId,
+          tokenId,
+        );
+
     return metadata;
   }
 }
