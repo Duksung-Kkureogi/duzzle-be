@@ -8,6 +8,8 @@ import { QnaEntity } from './entity/qna.entity';
 import { QuestRepositoryService } from './service/quest.repository.service';
 import { QuestEntity } from './entity/quest.entity';
 import { LogQuestEntity } from './entity/log-quest.entity';
+import { ZoneEntity } from './entity/zone.entity';
+import { ZoneRepositoryService } from './service/zone.repository.service';
 
 @Module({
   imports: [
@@ -17,17 +19,20 @@ import { LogQuestEntity } from './entity/log-quest.entity';
       QnaEntity,
       QuestEntity,
       LogQuestEntity,
+      ZoneEntity,
     ]),
   ],
   providers: [
     UserRepositoryService,
     SupportRepositoryService,
     QuestRepositoryService,
+    ZoneRepositoryService,
   ],
   exports: [
     UserRepositoryService,
     SupportRepositoryService,
     QuestRepositoryService,
+    ZoneRepositoryService,
   ],
 })
 export class RepositoryModule {}

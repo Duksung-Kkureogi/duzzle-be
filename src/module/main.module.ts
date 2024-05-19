@@ -20,6 +20,8 @@ import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { MailModule } from './email/email.module';
 import { QuestModule } from './quest/quest.module';
 import { BlockchainModule } from './blockchain/blockchain.module';
+import { ZoneModule } from './zone/zone.module';
+import { CloudStorageModule } from './cloudStorage/cloudStorage.module';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { BlockchainModule } from './blockchain/blockchain.module';
     MailModule,
     QuestModule,
     BlockchainModule
+    ZoneModule,
+    CloudStorageModule,
   ],
   controllers: [HealthController],
   providers: [

@@ -49,4 +49,10 @@ export interface Configuration {
     BLUEPRINT: string;
     PUZZLE_PIECE: string;
   };
+
+  // AWS
+  readonly AWS_REGION: string;
+  readonly AWS_S3_ACCESS_KEY: string;
+  readonly AWS_S3_SECRET_ACCESS_KEY: string;
+  readonly AWS_S3_BUCKET_NAME: string;
 }

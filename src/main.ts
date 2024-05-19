@@ -20,6 +20,7 @@ import {
 } from '@nestjs/platform-express';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { setupSwagger } from './setup-swagger';
+import { ZoneService } from './module/zone/zone.service';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -123,6 +124,9 @@ async function bootstrap() {
   }
 
   await app.listen(port);
+
+  // zones.ts 에 정의한 zone 목록으로 DB 초기화
+  await app.get<ZoneService>(ZoneService).setZones();
 
   console.info(
     `Server ${ConfigService.getConfig().ENV} running on port ${port}`,

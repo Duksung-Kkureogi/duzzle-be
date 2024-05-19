@@ -9,4 +9,5 @@ export class InsertUserDto {
 export class UpdateUserDto {
   id: number;
   name?: string;
+  image?: string;
 }
