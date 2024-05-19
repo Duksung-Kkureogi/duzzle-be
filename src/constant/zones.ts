@@ -40,12 +40,12 @@ export const ZONES: Zone[] = [
   {
     id: 6,
     nameKr: '도서관・대학원',
-    nameUs: '"Main Library & Graduate School',
+    nameUs: 'Main Library & Graduate School',
   },
   {
     id: 7,
     nameKr: '민주동산',
-    nameUs: '"Liberty Hill',
+    nameUs: 'Liberty Hill',
   },
   {
     id: 8,
@@ -95,7 +95,7 @@ export const ZONES: Zone[] = [
   {
     id: 17,
     nameKr: '국제관',
-    nameUs: '"International Hall',
+    nameUs: 'International Hall',
   },
   {
     id: 18,

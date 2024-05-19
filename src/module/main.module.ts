@@ -50,7 +50,7 @@ import { MetadataModule } from './metadata/metadata.module';
     UserModule,
     MailModule,
     QuestModule,
-    BlockchainModule
+    BlockchainModule,
     ZoneModule,
     CloudStorageModule,
     MetadataModule,
