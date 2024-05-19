@@ -11,7 +11,7 @@ import { LogQuestEntity } from './entity/log-quest.entity';
 import { ZoneEntity } from './entity/zone.entity';
 import { ZoneRepositoryService } from './service/zone.repository.service';
 import { NftMetadataRepositoryService } from './service/nft-metadata.repository.service';
-import { NftEntity } from './entity/nft.entity';
+import { NftContractEntity } from './entity/nft-contract.entity';
 import { NftMetadataEntity } from './entity/nft-metadata.entity';
 
 @Module({
@@ -23,7 +23,7 @@ import { NftMetadataEntity } from './entity/nft-metadata.entity';
       QuestEntity,
       LogQuestEntity,
       ZoneEntity,
-      NftEntity,
+      NftContractEntity,
       NftMetadataEntity,
     ]),
   ],

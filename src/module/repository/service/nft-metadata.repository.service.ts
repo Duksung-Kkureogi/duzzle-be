@@ -13,11 +13,11 @@ export class NftMetadataRepositoryService {
   ) {}
 
   async findMetadataByTokenId(
-    nftId: number,
+    nftContractId: number,
     tokenId: number,
   ): Promise<OpenseaStandardMetadata> {
     const nftMetadata = await this.nftMetadataRepository.findOneBy({
-      nftId,
+      nftContractId,
       tokenId,
     });
 

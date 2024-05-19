@@ -7,7 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { NftEntity } from './nft.entity';
+import { NftContractEntity } from './nft-contract.entity';
 import { OpenseaStandardMetadata } from 'src/module/metadata/dto/metadata.dto';
 
 @Entity('nft_metadata')
@@ -16,7 +16,7 @@ export class NftMetadataEntity {
   id: number;
 
   @Column('int')
-  nftId: number;
+  nftContractId: number;
 
   @Column('int')
   tokenId: number;
@@ -30,10 +30,10 @@ export class NftMetadataEntity {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @ManyToOne(() => NftEntity, {
+  @ManyToOne(() => NftContractEntity, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
-  @JoinColumn({ name: 'nft_id' })
-  nft: NftEntity;
+  @JoinColumn({ name: 'nft_contract_id' })
+  nft: NftContractEntity;
 }

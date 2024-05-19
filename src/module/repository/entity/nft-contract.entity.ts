@@ -7,8 +7,8 @@ import {
 } from 'typeorm';
 import { BlockchainNetworks } from '../enum/nft.enum';
 
-@Entity('nft')
-export class NftEntity {
+@Entity('nft_contract')
+export class NftContractEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
