@@ -21,6 +21,7 @@ import { MailModule } from './email/email.module';
 import { QuestModule } from './quest/quest.module';
 import { ZoneModule } from './zone/zone.module';
 import { CloudStorageModule } from './cloudStorage/cloudStorage.module';
+import { MetadataModule } from './metadata/metadata.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { CloudStorageModule } from './cloudStorage/cloudStorage.module';
     QuestModule,
     ZoneModule,
     CloudStorageModule,
+    MetadataModule,
   ],
   controllers: [HealthController],
   providers: [

@@ -33,23 +33,15 @@ async function bootstrap() {
     },
   );
 
-  // app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir('./views');
   app.setViewEngine('hbs');
 
-  // useContainer(app.select(MainModule), { fallbackOnErrors: true });
   const isProduction = ConfigService.isProduction();
   const port = ConfigService.getConfig().PORT;
 
   app.setGlobalPrefix(ConfigService.getConfig().API_VERSION, {
     exclude: [
-      { path: '/health', method: RequestMethod.GET },
-      { path: '/maintenance', method: RequestMethod.GET },
-      { path: '/version', method: RequestMethod.GET },
-    ],
-  });
-  app.setGlobalPrefix(ConfigService.getConfig().API_VERSION, {
-    exclude: [
+      { path: '/metadata.*', method: RequestMethod.GET },
       { path: '/health', method: RequestMethod.GET },
       { path: '/maintenance', method: RequestMethod.GET },
       { path: '/version', method: RequestMethod.GET },

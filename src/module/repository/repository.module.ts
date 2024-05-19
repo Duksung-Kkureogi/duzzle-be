@@ -10,6 +10,9 @@ import { QuestEntity } from './entity/quest.entity';
 import { LogQuestEntity } from './entity/log-quest.entity';
 import { ZoneEntity } from './entity/zone.entity';
 import { ZoneRepositoryService } from './service/zone.repository.service';
+import { NftMetadataRepositoryService } from './service/nft-metadata.repository.service';
+import { NftEntity } from './entity/nft.entity';
+import { NftMetadataEntity } from './entity/nft-metadata.entity';
 
 @Module({
   imports: [
@@ -20,6 +23,8 @@ import { ZoneRepositoryService } from './service/zone.repository.service';
       QuestEntity,
       LogQuestEntity,
       ZoneEntity,
+      NftEntity,
+      NftMetadataEntity,
     ]),
   ],
   providers: [
@@ -27,12 +32,14 @@ import { ZoneRepositoryService } from './service/zone.repository.service';
     SupportRepositoryService,
     QuestRepositoryService,
     ZoneRepositoryService,
+    NftMetadataRepositoryService,
   ],
   exports: [
     UserRepositoryService,
     SupportRepositoryService,
     QuestRepositoryService,
     ZoneRepositoryService,
+    NftMetadataRepositoryService,
   ],
 })
 export class RepositoryModule {}
