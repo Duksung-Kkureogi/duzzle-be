@@ -16,7 +16,7 @@ export const multerOptions: Options = {
   fileFilter: (req, file, cb) => {
     const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
     if (!allowedExtensions.test(file.originalname)) {
-      new BadRequestException('지원되지 않는 파일 형식입니다.');
+      cb(new BadRequestException('지원되지 않는 파일 형식입니다.'));
     }
     cb(null, true);
   },
