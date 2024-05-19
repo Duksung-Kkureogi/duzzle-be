@@ -22,6 +22,7 @@ import { QuestModule } from './quest/quest.module';
 import { BlockchainModule } from './blockchain/blockchain.module';
 import { ZoneModule } from './zone/zone.module';
 import { CloudStorageModule } from './cloudStorage/cloudStorage.module';
+import { MetadataModule } from './metadata/metadata.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { CloudStorageModule } from './cloudStorage/cloudStorage.module';
     BlockchainModule
     ZoneModule,
     CloudStorageModule,
+    MetadataModule,
   ],
   controllers: [HealthController],
   providers: [
