@@ -33,6 +33,12 @@ const config: Configuration = {
   // MAILGUN
   MAILGUN_USERNAME: 'api',
   MAILGUN_KEY: 'c13873f7570bafb50f7e40bc75447fae-86220e6a-7d295da1',
+
+  // AWS
+  AWS_REGION: 'ap-northeast-2',
+  AWS_S3_ACCESS_KEY: 'AKIASPFPKRIKHEFEBZGD',
+  AWS_S3_SECRET_ACCESS_KEY: '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',
+  AWS_S3_BUCKET_NAME: 'duzzle-s3-bucket',
 };
 
 export default config;

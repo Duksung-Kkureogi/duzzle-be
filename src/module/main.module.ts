@@ -19,6 +19,7 @@ import { NotFoundExceptionFilter } from 'src/filter/not-found-exception.filter';
 import { HttpExceptionFilter } from 'src/filter/http-exception.filter';
 import { MailModule } from './email/email.module';
 import { QuestModule } from './quest/quest.module';
+import { CloudStorageModule } from './cloudStorage/cloudStorage.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { QuestModule } from './quest/quest.module';
     UserModule,
     MailModule,
     QuestModule,
+    CloudStorageModule,
   ],
   controllers: [HealthController],
   providers: [

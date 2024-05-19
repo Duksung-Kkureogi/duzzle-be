@@ -32,6 +32,9 @@ export class UserEntity {
   @Column('varchar', { length: 40, nullable: true, unique: true })
   name: string;
 
+  @Column('varchar', { nullable: true })
+  image: string;
+
   @Column('enum', {
     enum: UserStatus,
     enumName: 'type_user_status',
