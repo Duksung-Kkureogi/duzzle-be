@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, plainToInstance } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 import { UserEntity } from 'src/module/repository/entity/user.entity';
 
 export class UserInfoResponse {
@@ -15,6 +15,10 @@ export class UserInfoResponse {
   @ApiProperty()
   @Expose()
   name: string;
+
+  @ApiProperty()
+  @Expose()
+  image: string;
 
   @ApiProperty()
   @Expose()
@@ -39,4 +43,10 @@ export class UpdateUserNameRequest {
   @ApiProperty()
   @IsNotEmpty()
   name: string;
+}
+
+export class ImageUploadDto {
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  @IsOptional()
+  file: any;
 }
