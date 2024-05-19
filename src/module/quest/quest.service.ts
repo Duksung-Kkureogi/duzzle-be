@@ -75,16 +75,19 @@ export class QuestService {
     log.isCompleted = true;
     log.isSucceeded = isSucceeded;
 
-    try {
-      await this.blockchainService.mintDalToken(
-        log.user.walletAddress,
-        QuestTokenReward,
-      );
-      log.rewardReceived = true;
-    } catch (err) {
-      Logger.error(err, err.stack);
-      log.rewardReceived = false;
+    if (isSucceeded) {
+      try {
+        await this.blockchainService.mintDalToken(
+          log.user.walletAddress,
+          QuestTokenReward,
+        );
+        log.rewardReceived = true;
+      } catch (err) {
+        Logger.error(err, err.stack);
+        log.rewardReceived = false;
+      }
     }
+
     await this.questRepositoryService.updateLog(log);
 
     return isSucceeded;

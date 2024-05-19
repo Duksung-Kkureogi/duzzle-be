@@ -1,12 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ContractFactory, ethers } from 'ethers';
-import {
-  abi as PlayDuzzleAbi,
-  bytecode as PlayDuzzleByteCode,
-} from './abi/PlayDuzzle.json';
+import { Contract, ethers } from 'ethers';
+import { abi as PlayDuzzleAbi } from './abi/PlayDuzzle.json';
 import 'dotenv/config';
 
-import { abi as DalAbi, bytecode as DalByteCode } from './abi/Dal.json';
+import { abi as DalAbi } from './abi/Dal.json';
 import { ConfigService } from '../config/config.service';
 
 @Injectable()
@@ -20,15 +17,17 @@ export class BlockchainService {
     );
 
     const signer = new ethers.Wallet(process.env.OWNER_PK_AMOY, provider);
-    this.dalContract = new ContractFactory(DalAbi, DalByteCode, signer).attach(
+    this.dalContract = new Contract(
       ConfigService.getConfig().CONTRACT_ADDRESS.DAL,
+      DalAbi,
+      signer,
     );
 
-    this.playDuzzleContract = new ContractFactory(
+    this.playDuzzleContract = new Contract(
+      ConfigService.getConfig().CONTRACT_ADDRESS.PLAY_DUZZLE,
       PlayDuzzleAbi,
-      PlayDuzzleByteCode,
       signer,
-    ).attach(ConfigService.getConfig().CONTRACT_ADDRESS.PLAY_DUZZLE);
+    );
   }
 
   async mintDalToken(to: string, amount: number) {
