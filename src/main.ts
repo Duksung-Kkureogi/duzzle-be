@@ -41,7 +41,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix(ConfigService.getConfig().API_VERSION, {
     exclude: [
-      { path: '/metadata.*', method: RequestMethod.GET },
+      { path: '/metadata(.*)', method: RequestMethod.GET },
       { path: '/health', method: RequestMethod.GET },
       { path: '/maintenance', method: RequestMethod.GET },
       { path: '/version', method: RequestMethod.GET },
