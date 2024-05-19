@@ -13,7 +13,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { uuid } from 'uuidv4';
 import { CloudStorageService } from './cloudStorage.service';
-import { ImageUploadDto } from './dto/cloudStorage.dto';
 import { multerOptions } from 'src/types/file-options';
 
 @Controller({
@@ -29,8 +28,16 @@ export class CloudStorageController {
   @ApiOperation({ summary: 'AWS 이미지 등록 테스트용' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: '업로드할 파일',
-    type: ImageUploadDto,
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+      required: ['file'],
+    },
   })
   @UseInterceptors(FileInterceptor('file', multerOptions))
   @HttpCode(HttpStatus.OK)
