@@ -53,7 +53,7 @@ const config: Configuration = {
   AWS_S3_SECRET_ACCESS_KEY: 'NWMsxGebIaAz15nQGYznxmNwz2AxEfI/FW5SQ+0c',
   AWS_S3_BUCKET_NAME: 'duzzle-s3-bucket',
   // In-momory DB
-  REDIS_HOST: 'duzzle-dev.mhf857.ng.0001.apn2.cache.amazonaws.com:6379',
+  REDIS_HOST: 'duzzle-dev.mhf857.ng.0001.apn2.cache.amazonaws.com',
   REDIS_PORT: 6379,
   REDIS_TTL: {
     EDIT_NAME: 10 * 60 * 1000, // 10분
