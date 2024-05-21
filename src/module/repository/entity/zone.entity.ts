@@ -1,13 +1,8 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { BaseEntity } from './base.entity';
 
 @Entity('zone')
-export class ZoneEntity {
+export class ZoneEntity extends BaseEntity {
   @PrimaryColumn({ type: 'int' })
   id: number;
 
@@ -16,10 +11,4 @@ export class ZoneEntity {
 
   @Column('varchar')
   nameUs: string;
-
-  @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
 }

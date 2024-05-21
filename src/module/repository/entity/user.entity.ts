@@ -1,13 +1,6 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { LoginType } from '../enum/user.enum';
+import { BaseEntity } from './base.entity';
 
 export enum UserStatus {
   NORMAL = 'normal',
@@ -16,7 +9,7 @@ export enum UserStatus {
 }
 
 @Entity('user')
-export class UserEntity {
+export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -41,10 +34,4 @@ export class UserEntity {
     default: UserStatus.NORMAL,
   })
   status: UserStatus;
-
-  @CreateDateColumn({ nullable: true, type: 'timestamptz' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ nullable: true, type: 'timestamptz' })
-  updatedAt: Date;
 }

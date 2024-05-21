@@ -2,15 +2,15 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { QuestEntity } from './quest.entity';
+import { BaseEntity } from './base.entity';
 
 @Entity('log_quest')
-export class LogQuestEntity {
+export class LogQuestEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -28,12 +28,6 @@ export class LogQuestEntity {
 
   @Column('boolean', { nullable: true })
   isCompleted: boolean;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
 
   @ManyToOne(() => UserEntity, {
     onDelete: 'NO ACTION',

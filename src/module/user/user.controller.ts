@@ -37,6 +37,8 @@ import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { UserEntity } from '../repository/entity/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/types/file-options';
+import { HttpError } from 'src/types/http-exceptions';
+import { ConfigService } from '../config/config.service';
 
 @Controller({
   path: 'user',
@@ -70,18 +72,29 @@ export class UserController {
   @ApiTags('User')
   @ApiOperation({
     summary: '유저 이름 변경',
-    description: '이미 존재하는 이름일 경우 409 ALREADY_EXISTS',
+    description: `
+    이미 존재하는 이름일 경우 409 ALREADY_EXISTS\n
+    ${ConfigService.getConfig().REDIS_TTL.EDIT_NAME / 1000} 초가 지나기 전에 이름을 바꾸는 경우\n
+    -> 409 LIMIT_EXCEEDED\n
+    [이름 변경 제한] dev 서버 10분, prod 24시간
+    `,
   })
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @ResponseData(UserInfoResponse)
-  @ResponseException(HttpStatus.CONFLICT, [ExceptionCode.DuplicateValues])
+  @ResponseException(HttpStatus.CONFLICT, [
+    ExceptionCode.DuplicateValues,
+    ExceptionCode.LimitExceeded,
+  ])
   @Patch('name')
   async updateUserName(
     @Body() dto: UpdateUserNameRequest,
   ): Promise<ResponsesDataDto<UserInfoResponse>> {
     const { user } = this.req;
+    if (!(await this.userService.canEditName(user.id))) {
+      throw new HttpError(HttpStatus.CONFLICT, ExceptionCode.LimitExceeded);
+    }
     const result = await this.userService.updateUserName(user.id, dto.name);
 
     return new ResponsesDataDto(result);

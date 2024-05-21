@@ -23,6 +23,7 @@ import { BlockchainModule } from './blockchain/blockchain.module';
 import { ZoneModule } from './zone/zone.module';
 import { CloudStorageModule } from './cloudStorage/cloudStorage.module';
 import { MetadataModule } from './metadata/metadata.module';
+import { CacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { MetadataModule } from './metadata/metadata.module';
     ZoneModule,
     CloudStorageModule,
     MetadataModule,
+    CacheModule,
   ],
   controllers: [HealthController],
   providers: [

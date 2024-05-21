@@ -1,17 +1,16 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
 import { NftContractEntity } from './nft-contract.entity';
 import { OpenseaStandardMetadata } from 'src/module/metadata/dto/metadata.dto';
+import { BaseEntity } from './base.entity';
 
 @Entity('nft_metadata')
-export class NftMetadataEntity {
+export class NftMetadataEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -23,12 +22,6 @@ export class NftMetadataEntity {
 
   @Column('jsonb', { nullable: true })
   metadata: OpenseaStandardMetadata;
-
-  @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
 
   @ManyToOne(() => NftContractEntity, {
     onDelete: 'NO ACTION',

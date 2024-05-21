@@ -1,13 +1,8 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity } from './base.entity';
 
 @Entity('faq')
-export class FaqEntity {
+export class FaqEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -16,10 +11,4 @@ export class FaqEntity {
 
   @Column('varchar')
   answer: string;
-
-  @CreateDateColumn({ nullable: true, type: 'timestamptz' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ nullable: true, type: 'timestamptz' })
-  updatedAt: Date;
 }

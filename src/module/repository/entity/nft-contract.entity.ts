@@ -1,14 +1,9 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { BlockchainNetworks } from '../enum/nft.enum';
+import { BaseEntity } from './base.entity';
 
 @Entity('nft_contract')
-export class NftContractEntity {
+export class NftContractEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -26,10 +21,4 @@ export class NftContractEntity {
 
   @Column('boolean')
   isTokenIdAutoIncremented: boolean;
-
-  @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
 }
