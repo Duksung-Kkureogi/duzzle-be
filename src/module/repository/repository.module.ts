@@ -13,6 +13,9 @@ import { ZoneRepositoryService } from './service/zone.repository.service';
 import { NftContractEntity } from './entity/nft-contract.entity';
 import { NftMetadataEntity } from './entity/nft-metadata.entity';
 import { NftRepositoryService } from './service/nft.repository.service';
+import { ItemEntity } from './entity/item.entity';
+import { SeasonEntity } from './entity/season.entity';
+import { ZoneDataEntity } from './entity/zone-data.entity';
 
 @Module({
   imports: [
@@ -25,6 +28,9 @@ import { NftRepositoryService } from './service/nft.repository.service';
       ZoneEntity,
       NftContractEntity,
       NftMetadataEntity,
+      SeasonEntity,
+      ItemEntity,
+      ZoneDataEntity,
     ]),
   ],
   providers: [

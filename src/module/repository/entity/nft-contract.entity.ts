@@ -19,6 +19,9 @@ export class NftContractEntity extends BaseEntity {
   @Column('varchar')
   symbol: string;
 
+  @Column('varchar', { nullable: true })
+  metadataBaseUri: string;
+
   @Column('boolean')
   isTokenIdAutoIncremented: boolean;
 }
