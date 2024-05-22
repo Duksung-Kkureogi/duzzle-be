@@ -23,9 +23,9 @@ export class CacheService {
   async set(key: string, value: string, ttl?: number): Promise<void> {
     if (ttl) {
       await this.memory.set(key, value, 'PX', ttl);
+    } else {
+      await this.memory.set(key, value);
     }
-
-    await this.memory.set(key, value);
   }
 
   async find(key: string): Promise<string> {
