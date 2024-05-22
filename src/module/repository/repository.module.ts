@@ -16,6 +16,7 @@ import { NftRepositoryService } from './service/nft.repository.service';
 import { ItemEntity } from './entity/item.entity';
 import { SeasonEntity } from './entity/season.entity';
 import { ZoneDataEntity } from './entity/zone-data.entity';
+import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ZoneDataEntity } from './entity/zone-data.entity';
       SeasonEntity,
       ItemEntity,
       ZoneDataEntity,
+      PuzzlePieceEntity,
     ]),
   ],
   providers: [

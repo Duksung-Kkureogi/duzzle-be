@@ -1,35 +1,34 @@
 import {
   Column,
   Entity,
-  PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
-  OneToMany,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { SeasonEntity } from './season.entity';
 import { ZoneEntity } from './zone.entity';
-import { ItemEntity } from './item.entity';
 
-@Entity('zone_data')
-export class ZoneDataEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
+export class Point {
+  x: number;
+  y: number;
+}
 
-  @Column('int')
+@Entity('puzzle_piece')
+export class PuzzlePieceEntity extends BaseEntity {
+  @Column('int', { primary: true })
   seasonId: number;
 
-  @Column('int')
+  @Column('int', { primary: true })
   zoneId: number;
 
-  @Column('int')
-  pieceCountOfZone: number;
+  @Column('int', { primary: true })
+  id: number;
 
-  @Column('int', { array: true })
-  requiredItems: number[];
+  @Column({ type: 'jsonb', array: true })
+  points: Point[];
 
-  @Column('int', { array: true })
-  requiredAmouts: number[];
+  @Column('boolean', { default: false })
+  minted: boolean;
 
   @ManyToOne(() => SeasonEntity, {
     onDelete: 'NO ACTION',
@@ -44,7 +43,4 @@ export class ZoneDataEntity extends BaseEntity {
   })
   @JoinColumn({ name: 'zone_id' })
   zone: ZoneEntity;
-
-  @OneToMany(() => ItemEntity, (items) => items.zoneData)
-  items: Array<ItemEntity>;
 }
