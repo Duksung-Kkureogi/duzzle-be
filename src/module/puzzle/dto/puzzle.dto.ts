@@ -5,7 +5,7 @@ import {
   Point,
   PuzzlePieceEntity,
 } from 'src/module/repository/entity/puzzle-piece.entity';
-import { RequiredItemsEntity } from 'src/module/repository/entity/season-zone.entity';
+import { RequiredItemsEntity } from 'src/module/repository/entity/required-items.entity';
 
 export class RequiredItem {
   @ApiProperty({ description: '아이템 이름' })

@@ -16,11 +16,11 @@ import { NftRepositoryService } from './service/nft.repository.service';
 import { ItemEntity } from './entity/item.entity';
 import { SeasonEntity } from './entity/season.entity';
 import {
-  RequiredItemsEntity,
   SeasonZoneEntity,
 } from './entity/season-zone.entity';
 import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
 import { PuzzleRepositoryService } from './service/puzzle.repository.service';
+import { RequiredItemsEntity } from './entity/required-items.entity';
 
 @Module({
   imports: [

@@ -5,6 +5,7 @@ import { PuzzleService } from './puzzle.service';
 import { ResponseData } from 'src/decorator/response-data.decorator';
 import { PuzzleRequest, PuzzleResponse } from './dto/puzzle.dto';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
+import { DummyData } from './puzzle-dummy-data';
 
 @Controller('puzzle')
 export class PuzzleController {
@@ -18,9 +19,10 @@ export class PuzzleController {
   async getPuzzleData(
     @Param() dto: PuzzleRequest,
   ): Promise<ResponsesDataDto<PuzzleResponse>> {
-    await this.puzzleService.getSeasonById(dto.seasonId);
-    const result = await this.puzzleService.getPuzzleData(dto.seasonId);
+    // await this.puzzleService.getSeasonById(dto.seasonId);
+    // const result = await this.puzzleService.getPuzzleData(dto.seasonId);
 
-    return new ResponsesDataDto(result);
+    // return new ResponsesDataDto(result);
+    return DummyData;
   }
 }

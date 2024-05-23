@@ -9,7 +9,7 @@ import {
 import { BaseEntity } from './base.entity';
 import { SeasonEntity } from './season.entity';
 import { ZoneEntity } from './zone.entity';
-import { ItemEntity } from './item.entity';
+import { RequiredItemsEntity } from './required-items.entity';
 
 @Entity('season_zone')
 export class SeasonZoneEntity extends BaseEntity {
@@ -23,7 +23,7 @@ export class SeasonZoneEntity extends BaseEntity {
   zoneId: number;
 
   @Column('int')
-  pieceCountOfZone: number;
+  pieceCount: number;
 
   @ManyToOne(() => SeasonEntity, {
     onDelete: 'NO ACTION',
@@ -44,33 +44,4 @@ export class SeasonZoneEntity extends BaseEntity {
     (requiredItems) => requiredItems.seasonZone,
   )
   requiredItems: RequiredItemsEntity[];
-}
-
-@Entity('required_items')
-export class RequiredItemsEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
-
-  @Column('int')
-  seasonZoneId: number;
-
-  @Column('int')
-  itemId: number;
-
-  @Column('int')
-  itemAmount: number;
-
-  @ManyToOne(() => SeasonZoneEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-  })
-  @JoinColumn({ name: 'season_zone_id' })
-  seasonZone: SeasonZoneEntity;
-
-  @ManyToOne(() => ItemEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-  })
-  @JoinColumn({ name: 'item_id' })
-  item: ItemEntity;
 }
