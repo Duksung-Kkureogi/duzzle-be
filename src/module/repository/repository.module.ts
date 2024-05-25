@@ -13,6 +13,14 @@ import { ZoneRepositoryService } from './service/zone.repository.service';
 import { NftContractEntity } from './entity/nft-contract.entity';
 import { NftMetadataEntity } from './entity/nft-metadata.entity';
 import { NftRepositoryService } from './service/nft.repository.service';
+import { ItemEntity } from './entity/item.entity';
+import { SeasonEntity } from './entity/season.entity';
+import {
+  SeasonZoneEntity,
+} from './entity/season-zone.entity';
+import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
+import { PuzzleRepositoryService } from './service/puzzle.repository.service';
+import { RequiredItemsEntity } from './entity/required-items.entity';
 
 @Module({
   imports: [
@@ -25,6 +33,11 @@ import { NftRepositoryService } from './service/nft.repository.service';
       ZoneEntity,
       NftContractEntity,
       NftMetadataEntity,
+      SeasonEntity,
+      ItemEntity,
+      SeasonZoneEntity,
+      PuzzlePieceEntity,
+      RequiredItemsEntity,
     ]),
   ],
   providers: [
@@ -33,6 +46,7 @@ import { NftRepositoryService } from './service/nft.repository.service';
     QuestRepositoryService,
     ZoneRepositoryService,
     NftRepositoryService,
+    PuzzleRepositoryService,
   ],
   exports: [
     UserRepositoryService,
@@ -40,6 +54,7 @@ import { NftRepositoryService } from './service/nft.repository.service';
     QuestRepositoryService,
     ZoneRepositoryService,
     NftRepositoryService,
+    PuzzleRepositoryService,
   ],
 })
 export class RepositoryModule {}

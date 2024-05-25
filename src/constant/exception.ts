@@ -50,7 +50,7 @@ export const ExceptionMessage: {
   [ExceptionCode.TokenExpired]: 'Token expired',
 
   // 404 (Not Found)
-  [ExceptionCode.NotFound]: 'Page Not Found',
+  [ExceptionCode.NotFound]: 'Content Not Found',
 
   // 409 (Confict)
   [ExceptionCode.AlreadyExists]: 'Same value already exists',

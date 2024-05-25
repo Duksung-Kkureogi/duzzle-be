@@ -123,7 +123,7 @@ async function bootstrap() {
   await app.listen(port);
 
   // zones.ts 에 정의한 zone 목록으로 DB 초기화
-  await app.get<ZoneService>(ZoneService).setZones();
+  // await app.get<ZoneService>(ZoneService).setZones();
 
   console.info(
     `Server ${ConfigService.getConfig().ENV} running on port ${port}`,
