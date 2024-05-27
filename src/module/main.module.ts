@@ -26,6 +26,7 @@ import { MetadataModule } from './metadata/metadata.module';
 import { CacheModule } from './cache/cache.module';
 import { PuzzleModule } from './puzzle/puzzle.module';
 import { EnvironmentModule } from './config/config.module';
+import { StoryModule } from './story/story.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { EnvironmentModule } from './config/config.module';
     MetadataModule,
     CacheModule,
     PuzzleModule,
+    StoryModule,
   ],
   controllers: [HealthController],
   providers: [
