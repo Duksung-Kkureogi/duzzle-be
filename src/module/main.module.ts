@@ -25,6 +25,7 @@ import { CloudStorageModule } from './cloudStorage/cloudStorage.module';
 import { MetadataModule } from './metadata/metadata.module';
 import { CacheModule } from './cache/cache.module';
 import { PuzzleModule } from './puzzle/puzzle.module';
+import { StoryModule } from './story/story.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { PuzzleModule } from './puzzle/puzzle.module';
     MetadataModule,
     CacheModule,
     PuzzleModule,
+    StoryModule,
   ],
   controllers: [HealthController],
   providers: [

@@ -1,6 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { LoginType } from '../enum/user.enum';
 import { BaseEntity } from './base.entity';
+import { UserStoryProgressDto } from '../dto/story.dto';
 
 export enum UserStatus {
   NORMAL = 'normal',
@@ -27,6 +28,9 @@ export class UserEntity extends BaseEntity {
 
   @Column('varchar', { nullable: true })
   image: string;
+
+  @Column('json', { nullable: true })
+  storyProgress: UserStoryProgressDto[];
 
   @Column('enum', {
     enum: UserStatus,

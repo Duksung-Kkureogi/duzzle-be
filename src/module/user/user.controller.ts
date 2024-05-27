@@ -10,6 +10,7 @@ import {
   Patch,
   UseInterceptors,
   UploadedFile,
+  Param,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -29,7 +30,9 @@ import { AuthGuard } from '../auth/auth.guard';
 import {
   ImageUploadDto,
   UpdateUserNameRequest,
+  UpdateUserStoryProgressRequest,
   UserInfoResponse,
+  UserStoryProgressResponse,
 } from './dto/user.dto';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { ExceptionCode } from 'src/constant/exception';
@@ -39,6 +42,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/types/file-options';
 import { HttpError } from 'src/types/http-exceptions';
 import { ConfigService } from '../config/config.service';
+import { UserStoryProgressDto } from '../repository/dto/story.dto';
 
 @Controller({
   path: 'user',
@@ -96,6 +100,47 @@ export class UserController {
       throw new HttpError(HttpStatus.CONFLICT, ExceptionCode.LimitExceeded);
     }
     const result = await this.userService.updateUserName(user.id, dto.name);
+
+    return new ResponsesDataDto(result);
+  }
+
+  @ApiTags('User')
+  @ApiOperation({
+    summary: '유저 스토리 진행도 조회',
+    description: '이번 시즌 스토리 진행도 조회',
+  })
+  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ResponseData(UserStoryProgressResponse)
+  @Get('story/:seasonId')
+  async getUerStoryProgress(
+    @Param('seasonId') seasonId: number,
+  ): Promise<ResponsesDataDto<UserStoryProgressResponse>> {
+    const { user } = this.req;
+    const result = await this.userService.getUserStoryProgressBySeason(
+      user.id,
+      seasonId,
+    );
+
+    return new ResponsesDataDto(result);
+  }
+
+  @ApiTags('User')
+  @ApiOperation({
+    summary: '유저 스토리 진행도 수정',
+    description: '특정 구역 스토리 진행도 수정',
+  })
+  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ResponseData(UserStoryProgressResponse)
+  @Patch('zoneProgress')
+  async updateZoneProgress(
+    @Body() dto: UpdateUserStoryProgressRequest,
+  ): Promise<ResponsesDataDto<UserStoryProgressResponse>> {
+    const { user } = this.req;
+    const result = await this.userService.updateUserStory(user.id, dto);
 
     return new ResponsesDataDto(result);
   }
