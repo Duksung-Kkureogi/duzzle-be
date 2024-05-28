@@ -11,12 +11,13 @@ import { ConfigService } from 'src/module/config/config.service';
 export class ValidationExceptionFilter
   implements ExceptionFilter<BadRequestException>
 {
+  constructor(private readonly configService: ConfigService) {}
   catch(exception: BadRequestException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const exceptionObj = exception.getResponse() as Record<string, any>;
 
-    const isProduction = ConfigService.isProduction();
+    const isProduction = this.configService.isProduction();
 
     response.status(exception.getStatus()).json({
       result: false,

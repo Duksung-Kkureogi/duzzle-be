@@ -12,12 +12,14 @@ import { ExceptionCode } from 'src/constant/exception';
 export class CloudStorageService {
   s3Client: S3Client;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     this.s3Client = new S3Client({
-      region: ConfigService.getConfig().AWS_REGION,
+      region: this.configService.get<string>('AWS_REGION'),
       credentials: {
-        accessKeyId: ConfigService.getConfig().AWS_S3_ACCESS_KEY,
-        secretAccessKey: ConfigService.getConfig().AWS_S3_SECRET_ACCESS_KEY,
+        accessKeyId: this.configService.get<string>('AWS_S3_ACCESS_KEY'),
+        secretAccessKey: this.configService.get<string>(
+          'AWS_S3_SECRET_ACCESS_KEY',
+        ),
       },
     });
   }
@@ -28,7 +30,7 @@ export class CloudStorageService {
     ext: string,
   ): Promise<string> {
     const command = new PutObjectCommand({
-      Bucket: ConfigService.getConfig().AWS_S3_BUCKET_NAME,
+      Bucket: this.configService.get<string>('AWS_S3_BUCKET_NAME'),
       Key: fileName,
       Body: file.buffer,
       ContentType: `image/${ext}`,
@@ -37,7 +39,7 @@ export class CloudStorageService {
     try {
       await this.s3Client.send(command);
 
-      return `https://s3.${ConfigService.getConfig().AWS_REGION}.amazonaws.com/${ConfigService.getConfig().AWS_S3_BUCKET_NAME}/${fileName}`;
+      return `https://s3.${this.configService.get<string>('AWS_REGION')}.amazonaws.com/${this.configService.get<string>('AWS_S3_BUCKET_NAME')}/${fileName}`;
     } catch (e) {
       throw new ServiceError(ExceptionCode.InternalServerError, new Error(e));
     }
@@ -45,7 +47,7 @@ export class CloudStorageService {
 
   async deleteFile(fileName: string) {
     const command = new DeleteObjectCommand({
-      Bucket: ConfigService.getConfig().AWS_S3_BUCKET_NAME,
+      Bucket: this.configService.get<string>('AWS_S3_BUCKET_NAME'),
       Key: fileName,
     });
 

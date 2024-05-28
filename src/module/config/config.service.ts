@@ -1,34 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { Configuration, SupportedEnvironment } from './Configuration';
-import Local from './Local';
-import Development from './Development';
-import Production from './Production';
+import { EnvironmentKey, SupportedEnvironment } from './Configuration';
+import { ConfigService as _ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ConfigService {
-  private static config: Configuration;
+  constructor(private readonly configService: _ConfigService) {}
 
-  public static getConfig(): Configuration {
-    if (!this.config) {
-      switch (process.env.NODE_ENV) {
-        case SupportedEnvironment.local:
-          this.config = Local;
-          break;
-        case SupportedEnvironment.development:
-          this.config = Development;
-          break;
-        case SupportedEnvironment.production:
-          this.config = Production;
-          break;
-        default:
-          this.config = Development;
-      }
-    }
-
-    return this.config;
+  get<T>(key: EnvironmentKey): T {
+    return this.configService.get<T>(key);
   }
 
-  public static isProduction(): boolean {
-    return ConfigService.getConfig().ENV === SupportedEnvironment.production;
+  isLocal(): boolean {
+    return this.get<string>('ENV') === SupportedEnvironment.local;
+  }
+  isProduction(): boolean {
+    return this.get<string>('ENV') === SupportedEnvironment.production;
   }
 }

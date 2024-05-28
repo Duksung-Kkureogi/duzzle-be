@@ -6,16 +6,18 @@ import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class DatabaseConfigService implements TypeOrmOptionsFactory {
+  constructor(private configService: ConfigService) {}
+
   createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
       type: 'postgres',
-      host: ConfigService.getConfig().DB_INFO.host,
-      port: ConfigService.getConfig().DB_INFO.port,
-      username: ConfigService.getConfig().DB_INFO.user,
-      password: ConfigService.getConfig().DB_INFO.password,
-      database: ConfigService.getConfig().DB_INFO.database,
+      host: this.configService.get<string>('DB_HOST'),
+      port: this.configService.get<number>('DB_PORT'),
+      username: this.configService.get<string>('DB_USER'),
+      password: this.configService.get<string>('DB_PASSWORD'),
+      database: this.configService.get<string>('DB_NAME'),
       entities: ['dist/**/*.entity{.ts,.js}'],
-      synchronize: ConfigService.getConfig().USE_SYNCHRONIZE,
+      synchronize: this.configService.get<boolean>('DB_USE_SYNCHRONIZE'),
       namingStrategy: new SnakeNamingStrategy(),
       logging: true,
       useUTC: true,

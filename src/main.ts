@@ -9,6 +9,7 @@ import {
   VersioningType,
 } from '@nestjs/common';
 import { ConfigService } from './module/config/config.service';
+
 import { ServerResponse } from 'http';
 import morganBody from 'morgan-body';
 import { json, urlencoded, Request, NextFunction } from 'express';
@@ -37,10 +38,12 @@ async function bootstrap() {
   app.setBaseViewsDir('./views');
   app.setViewEngine('hbs');
 
-  const isProduction = ConfigService.isProduction();
-  const port = ConfigService.getConfig().PORT;
+  const configService: ConfigService = app.get<ConfigService>(ConfigService);
 
-  app.setGlobalPrefix(ConfigService.getConfig().API_VERSION, {
+  const isProduction = configService.isProduction();
+  const port = configService.get<number>('PORT');
+
+  app.setGlobalPrefix(configService.get<string>('API_VERSION'), {
     exclude: [
       { path: '/metadata(.*)', method: RequestMethod.GET },
       { path: '/health', method: RequestMethod.GET },
@@ -63,12 +66,12 @@ async function bootstrap() {
     }),
   );
 
-  app.use(json({ limit: ConfigService.getConfig().HTTP_BODY_SIZE_LIMIT }));
+  app.use(json({ limit: configService.get<string>('HTTP_BODY_SIZE_LIMIT') }));
 
   app.use(
     urlencoded({
       extended: true,
-      limit: ConfigService.getConfig().HTTP_URL_LIMIT,
+      limit: configService.get<number>('HTTP_URL_LIMIT'),
     }),
   );
 
@@ -126,7 +129,7 @@ async function bootstrap() {
   // await app.get<ZoneService>(ZoneService).setZones();
 
   console.info(
-    `Server ${ConfigService.getConfig().ENV} running on port ${port}`,
+    `Server ${configService.get<string>('ENV')} running on port ${port}`,
     'APP',
   );
 }

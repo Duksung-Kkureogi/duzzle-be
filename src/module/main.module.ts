@@ -25,6 +25,7 @@ import { CloudStorageModule } from './cloudStorage/cloudStorage.module';
 import { MetadataModule } from './metadata/metadata.module';
 import { CacheModule } from './cache/cache.module';
 import { PuzzleModule } from './puzzle/puzzle.module';
+import { EnvironmentModule } from './config/config.module';
 
 @Module({
   imports: [
@@ -42,9 +43,14 @@ import { PuzzleModule } from './puzzle/puzzle.module';
         });
       },
     }),
+    EnvironmentModule,
     {
-      ...JwtModule.register({ secret: ConfigService.getConfig().JWT_SECRET }),
-      global: true,
+      ...JwtModule.registerAsync({
+        useFactory: async () => ({
+          secret: process.env.JWT_SECRET,
+        }),
+        global: true,
+      }),
     },
     RepositoryModule,
     AuthModule,

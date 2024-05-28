@@ -1,14 +1,15 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MailgunModule } from 'nestjs-mailgun';
 import { MailService } from './email.service';
 import { MailController } from './email.controller';
-import { ConfigService } from '../config/config.service';
 
 @Module({
   imports: [
-    MailgunModule.forRoot({
-      username: ConfigService.getConfig().MAILGUN_USERNAME,
-      key: ConfigService.getConfig().MAILGUN_KEY,
+    MailgunModule.forAsyncRoot({
+      useFactory: async () => ({
+        username: process.env.MAILGUN_USERNAME,
+        key: process.env.MAILGUN_KEY,
+      }),
     }),
   ],
   controllers: [MailController],

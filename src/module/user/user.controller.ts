@@ -39,6 +39,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/types/file-options';
 import { HttpError } from 'src/types/http-exceptions';
 import { ConfigService } from '../config/config.service';
+import { RedisTTL } from '../cache/enum/cache.enum';
 
 @Controller({
   path: 'user',
@@ -50,6 +51,8 @@ export class UserController {
 
     @Inject(UserService)
     private readonly userService: UserService,
+
+    private readonly configService: ConfigService,
   ) {}
 
   @ApiTags('User')
@@ -74,7 +77,7 @@ export class UserController {
     summary: '유저 이름 변경',
     description: `
     이미 존재하는 이름일 경우 409 ALREADY_EXISTS\n
-    ${ConfigService.getConfig().REDIS_TTL.EDIT_NAME / 1000} 초가 지나기 전에 이름을 바꾸는 경우\n
+    ${RedisTTL.EditUserName / 1000} 초가 지나기 전에 이름을 바꾸는 경우\n
     -> 409 LIMIT_EXCEEDED\n
     [이름 변경 제한] dev 서버 10분, prod 24시간
     `,

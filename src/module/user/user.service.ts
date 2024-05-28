@@ -5,9 +5,9 @@ import { UserInfoResponse } from './dto/user.dto';
 import { UserEntity } from '../repository/entity/user.entity';
 import { uuid } from 'uuidv4';
 import { CloudStorageService } from '../cloudStorage/cloudStorage.service';
-import { ConfigService } from '../config/config.service';
 import { CacheService } from './../cache/cache.service';
 import { EditUserNameKey } from '../cache/dto/cache.dto';
+import { RedisTTL } from '../cache/enum/cache.enum';
 
 @Injectable()
 export class UserService {
@@ -34,7 +34,7 @@ export class UserService {
     await this.cacheService.set(
       EditUserNameKey.get(userId),
       name,
-      ConfigService.getConfig().REDIS_TTL.EDIT_NAME,
+      RedisTTL.EditUserName,
     );
 
     return UserInfoResponse.from(result);

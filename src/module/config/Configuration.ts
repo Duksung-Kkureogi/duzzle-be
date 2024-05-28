@@ -1,3 +1,5 @@
+import path from 'path';
+
 export enum SupportedEnvironment {
   local = 'local',
   development = 'dev',
@@ -15,50 +17,50 @@ export interface Configuration {
   readonly HTTP_URL_LIMIT: string;
 
   // DB
-  readonly DB_INFO: {
-    host: string;
-    port: number;
-    max: number;
-    database: string;
-    user: string;
-    password: string;
-  };
-  readonly USE_SYNCHRONIZE: boolean;
+  readonly DB_HOST: string;
+  readonly DB_PORT: number;
+  readonly DB_MAX: number;
+  readonly DB_NAME: string;
+  readonly DB_USER: string;
+  readonly DB_PASSWORD: string;
+  readonly DB_USE_SYNCHRONIZE: boolean;
 
   // JWT
   readonly JWT_SECRET: string;
   readonly JWT_ACCESS_EXPIRES_IN: string;
   readonly JWT_REFRESH_EXPIRES_IN: string;
-  readonly WEB3AUTH_JWKS_ENDPOINT: {
-    SOCIAL_LOGIN: string;
-    EXTERNAL_WALLET: string;
-  };
+  readonly WEB3AUTH_JWKS_ENDPOINT_SOCIAL_LOGIN: string;
+  readonly WEB3AUTH_JWKS_ENDPOINT_EXTERNAL_WALLET: string;
 
   // MAILGUN
   readonly MAILGUN_USERNAME: string;
   readonly MAILGUN_KEY: string;
 
   // RPC URL
-  readonly RPC_URL: {
-    POLYGON: string;
-  };
+  readonly RPC_URL_POLYGON: string;
 
-  readonly CONTRACT_ADDRESS: {
-    PLAY_DUZZLE: string;
-    DAL: string;
-    BLUEPRINT: string;
-    PUZZLE_PIECE: string;
-  };
+  readonly CONTRACT_ADDRESS_PLAY_DUZZLE: string;
+  readonly CONTRACT_ADDRESS_DAL: string;
+  readonly CONTRACT_ADDRESS_BLUEPRINT: string;
+  readonly CONTRACT_ADDRESS_PUZZLE_PIECE: string;
+
+  // In-momory DB
+  readonly REDIS_HOST: string;
+  readonly REDIS_PORT: number;
+  readonly REDIS_PASSWORD: string;
 
   // AWS
   readonly AWS_REGION: string;
   readonly AWS_S3_ACCESS_KEY: string;
   readonly AWS_S3_SECRET_ACCESS_KEY: string;
   readonly AWS_S3_BUCKET_NAME: string;
-  // In-momory DB
-  REDIS_HOST: string;
-  REDIS_PORT: number;
-  REDIS_TTL: {
-    EDIT_NAME: number;
-  };
+  readonly OWNER_PK_AMOY: string;
 }
+
+export const getEnvFilePath = (): string =>
+  path.join(
+    process.cwd(),
+    `/env/.env.${process.env.NODE_ENV ?? SupportedEnvironment.development}`,
+  );
+
+export type EnvironmentKey = keyof Configuration;

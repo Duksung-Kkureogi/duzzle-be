@@ -28,6 +28,7 @@ export class AuthService {
 
     @Inject(JwtService)
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   private async getKey(
@@ -35,8 +36,8 @@ export class AuthService {
     header: JwtHeader,
   ): Promise<string> {
     const jwksUri: string = isWalletLogin
-      ? ConfigService.getConfig().WEB3AUTH_JWKS_ENDPOINT.EXTERNAL_WALLET
-      : ConfigService.getConfig().WEB3AUTH_JWKS_ENDPOINT.SOCIAL_LOGIN;
+      ? this.configService.get<string>('WEB3AUTH_JWKS_ENDPOINT_EXTERNAL_WALLET')
+      : this.configService.get<string>('WEB3AUTH_JWKS_ENDPOINT_SOCIAL_LOGIN');
 
     const client = jwksClient({
       jwksUri,
@@ -90,11 +91,11 @@ export class AuthService {
     );
 
     const accessToken = await this.jwtService.signAsync(payload, {
-      expiresIn: ConfigService.getConfig().JWT_ACCESS_EXPIRES_IN,
+      expiresIn: this.configService.get<number>('JWT_ACCESS_EXPIRES_IN'),
     });
 
     const refreshToken = await this.jwtService.signAsync(payload, {
-      expiresIn: ConfigService.getConfig().JWT_REFRESH_EXPIRES_IN,
+      expiresIn: this.configService.get<number>('JWT_REFRESH_EXPIRES_IN'),
     });
 
     const result = {

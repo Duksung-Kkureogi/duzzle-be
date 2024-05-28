@@ -11,20 +11,20 @@ export class BlockchainService {
   readonly dalContract: any;
   readonly playDuzzleContract: any;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     const provider = new ethers.JsonRpcProvider(
-      ConfigService.getConfig().RPC_URL.POLYGON,
+      this.configService.get<string>('RPC_URL_POLYGON'),
     );
 
     const signer = new ethers.Wallet(process.env.OWNER_PK_AMOY, provider);
     this.dalContract = new Contract(
-      ConfigService.getConfig().CONTRACT_ADDRESS.DAL,
+      this.configService.get<string>('CONTRACT_ADDRESS_DAL'),
       DalAbi,
       signer,
     );
 
     this.playDuzzleContract = new Contract(
-      ConfigService.getConfig().CONTRACT_ADDRESS.PLAY_DUZZLE,
+      this.configService.get<string>('CONTRACT_ADDRESS_PLAY_DUZZLE'),
       PlayDuzzleAbi,
       signer,
     );
