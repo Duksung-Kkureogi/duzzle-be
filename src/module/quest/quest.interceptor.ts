@@ -25,9 +25,11 @@ export class StartQuestInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest();
     const userId: number = request?.body?.userId;
 
-    const isAlreadyOngoing = await this.questService.isAlreadyOngoing(userId);
+    const { isAlreadyOngoing, log } =
+      await this.questService.isAlreadyOngoing(userId);
     if (isAlreadyOngoing) {
-      throw new HttpError(HttpStatus.CONFLICT, ExceptionCode.AlreadyExists);
+      await this.questService.completeLog(log);
+      // throw new HttpError(HttpStatus.CONFLICT, ExceptionCode.AlreadyExists);
     }
 
     return next.handle().pipe();

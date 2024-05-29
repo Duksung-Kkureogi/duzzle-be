@@ -6,6 +6,7 @@ import { QuestRepositoryService } from '../repository/service/quest.repository.s
 import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
 import dayjs from 'dayjs';
 import { QuestTokenReward } from 'src/constant/quest';
+import { LogQuestEntity } from '../repository/entity/log-quest.entity';
 
 @Injectable()
 export class QuestService {
@@ -37,7 +38,9 @@ export class QuestService {
     return StartRandomQuestResponse.from(quest, log.id);
   }
 
-  async isAlreadyOngoing(userId: number): Promise<boolean> {
+  async isAlreadyOngoing(
+    userId: number,
+  ): Promise<{ isAlreadyOngoing: boolean; log?: LogQuestEntity }> {
     const logs =
       await this.questRepositoryService.findNotCompletedLogsByUser(userId);
     if (logs.length) {
@@ -48,10 +51,10 @@ export class QuestService {
         ),
       );
 
-      return !isTimedOut;
+      return { isAlreadyOngoing: !isTimedOut, log: logs[0] };
     }
 
-    return false;
+    return { isAlreadyOngoing: false };
   }
 
   async getResult(userId: number, params: GetResultRequest): Promise<boolean> {
@@ -91,5 +94,10 @@ export class QuestService {
     await this.questRepositoryService.updateLog(log);
 
     return isSucceeded;
+  }
+
+  async completeLog(log: LogQuestEntity): Promise<void> {
+    log.isCompleted = true;
+    await this.questRepositoryService.updateLog(log);
   }
 }
