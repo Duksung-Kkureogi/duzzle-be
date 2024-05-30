@@ -41,12 +41,12 @@ export class PuzzleRepositoryService {
           zone: true,
           requiredItems: {
             item: {
-              nftContract: true,
+              contract: true,
             },
           },
         },
         metadata: {
-          nft: true,
+          contract: true,
         },
         owner: true,
       },

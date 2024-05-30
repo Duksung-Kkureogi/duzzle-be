@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { NftMetadataEntity } from '../entity/nft-metadata.entity';
 import { OpenseaStandardMetadata } from 'src/module/metadata/dto/metadata.dto';
-import { NftContractEntity } from '../entity/nft-contract.entity';
+import { ContractEntity } from '../entity/contract.entity';
 
 @Injectable()
 export class NftRepositoryService {
@@ -12,22 +12,22 @@ export class NftRepositoryService {
     @InjectRepository(NftMetadataEntity)
     private nftMetadataRepository: Repository<NftMetadataEntity>,
 
-    @InjectRepository(NftContractEntity)
-    private nftContractRepository: Repository<NftContractEntity>,
+    @InjectRepository(ContractEntity)
+    private nftContractRepository: Repository<ContractEntity>,
   ) {}
 
-  async findNftContractById(id: number): Promise<NftContractEntity | null> {
+  async findNftContractById(id: number): Promise<ContractEntity | null> {
     const contract = await this.nftContractRepository.findOneBy({ id });
 
     return contract;
   }
 
   async findMetadataByTokenId(
-    nftContractId: number,
+    contractId: number,
     tokenId: number,
   ): Promise<OpenseaStandardMetadata> {
     const nftMetadata = await this.nftMetadataRepository.findOneBy({
-      nftContractId,
+      contractId,
       tokenId,
     });
 
@@ -35,10 +35,10 @@ export class NftRepositoryService {
   }
 
   async findMetadataByContractId(
-    nftContractId: number,
+    contractId: number,
   ): Promise<OpenseaStandardMetadata> {
     const nftMetadata = await this.nftMetadataRepository.findOneBy({
-      nftContractId,
+      contractId,
     });
 
     return nftMetadata?.metadata;

@@ -6,7 +6,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { NftContractEntity } from './nft-contract.entity';
+import { ContractEntity } from './contract.entity';
 
 @Entity('item')
 export class ItemEntity extends BaseEntity {
@@ -14,7 +14,7 @@ export class ItemEntity extends BaseEntity {
   id: number;
 
   @Column('int')
-  nftContractId: number;
+  contractId: number;
 
   @Column('varchar')
   imageUrl: string;
@@ -22,10 +22,10 @@ export class ItemEntity extends BaseEntity {
   @Column('int')
   maxSupply: number;
 
-  @ManyToOne(() => NftContractEntity, {
+  @ManyToOne(() => ContractEntity, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'nft_contract_id' })
-  nftContract: NftContractEntity;
+  @JoinColumn({ name: 'contract_id' })
+  contract: ContractEntity;
 }

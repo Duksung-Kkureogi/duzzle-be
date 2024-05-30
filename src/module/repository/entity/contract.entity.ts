@@ -1,14 +1,17 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { BlockchainNetworks } from '../enum/nft.enum';
+import { BlockchainNetworks, ContractType } from '../enum/contract.enum';
 import { BaseEntity } from './base.entity';
 
-@Entity('nft_contract')
-export class NftContractEntity extends BaseEntity {
+@Entity('contract')
+export class ContractEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column('enum', { enum: BlockchainNetworks })
   network: BlockchainNetworks;
+
+  @Column('enum', { enum: ContractType })
+  type: ContractType;
 
   @Column('varchar')
   address: string;
@@ -22,6 +25,7 @@ export class NftContractEntity extends BaseEntity {
   @Column('varchar', { nullable: true })
   metadataBaseUri: string;
 
-  @Column('boolean')
+  // Token 컨트랙트만 해당
+  @Column('boolean', { nullable: true })
   isTokenIdAutoIncremented: boolean;
 }

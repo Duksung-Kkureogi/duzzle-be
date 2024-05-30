@@ -10,17 +10,15 @@ import { QuestEntity } from './entity/quest.entity';
 import { LogQuestEntity } from './entity/log-quest.entity';
 import { ZoneEntity } from './entity/zone.entity';
 import { ZoneRepositoryService } from './service/zone.repository.service';
-import { NftContractEntity } from './entity/nft-contract.entity';
 import { NftMetadataEntity } from './entity/nft-metadata.entity';
 import { NftRepositoryService } from './service/nft.repository.service';
 import { ItemEntity } from './entity/item.entity';
 import { SeasonEntity } from './entity/season.entity';
-import {
-  SeasonZoneEntity,
-} from './entity/season-zone.entity';
+import { SeasonZoneEntity } from './entity/season-zone.entity';
 import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
 import { PuzzleRepositoryService } from './service/puzzle.repository.service';
 import { RequiredItemsEntity } from './entity/required-items.entity';
+import { ContractEntity } from './entity/contract.entity';
 
 @Module({
   imports: [
@@ -31,7 +29,7 @@ import { RequiredItemsEntity } from './entity/required-items.entity';
       QuestEntity,
       LogQuestEntity,
       ZoneEntity,
-      NftContractEntity,
+      ContractEntity,
       NftMetadataEntity,
       SeasonEntity,
       ItemEntity,
