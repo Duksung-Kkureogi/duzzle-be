@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { SeasonZoneEntity } from './season-zone.entity';
 import { ApiProperty } from '@nestjs/swagger';
@@ -52,7 +52,7 @@ export class PuzzlePieceEntity extends BaseEntity {
   @JoinColumn({ name: 'user_id' })
   owner: UserEntity;
 
-  @ManyToOne(() => NftMetadataEntity, {
+  @OneToOne(() => NftMetadataEntity, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

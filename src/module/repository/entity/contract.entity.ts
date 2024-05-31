@@ -19,11 +19,14 @@ export class ContractEntity extends BaseEntity {
   @Column('varchar')
   name: string;
 
-  @Column('varchar')
-  symbol: string;
+  @Column('varchar', { nullable: true })
+  symbol?: string;
 
   @Column('varchar', { nullable: true })
-  metadataBaseUri: string;
+  metadataBaseUri?: string;
+
+  @Column('int')
+  birthBlock: number;
 
   // Token 컨트랙트만 해당
   @Column('boolean', { nullable: true })
