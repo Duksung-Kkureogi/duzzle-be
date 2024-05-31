@@ -39,11 +39,6 @@ export interface Configuration {
   // RPC URL
   readonly RPC_URL_POLYGON: string;
 
-  readonly CONTRACT_ADDRESS_PLAY_DUZZLE: string;
-  readonly CONTRACT_ADDRESS_DAL: string;
-  readonly CONTRACT_ADDRESS_BLUEPRINT: string;
-  readonly CONTRACT_ADDRESS_PUZZLE_PIECE: string;
-
   // In-momory DB
   readonly REDIS_HOST: string;
   readonly REDIS_PORT: number;

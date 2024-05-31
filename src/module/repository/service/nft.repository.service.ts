@@ -13,11 +13,17 @@ export class NftRepositoryService {
     private nftMetadataRepository: Repository<NftMetadataEntity>,
 
     @InjectRepository(ContractEntity)
-    private nftContractRepository: Repository<ContractEntity>,
+    private contractRepository: Repository<ContractEntity>,
   ) {}
 
-  async findNftContractById(id: number): Promise<ContractEntity | null> {
-    const contract = await this.nftContractRepository.findOneBy({ id });
+  async findContractById(id: number): Promise<ContractEntity | null> {
+    const contract = await this.contractRepository.findOneBy({ id });
+
+    return contract;
+  }
+
+  async findContractByName(name: string): Promise<ContractEntity | null> {
+    const contract = await this.contractRepository.findOneBy({ name });
 
     return contract;
   }
