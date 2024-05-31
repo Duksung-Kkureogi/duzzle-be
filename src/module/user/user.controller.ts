@@ -43,7 +43,6 @@ import { multerOptions } from 'src/types/file-options';
 import { HttpError } from 'src/types/http-exceptions';
 import { ConfigService } from '../config/config.service';
 import { RedisTTL } from '../cache/enum/cache.enum';
-import { UserStoryProgressDto } from '../repository/dto/story.dto';
 
 @Controller({
   path: 'user',
@@ -108,20 +107,17 @@ export class UserController {
   }
 
   @ApiTags('User')
-  @ApiOperation({
-    summary: '유저 스토리 진행도 조회',
-    description: '이번 시즌 스토리 진행도 조회',
-  })
+  @ApiOperation({ summary: '특정 시즌의 유저 스토리 진행도 조회' })
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @ResponseData(UserStoryProgressResponse)
   @Get('story/:seasonId')
-  async getUerStoryProgress(
+  async getUserStoryProgress(
     @Param('seasonId') seasonId: number,
   ): Promise<ResponsesDataDto<UserStoryProgressResponse>> {
     const { user } = this.req;
-    const result = await this.userService.getUserStoryProgressBySeason(
+    const result = await this.userService.getUserStoryProgress(
       user.id,
       seasonId,
     );
@@ -130,20 +126,17 @@ export class UserController {
   }
 
   @ApiTags('User')
-  @ApiOperation({
-    summary: '유저 스토리 진행도 수정',
-    description: '특정 구역 스토리 진행도 수정',
-  })
+  @ApiOperation({ summary: '유저 스토리(구역)별 진행도 수정' })
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @ResponseData(UserStoryProgressResponse)
-  @Patch('zoneProgress')
-  async updateZoneProgress(
+  @Patch('storyProgress')
+  async updateUserStoryProgress(
     @Body() dto: UpdateUserStoryProgressRequest,
   ): Promise<ResponsesDataDto<UserStoryProgressResponse>> {
     const { user } = this.req;
-    const result = await this.userService.updateUserStory(user.id, dto);
+    const result = await this.userService.updateUserStoryProgress(user.id, dto);
 
     return new ResponsesDataDto(result);
   }

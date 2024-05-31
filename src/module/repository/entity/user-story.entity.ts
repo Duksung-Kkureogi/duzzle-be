@@ -6,12 +6,12 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
+import { StoryProgressDto } from 'src/module/story/dto/story.dto';
 import { SeasonEntity } from './season.entity';
-import { ZoneEntity } from './zone.entity';
-import { StoryDto } from 'src/module/story/dto/story.dto';
+import { UserEntity } from './user.entity';
 
-@Entity('story')
-export class StoryEntity extends BaseEntity {
+@Entity('user_story')
+export class UserStoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -19,13 +19,10 @@ export class StoryEntity extends BaseEntity {
   seasonId: number;
 
   @Column('int')
-  zoneId: number;
-
-  @Column('int')
-  page: number;
+  userId: number;
 
   @Column('json')
-  story: StoryDto[];
+  storyProgress: StoryProgressDto[];
 
   @ManyToOne(() => SeasonEntity, {
     onDelete: 'NO ACTION',
@@ -34,10 +31,10 @@ export class StoryEntity extends BaseEntity {
   @JoinColumn({ name: 'season_id' })
   season: SeasonEntity;
 
-  @ManyToOne(() => ZoneEntity, {
+  @ManyToOne(() => UserEntity, {
     onDelete: 'NO ACTION',
     onUpdate: 'NO ACTION',
   })
-  @JoinColumn({ name: 'zone_id' })
-  zone: ZoneEntity;
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
 }

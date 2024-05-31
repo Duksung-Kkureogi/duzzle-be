@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type, plainToInstance } from 'class-transformer';
 import { IsInt, IsOptional } from 'class-validator';
-import { StoryDto } from 'src/module/repository/dto/story.dto';
 import { StoryEntity } from 'src/module/repository/entity/story.entity';
 
-export class StoryQueryDto {
+export class StoryRequest {
   @IsInt()
   @Type(() => Number)
   seasonId: number;
@@ -54,4 +53,32 @@ export class StoryResponse {
       },
     );
   }
+}
+
+export class StoryDto {
+  @ApiProperty()
+  @Expose()
+  id: number;
+
+  @ApiProperty()
+  @Expose()
+  speaker: string;
+
+  @ApiProperty()
+  @Expose()
+  content: string;
+
+  @ApiProperty()
+  @Expose()
+  image?: string;
+}
+
+export class StoryProgressDto {
+  @ApiProperty()
+  @Expose()
+  zoneId: number;
+
+  @ApiProperty()
+  @Expose()
+  page: number;
 }

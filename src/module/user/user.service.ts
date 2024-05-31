@@ -13,7 +13,6 @@ import { CacheService } from './../cache/cache.service';
 import { EditUserNameKey } from '../cache/dto/cache.dto';
 import { RedisTTL } from '../cache/enum/cache.enum';
 import { ZoneRepositoryService } from '../repository/service/zone.repository.service';
-import { UserStoryProgressDto } from '../repository/dto/story.dto';
 
 @Injectable()
 export class UserService {
@@ -30,15 +29,18 @@ export class UserService {
     return UserInfoResponse.from(result);
   }
 
-  async getUserStoryProgressBySeason(
+  async getUserStoryProgress(
     userId: number,
     seasonId: number,
   ): Promise<UserStoryProgressResponse> {
-    this.initUserStory(userId, seasonId);
+    await this.initUserStoryProgress(userId, seasonId);
 
-    const result = await this.userRepositoryService.findUserById(userId);
+    const result = await this.userRepositoryService.findUserStoryBySeason(
+      userId,
+      seasonId,
+    );
 
-    return UserStoryProgressResponse.from(result, seasonId);
+    return UserStoryProgressResponse.from(result);
   }
 
   async updateUserName(
@@ -101,23 +103,26 @@ export class UserService {
     return UserInfoResponse.from(result);
   }
 
-  async updateUserStory(
+  async updateUserStoryProgress(
     userId: number,
     params: UpdateUserStoryProgressRequest,
   ): Promise<UserStoryProgressResponse> {
-    const { seasonId, zoneId, progress } = params;
+    const { seasonId, zoneId, page } = params;
 
-    const result = await this.userRepositoryService.findUserById(userId);
+    const currentProgress =
+      await this.userRepositoryService.findUserStoryBySeason(userId, seasonId);
+    const updatedProgress = currentProgress.storyProgress;
+    updatedProgress.find((e) => e.zoneId === zoneId).page = page;
 
-    const userProgress = result.storyProgress.find(
-      (e) => e.seasonId === seasonId,
-    );
-    const zoneProgress = userProgress.data.find((e) => e.zoneId === zoneId);
-    zoneProgress.progress = progress;
+    await this.userRepositoryService.updateUserStory({
+      id: currentProgress.id,
+      storyProgress: updatedProgress,
+    });
 
-    await this.userRepositoryService.updateUser(result);
-
-    return UserStoryProgressResponse.from(result, seasonId);
+    return UserStoryProgressResponse.from({
+      ...currentProgress,
+      storyProgress: updatedProgress,
+    });
   }
 
   async canEditName(userId: number): Promise<boolean> {
@@ -126,44 +131,33 @@ export class UserService {
     return !!!value;
   }
 
-  async initUserStory(userId: number, seasonId: number): Promise<void> {
-    const user = await this.userRepositoryService.findUserById(userId);
-
-    // 0. 이번 시즌을 제외한 userProgress: UserStoryProgressDto[]
-    let userProgress =
-      user.storyProgress?.filter(
-        (userProgress) => userProgress.seasonId !== seasonId,
-      ) || [];
-
-    // 1. user.storyProgress가 null 일 떄, seasonId가 일치하는 값이 없을 때, 기본값
-    let zoneProgress = { seasonId: seasonId, data: [] };
-
-    // 2. user.storyProgress가 있고, seasonId가 일치하는 값이 있을 때, 저장되어 있는 값
-    const currentProgress = user.storyProgress?.find(
-      (userProgress) => userProgress.seasonId === seasonId,
+  async initUserStoryProgress(userId: number, seasonId: number): Promise<void> {
+    const userStory = await this.userRepositoryService.findUserStoryBySeason(
+      userId,
+      seasonId,
     );
-    if (currentProgress) {
-      zoneProgress = currentProgress;
-    }
+    let storyProgress = userStory ? userStory.storyProgress : [];
 
-    // 3. 모든 zoneId 값에 대한 기본값 설정. 이미 값이 있는 경우 무시
     const zoneIds = (await this.zoneRepositoryService.getZones()).map(
       (zone) => zone.id,
     );
-
     for (const id of zoneIds) {
-      if (!zoneProgress.data.some((e) => e.zoneId === id)) {
-        zoneProgress.data.push({ zoneId: id, progress: 0 });
+      if (!storyProgress.some((e) => e.zoneId === id)) {
+        storyProgress.push({ zoneId: id, page: 0 });
       }
     }
 
-    // 4. userProgress에 이번 시즌 진행도 push
-    userProgress.push(zoneProgress);
-
-    // 5. userDB 업데이트
-    this.userRepositoryService.updateUser({
-      id: userId,
-      storyProgress: userProgress,
-    });
+    if (userStory) {
+      this.userRepositoryService.updateUserStory({
+        id: userStory.id,
+        storyProgress,
+      });
+    } else {
+      this.userRepositoryService.insertUserStory({
+        seasonId,
+        userId,
+        storyProgress,
+      });
+    }
   }
 }

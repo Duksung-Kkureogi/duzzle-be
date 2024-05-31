@@ -1,5 +1,5 @@
+import { StoryProgressDto } from 'src/module/story/dto/story.dto';
 import { LoginType } from '../enum/user.enum';
-import { UserStoryProgressDto } from './story.dto';
 
 export class InsertUserDto {
   loginType: LoginType;
@@ -11,5 +11,15 @@ export class UpdateUserDto {
   id: number;
   name?: string;
   image?: string;
-  storyProgress?: UserStoryProgressDto[];
+}
+
+export class InsertUserStoryDto {
+  seasonId: number;
+  userId: number;
+  storyProgress: StoryProgressDto[];
+}
+
+export class UpdateUserStoryDto {
+  id: number;
+  storyProgress: StoryProgressDto[];
 }

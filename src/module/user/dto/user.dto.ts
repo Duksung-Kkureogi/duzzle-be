@@ -1,11 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, plainToInstance } from 'class-transformer';
 import { IsNotEmpty, IsOptional } from 'class-validator';
-import {
-  UserStoryProgressDto,
-  ZoneStoryProgressDto,
-} from 'src/module/repository/dto/story.dto';
+import { UserStoryEntity } from 'src/module/repository/entity/user-story.entity';
 import { UserEntity } from 'src/module/repository/entity/user.entity';
+import { StoryProgressDto } from 'src/module/story/dto/story.dto';
 
 export class UserInfoResponse {
   @ApiProperty()
@@ -46,18 +44,16 @@ export class UserInfoResponse {
 export class UserStoryProgressResponse {
   @ApiProperty()
   @Expose()
-  story: UserStoryProgressDto;
+  seasonId: number;
 
-  static from(entity: UserEntity, seasonId: number) {
-    const storyProgress = entity.storyProgress.find(
-      (e) => e.seasonId === seasonId,
-    );
+  @ApiProperty()
+  @Expose()
+  storyProgress: StoryProgressDto[];
 
-    return plainToInstance(
-      this,
-      { story: storyProgress },
-      { excludeExtraneousValues: true },
-    );
+  static from(entity: UserStoryEntity) {
+    return plainToInstance(this, entity, {
+      excludeExtraneousValues: true,
+    });
   }
 }
 
@@ -78,7 +74,7 @@ export class UpdateUserStoryProgressRequest {
 
   @ApiProperty()
   @IsNotEmpty()
-  progress: number;
+  page: number;
 }
 
 export class ImageUploadDto {

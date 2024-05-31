@@ -21,6 +21,7 @@ import { PuzzleRepositoryService } from './service/puzzle.repository.service';
 import { RequiredItemsEntity } from './entity/required-items.entity';
 import { StoryEntity } from './entity/story.entity';
 import { StoryRepositoryService } from './service/story.repository.service';
+import { UserStoryEntity } from './entity/user-story.entity';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { StoryRepositoryService } from './service/story.repository.service';
       PuzzlePieceEntity,
       RequiredItemsEntity,
       StoryEntity,
+      UserStoryEntity,
     ]),
   ],
   providers: [
