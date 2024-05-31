@@ -15,7 +15,7 @@ import { ResponseData } from 'src/decorator/response-data.decorator';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { ExceptionCode } from 'src/constant/exception';
-import { StoryQueryDto, StoryResponse } from './dto/story.dto';
+import { StoryRequest, StoryResponse } from './dto/story.dto';
 
 @Controller({
   path: 'story',
@@ -52,7 +52,7 @@ export class StoryController {
   @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   @Get('')
-  async getStory(@Query() query: StoryQueryDto) {
+  async getStory(@Query() query: StoryRequest) {
     const { seasonId, zoneId, page } = query;
     const result = await this.storyService.getStory(seasonId, zoneId, page);
 
