@@ -16,7 +16,6 @@ import { HttpClientService } from './http-client.service';
       }),
     }),
   ],
-  controllers: [],
   providers: [HttpClientService],
   exports: [HttpClientService],
 })

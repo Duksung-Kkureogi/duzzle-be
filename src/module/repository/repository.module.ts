@@ -19,6 +19,8 @@ import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
 import { PuzzleRepositoryService } from './service/puzzle.repository.service';
 import { RequiredItemsEntity } from './entity/required-items.entity';
 import { ContractEntity } from './entity/contract.entity';
+import { TransactionLogEntity } from './entity/transaction-log.entity';
+import { TransactionRepositoryService } from './service/transaction.repository.service';
 
 @Module({
   imports: [
@@ -36,6 +38,7 @@ import { ContractEntity } from './entity/contract.entity';
       SeasonZoneEntity,
       PuzzlePieceEntity,
       RequiredItemsEntity,
+      TransactionLogEntity,
     ]),
   ],
   providers: [
@@ -45,6 +48,7 @@ import { ContractEntity } from './entity/contract.entity';
     ZoneRepositoryService,
     NftRepositoryService,
     PuzzleRepositoryService,
+    TransactionRepositoryService,
   ],
   exports: [
     UserRepositoryService,
@@ -53,6 +57,7 @@ import { ContractEntity } from './entity/contract.entity';
     ZoneRepositoryService,
     NftRepositoryService,
     PuzzleRepositoryService,
+    TransactionRepositoryService,
   ],
 })
 export class RepositoryModule {}

@@ -63,7 +63,7 @@ export class BlockchainCoreService {
       throw new Error(res.error);
     }
 
-    return res.data.number;
+    return res.data.result.number;
   }
 
   async getLogs(dto: CollectRangeDto): Promise<ethers.Log[]> {
@@ -76,5 +76,17 @@ export class BlockchainCoreService {
     const logs = await this.provider.getLogs(filter);
 
     return logs;
+  }
+
+  async getBlockByNumber(blockNumber: number): Promise<ethers.Block> {
+    let block: ethers.Block;
+    try {
+      block = await this.provider.getBlock(blockNumber);
+    } catch (error) {
+      await new Promise((resolve) => setTimeout(resolve, 1.5 * 1000)); // retryDelay in seconds
+      block = await this.provider.getBlock(blockNumber);
+    }
+
+    return block;
   }
 }
