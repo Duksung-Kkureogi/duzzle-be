@@ -2,17 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { TransactionLogEntity } from '../entity/transaction-log.entity';
+import { LogTransactionEntity } from '../entity/log-transaction.entity';
 
 @Injectable()
 export class TransactionRepositoryService {
   constructor(
-    @InjectRepository(TransactionLogEntity)
-    private txLogRepository: Repository<TransactionLogEntity>,
+    @InjectRepository(LogTransactionEntity)
+    private txLogRepository: Repository<LogTransactionEntity>,
   ) {}
 
-  async insertLogs(entities: Partial<TransactionLogEntity>[]) {
-    await this.txLogRepository.insert(entities);
+  async upsertLogs(entities: Partial<LogTransactionEntity>[]) {
+    await this.txLogRepository.upsert(entities, [
+      'transactionHash',
+      'transactionIndex',
+    ]);
   }
 
   async findLatestSyncedBlockNumber(): Promise<number | null> {

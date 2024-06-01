@@ -1,9 +1,10 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { EventTopicName } from '../enum/transaction.enum';
 
-@Entity('transaction_log')
-export class TransactionLogEntity extends BaseEntity {
+@Unique(['transactionHash', 'transactionIndex'])
+@Entity('log_transaction')
+export class LogTransactionEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
@@ -15,6 +16,9 @@ export class TransactionLogEntity extends BaseEntity {
 
   @Column('int')
   blockNumber: number;
+
+  @Column('int', { nullable: true })
+  transactionIndex: number;
 
   @Column('varchar')
   from: string;

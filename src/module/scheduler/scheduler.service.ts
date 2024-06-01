@@ -7,14 +7,14 @@ import { BlockchainTransactionService } from '../blockchain/blockchain.transacti
 import { NftRepositoryService } from './../repository/service/nft.repository.service';
 import { CacheService } from '../cache/cache.service';
 import { RedisKey } from '../cache/enum/cache.enum';
-import { TransactionLogEntity } from '../repository/entity/transaction-log.entity';
+import { LogTransactionEntity } from '../repository/entity/log-transaction.entity';
 import { CollectRangeDto, EventTopic } from '../blockchain/dto/blockchain.dto';
 import { ContractType } from '../repository/enum/contract.enum';
 import { PuzzleRepositoryService } from '../repository/service/puzzle.repository.service';
 
 @Injectable()
 export class SchedulerService {
-  private readonly MAX_BLOCK_RANGE = 20_000;
+  private readonly MAX_BLOCK_RANGE = 17_000;
 
   constructor(
     @Inject(BlockchainCoreService)
@@ -34,9 +34,9 @@ export class SchedulerService {
   ) {}
 
   // TODO: 우선 Mint Transaction 만 수집
-  // @Cron(CronExpression.EVERY_MINUTE, {
-  //   timeZone: 'UTC',
-  // })
+  @Cron(CronExpression.EVERY_MINUTE, {
+    timeZone: 'UTC',
+  })
   async collectBlockchainTransaction() {
     try {
       // 블록체인 네트워크의 최신 블록 가져오기
@@ -103,13 +103,13 @@ export class SchedulerService {
         return;
       }
 
-      const rowsToInsert: Partial<TransactionLogEntity>[] =
+      const rowsToUpsert: Partial<LogTransactionEntity>[] =
         await this.blockchainTransactionService.processLog(collectedLogs);
-      const puzzlePieceMintedLogs = rowsToInsert.filter(
+      const puzzlePieceMintedLogs = rowsToUpsert.filter(
         (log) =>
           log.contractAddress ===
           nftContracts.find(
-            (contract) => contract.name === 'Duzzle Puzzle Pieces',
+            (contract) => contract.name === 'Duzzle Puzzle Pieces', // TODO: DB contract table 에 enum 으로 enum 마다 다른 테이블에 insert (혹은 테이블명 매핑?)
           ).address,
       );
 
@@ -117,7 +117,7 @@ export class SchedulerService {
         ...puzzlePieceMintedLogs.map((e) =>
           this.puzzleRepositoryService.updateOwner(e.tokenId, e.to),
         ),
-        this.blockchainTransactionService.insertTransactionLogs(rowsToInsert),
+        this.blockchainTransactionService.upsertTransactionLogs(rowsToUpsert),
       ]),
         await this.memory.set(RedisKey.LastSyncedBlock, latestBlock);
     } catch (error) {

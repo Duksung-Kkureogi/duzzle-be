@@ -19,7 +19,7 @@ export class ContractEntity extends BaseEntity {
   @Column('varchar')
   name: string;
 
-  @Column('varchar')
+  @Column('varchar', { nullable: true })
   nameKr: string;
 
   @Column('varchar', { nullable: true })

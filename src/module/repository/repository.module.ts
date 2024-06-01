@@ -19,7 +19,7 @@ import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
 import { PuzzleRepositoryService } from './service/puzzle.repository.service';
 import { RequiredItemsEntity } from './entity/required-items.entity';
 import { ContractEntity } from './entity/contract.entity';
-import { TransactionLogEntity } from './entity/transaction-log.entity';
+import { LogTransactionEntity } from './entity/log-transaction.entity';
 import { TransactionRepositoryService } from './service/transaction.repository.service';
 
 @Module({
@@ -38,7 +38,7 @@ import { TransactionRepositoryService } from './service/transaction.repository.s
       SeasonZoneEntity,
       PuzzlePieceEntity,
       RequiredItemsEntity,
-      TransactionLogEntity,
+      LogTransactionEntity,
     ]),
   ],
   providers: [
