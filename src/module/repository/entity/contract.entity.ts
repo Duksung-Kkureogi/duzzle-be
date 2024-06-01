@@ -19,6 +19,12 @@ export class ContractEntity extends BaseEntity {
   @Column('varchar')
   name: string;
 
+  @Column('varchar')
+  nameKr: string;
+
+  @Column('varchar', { nullable: true })
+  image: string;
+
   @Column('varchar', { nullable: true })
   symbol?: string;
 
