@@ -28,6 +28,7 @@ import { PuzzleModule } from './puzzle/puzzle.module';
 import { EnvironmentModule } from './config/config.module';
 import { HttpClientModule } from './http-client/http-client.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
+import { ItemModule } from './item/item.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { SchedulerModule } from './scheduler/scheduler.module';
     PuzzleModule,
     HttpClientModule,
     SchedulerModule,
+    ItemModule,
   ],
   controllers: [HealthController],
   providers: [
