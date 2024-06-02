@@ -10,6 +10,8 @@ import { RequiredMaterialItemsEntity } from 'src/module/repository/entity/requir
 
 export const NON_MEMBER_USER_NAME = 'Unknown';
 
+const BLUEPRINT_ITEM_IMAGE_URL =
+  'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png';
 export class RequiredItem {
   @ApiProperty({ description: '아이템 이름' })
   @Expose()
