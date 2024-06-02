@@ -48,6 +48,7 @@ import { ItemRepositoryService } from './service/item.repository.service';
       StoryEntity,
       StoryContentEntity,
       UserStoryEntity,
+      RequiredMaterialItemsEntity,
       LogTransactionEntity,
       MaterialItemEntity,
       BlueprintItemEntity,
