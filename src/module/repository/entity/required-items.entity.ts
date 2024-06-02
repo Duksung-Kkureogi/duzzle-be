@@ -21,7 +21,7 @@ export class RequiredItemsEntity extends BaseEntity {
   itemId: number;
 
   @Column('int')
-  itemAmount: number;
+  itemCount: number;
 
   @ManyToOne(() => SeasonZoneEntity, {
     onDelete: 'CASCADE',

@@ -18,13 +18,13 @@ export class RequiredItem {
 
   @ApiProperty({ description: '아이템 수' })
   @Expose()
-  amount: number;
+  count: number;
 
   static from(entity: RequiredItemsEntity) {
     return plainToInstance(this, {
       name: entity.item.contract.name,
       image: entity.item.imageUrl,
-      amount: entity.itemAmount,
+      count: entity.itemCount,
     });
   }
 }

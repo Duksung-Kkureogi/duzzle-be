@@ -34,7 +34,7 @@ export class BlockchainCoreService {
     this.signer = new ethers.Wallet(process.env.OWNER_PK_AMOY, this.provider);
   }
 
-  async mintDalToken(to: string, amount: number): Promise<void> {
+  async mintDalToken(to: string, count: number): Promise<void> {
     const dalContractAddress: string = (
       await this.nftRepositoryService.findContractByName('Dal')
     ).address;
@@ -44,7 +44,7 @@ export class BlockchainCoreService {
       this.signer,
     ) as unknown as Dal;
 
-    await dalContract.mint(to, ethers.parseEther(String(amount)));
+    await dalContract.mint(to, ethers.parseEther(String(count)));
   }
 
   /**
