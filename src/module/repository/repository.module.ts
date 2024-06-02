@@ -22,6 +22,8 @@ import { TransactionRepositoryService } from './service/transaction.repository.s
 import { MaterialItemEntity } from './entity/material-item.entity';
 import { RequiredMaterialItemsEntity } from './entity/required-material-items.entity';
 import { BlueprintItemEntity } from './entity/blueprint-item.entity';
+import { UserMaterialItemEntity } from './entity/user-material-item.entity';
+import { ItemRepositoryService } from './service/item.repository.service';
 
 @Module({
   imports: [
@@ -42,6 +44,7 @@ import { BlueprintItemEntity } from './entity/blueprint-item.entity';
       LogTransactionEntity,
       MaterialItemEntity,
       BlueprintItemEntity,
+      UserMaterialItemEntity,
     ]),
   ],
   providers: [
@@ -52,6 +55,7 @@ import { BlueprintItemEntity } from './entity/blueprint-item.entity';
     NftRepositoryService,
     PuzzleRepositoryService,
     TransactionRepositoryService,
+    ItemRepositoryService,
   ],
   exports: [
     UserRepositoryService,
@@ -61,6 +65,7 @@ import { BlueprintItemEntity } from './entity/blueprint-item.entity';
     NftRepositoryService,
     PuzzleRepositoryService,
     TransactionRepositoryService,
+    ItemRepositoryService,
   ],
 })
 export class RepositoryModule {}

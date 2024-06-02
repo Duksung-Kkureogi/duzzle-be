@@ -12,7 +12,7 @@ export class BlueprintItemEntity extends BaseEntity {
   @Column('int', { primary: true })
   id: number;
 
-  @Column('int', { unique: true })
+  @Column('int')
   seasonZoneId: number;
 
   @Column('int', { nullable: true })

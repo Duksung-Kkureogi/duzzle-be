@@ -3,6 +3,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -13,10 +14,16 @@ import { ItemService } from './item.service';
 import { AuthorizationToken } from 'src/constant/authorization-token';
 import { AuthGuard } from '../auth/auth.guard';
 import { MyItemsResponse } from './dto/item.dto';
-
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
 @Controller()
 export class ItemController {
-  constructor(private readonly itemService: ItemService) {}
+  constructor(
+    @Inject(REQUEST)
+    private req: Request,
+
+    private readonly itemService: ItemService,
+  ) {}
 
   @ApiTags('Item')
   @ApiOperation({ summary: '유저 보유 아이템 NFT 현황' })
@@ -26,6 +33,9 @@ export class ItemController {
   @ResponseData(MyItemsResponse)
   @Get('my/nft-items')
   async getPuzzleData(): Promise<ResponsesDataDto<MyItemsResponse>> {
-    return;
+    const user = this.req.user;
+    const result = await this.itemService.getUserItems(user.id);
+
+    return new ResponsesDataDto(result);
   }
 }
