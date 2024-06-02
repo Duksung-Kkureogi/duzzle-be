@@ -1,5 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { BlockchainNetworks, ContractType } from '../enum/contract.enum';
+import {
+  BlockchainNetworks,
+  ContractKey,
+  ContractType,
+} from '../enum/contract.enum';
 import { BaseEntity } from './base.entity';
 
 @Entity('contract')
@@ -18,6 +22,9 @@ export class ContractEntity extends BaseEntity {
 
   @Column('varchar')
   name: string;
+
+  @Column('enum', { enum: ContractKey, default: ContractKey.BLUEPRINT_ITEM })
+  key: ContractKey;
 
   @Column('varchar', { nullable: true })
   nameKr: string;
