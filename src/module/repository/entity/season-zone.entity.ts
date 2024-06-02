@@ -9,7 +9,7 @@ import {
 import { BaseEntity } from './base.entity';
 import { SeasonEntity } from './season.entity';
 import { ZoneEntity } from './zone.entity';
-import { RequiredItemsEntity } from './required-items.entity';
+import { RequiredMaterialItemsEntity } from './required-material-items.entity';
 
 @Entity('season_zone')
 export class SeasonZoneEntity extends BaseEntity {
@@ -40,8 +40,9 @@ export class SeasonZoneEntity extends BaseEntity {
   zone: ZoneEntity;
 
   @OneToMany(
-    () => RequiredItemsEntity,
-    (requiredItems) => requiredItems.seasonZone,
+    () => RequiredMaterialItemsEntity,
+    (requiredMaterialItems) => requiredMaterialItems.seasonZone,
   )
-  requiredItems: RequiredItemsEntity[];
+  requiredMaterialItems: RequiredMaterialItemsEntity[];
 }
+

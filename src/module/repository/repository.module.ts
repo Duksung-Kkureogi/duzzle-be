@@ -12,15 +12,16 @@ import { ZoneEntity } from './entity/zone.entity';
 import { ZoneRepositoryService } from './service/zone.repository.service';
 import { NftMetadataEntity } from './entity/nft-metadata.entity';
 import { NftRepositoryService } from './service/nft.repository.service';
-import { ItemEntity } from './entity/item.entity';
 import { SeasonEntity } from './entity/season.entity';
 import { SeasonZoneEntity } from './entity/season-zone.entity';
 import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
 import { PuzzleRepositoryService } from './service/puzzle.repository.service';
-import { RequiredItemsEntity } from './entity/required-items.entity';
 import { ContractEntity } from './entity/contract.entity';
 import { LogTransactionEntity } from './entity/log-transaction.entity';
 import { TransactionRepositoryService } from './service/transaction.repository.service';
+import { MaterialItemEntity } from './entity/material-item.entity';
+import { RequiredMaterialItemsEntity } from './entity/required-material-items.entity';
+import { BlueprintItemEntity } from './entity/blueprint-item.entity';
 
 @Module({
   imports: [
@@ -34,11 +35,13 @@ import { TransactionRepositoryService } from './service/transaction.repository.s
       ContractEntity,
       NftMetadataEntity,
       SeasonEntity,
-      ItemEntity,
+      MaterialItemEntity,
       SeasonZoneEntity,
       PuzzlePieceEntity,
-      RequiredItemsEntity,
+      RequiredMaterialItemsEntity,
       LogTransactionEntity,
+      MaterialItemEntity,
+      BlueprintItemEntity,
     ]),
   ],
   providers: [

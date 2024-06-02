@@ -5,7 +5,7 @@ import {
   Point,
   PuzzlePieceEntity,
 } from 'src/module/repository/entity/puzzle-piece.entity';
-import { RequiredItemsEntity } from 'src/module/repository/entity/required-items.entity';
+import { RequiredMaterialItemsEntity } from 'src/module/repository/entity/required-material-items.entity';
 
 export class RequiredItem {
   @ApiProperty({ description: '아이템 이름' })
@@ -20,10 +20,10 @@ export class RequiredItem {
   @Expose()
   count: number;
 
-  static from(entity: RequiredItemsEntity) {
+  static from(entity: RequiredMaterialItemsEntity) {
     return plainToInstance(this, {
-      name: entity.item.contract.name,
-      image: entity.item.imageUrl,
+      name: entity.materialItem.contract.name,
+      image: entity.materialItem.imageUrl,
       count: entity.itemCount,
     });
   }
@@ -41,7 +41,7 @@ export class Unminted {
 
   static from(entity: PuzzlePieceEntity) {
     return plainToInstance(this, {
-      requiredItems: entity.seasonZone.requiredItems.map((e) =>
+      requiredItems: entity.seasonZone.requiredMaterialItems.map((e) =>
         RequiredItem.from(e),
       ),
     });
