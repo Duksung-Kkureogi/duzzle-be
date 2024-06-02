@@ -1,8 +1,8 @@
-import { BlockchainService } from './../blockchain/blockchain.service';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ServiceError } from 'src/types/exception';
 import { ExceptionCode } from 'src/constant/exception';
 import { QuestRepositoryService } from '../repository/service/quest.repository.service';
+import { BlockchainCoreService } from '../blockchain/blockchain.core.service';
 import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
 import dayjs from 'dayjs';
 import { QuestTokenReward } from 'src/constant/quest';
@@ -14,8 +14,8 @@ export class QuestService {
   constructor(
     private readonly questRepositoryService: QuestRepositoryService,
 
-    @Inject(BlockchainService)
-    private readonly blockchainService: BlockchainService,
+    @Inject(BlockchainCoreService)
+    private readonly blockchainCoreService: BlockchainCoreService,
   ) {}
 
   async getRandomQuest(userId: number): Promise<StartRandomQuestResponse> {
@@ -80,7 +80,7 @@ export class QuestService {
 
     if (isSucceeded) {
       try {
-        await this.blockchainService.mintDalToken(
+        await this.blockchainCoreService.mintDalToken(
           log.user.walletAddress,
           QuestTokenReward,
         );

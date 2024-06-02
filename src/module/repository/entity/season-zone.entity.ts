@@ -26,15 +26,15 @@ export class SeasonZoneEntity extends BaseEntity {
   pieceCount: number;
 
   @ManyToOne(() => SeasonEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'season_id' })
   season: SeasonEntity;
 
   @ManyToOne(() => ZoneEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'zone_id' })
   zone: ZoneEntity;

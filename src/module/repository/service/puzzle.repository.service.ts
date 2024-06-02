@@ -41,17 +41,37 @@ export class PuzzleRepositoryService {
           zone: true,
           requiredItems: {
             item: {
-              nftContract: true,
+              contract: true,
             },
           },
         },
         metadata: {
-          nft: true,
+          contract: true,
         },
         owner: true,
       },
     });
 
     return allPiecesInSeason;
+  }
+
+  async updateOwner(tokenId: number, walletAddress: string): Promise<void> {
+    await this.puzzlePieceRepository.query(
+      `
+    UPDATE puzzle_piece pp
+    SET user_id = (
+                    SELECT id
+                    FROM "user"
+                    WHERE
+                      wallet_address = $1),
+        minted  = true
+    WHERE pp.id = (
+                    SELECT pp_inner.id
+                    FROM puzzle_piece pp_inner
+                        JOIN nft_metadata nft ON pp_inner.nft_metadata_id = nft.id
+                    WHERE nft.token_id = $2
+                    LIMIT 1);`,
+      [walletAddress, tokenId],
+    );
   }
 }

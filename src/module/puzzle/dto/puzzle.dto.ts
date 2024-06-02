@@ -22,7 +22,7 @@ export class RequiredItem {
 
   static from(entity: RequiredItemsEntity) {
     return plainToInstance(this, {
-      name: entity.item.nftContract.name,
+      name: entity.item.contract.name,
       image: entity.item.imageUrl,
       amount: entity.itemAmount,
     });

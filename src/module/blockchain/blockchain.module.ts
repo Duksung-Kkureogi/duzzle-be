@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { RepositoryModule } from 'src/module/repository/repository.module';
-import { BlockchainService } from './blockchain.service';
+import { BlockchainCoreService } from './blockchain.core.service';
+import { BlockchainTransactionService } from './blockchain.transaction.service';
+import { HttpClientModule } from '../http-client/http-client.module';
 
 @Module({
-  imports: [RepositoryModule],
-  providers: [BlockchainService],
-  exports: [BlockchainService],
+  imports: [RepositoryModule, HttpClientModule],
+  providers: [BlockchainCoreService, BlockchainTransactionService],
+  exports: [BlockchainCoreService, BlockchainTransactionService],
 })
 export class BlockchainModule {}
