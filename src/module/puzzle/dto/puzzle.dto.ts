@@ -7,6 +7,8 @@ import {
 } from 'src/module/repository/entity/puzzle-piece.entity';
 import { RequiredMaterialItemsEntity } from 'src/module/repository/entity/required-material-items.entity';
 
+const BLUEPRINT_ITEM_IMAGE_URL =
+  'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png';
 export class RequiredItem {
   @ApiProperty({ description: '아이템 이름' })
   @Expose()
@@ -22,7 +24,7 @@ export class RequiredItem {
 
   static from(entity: RequiredMaterialItemsEntity) {
     return plainToInstance(this, {
-      name: entity.materialItem.contract.name,
+      name: entity.materialItem.nameKr,
       image: entity.materialItem.imageUrl,
       count: entity.itemCount,
     });
@@ -41,9 +43,13 @@ export class Unminted {
 
   static from(entity: PuzzlePieceEntity) {
     return plainToInstance(this, {
-      requiredItems: entity.seasonZone.requiredMaterialItems.map((e) =>
-        RequiredItem.from(e),
-      ),
+      requiredItems: entity.seasonZone.requiredMaterialItems
+        .map((e) => RequiredItem.from(e))
+        .concat({
+          name: `설계도면(${entity.seasonZone.zone.nameKr})`,
+          image: BLUEPRINT_ITEM_IMAGE_URL,
+          count: 1,
+        }),
     });
   }
 }

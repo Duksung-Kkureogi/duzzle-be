@@ -65,13 +65,13 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(스머프동산)',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
@@ -94,13 +94,13 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(스머프동산)',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
@@ -131,19 +131,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(인문사회관)',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -174,19 +174,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -217,19 +217,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -260,19 +260,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -303,19 +303,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -346,19 +346,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -389,19 +389,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -432,19 +432,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -475,19 +475,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -518,19 +518,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -561,19 +561,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -604,19 +604,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -647,19 +647,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -690,19 +690,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -733,19 +733,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -776,19 +776,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -819,19 +819,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -862,19 +862,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,
@@ -905,19 +905,19 @@ export const DummyData = {
         data: {
           requiredItems: [
             {
-              name: 'red brick',
+              name: '붉은 벽돌',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
               count: 1,
             },
             {
-              name: 'Blueprint Item',
+              name: '설계도면(구역이름..) ',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
               count: 1,
             },
             {
-              name: 'sand',
+              name: '모래',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
               count: 2,

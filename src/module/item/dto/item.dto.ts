@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class Item {
   @ApiProperty({ description: '아이템 이름' })
@@ -27,6 +28,7 @@ export class MyItemsResponse {
   @ApiProperty({ description: '총 보유 아이템 개수' })
   totalItems: number;
 
-  @ApiProperty({ description: '보유 아이템 목록' })
+  @ApiProperty({ type: Item, isArray: true, description: '보유 아이템 목록' })
+  @Type(() => Item)
   items: Item[];
 }
