@@ -15,6 +15,9 @@ export enum ContractKey {
   // Service Contract
   PLAY_DUZZLE = 'play_duzzle',
 
+  // ERC-20
+  DAL = 'dal',
+
   // Item NFT Contract
   BLUEPRINT_ITEM = 'blueprint_item',
   REDBRICK_ITEM = 'redbrick_item',
