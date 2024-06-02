@@ -9,7 +9,11 @@ import { OpenseaStandardMetadata } from 'src/module/metadata/dto/metadata.dto';
 import { BaseEntity } from './base.entity';
 import { ContractEntity } from './contract.entity';
 
-@Entity('nft_metadata')
+@Entity('nft_metadata', {
+  comment:
+    'NFT메타데이터, 퍼즐조각, 설계도면 NFT 는 발행될 모든 토큰의 metadata 가 유일하고,\
+  아이템 NFT 는 똑같음',
+})
 export class NftMetadataEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
