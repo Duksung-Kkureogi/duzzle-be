@@ -10,8 +10,6 @@ import { RedisKey } from '../cache/enum/cache.enum';
 import { LogTransactionEntity } from '../repository/entity/log-transaction.entity';
 import { CollectRangeDto, EventTopic } from '../blockchain/dto/blockchain.dto';
 import { ContractKey, ContractType } from '../repository/enum/contract.enum';
-import { PuzzleRepositoryService } from '../repository/service/puzzle.repository.service';
-import { ItemRepositoryService } from '../repository/service/item.repository.service';
 
 @Injectable()
 export class SchedulerService {
@@ -26,12 +24,6 @@ export class SchedulerService {
 
     @Inject(NftRepositoryService)
     private readonly nftRepositoryService: NftRepositoryService,
-
-    @Inject(PuzzleRepositoryService)
-    private readonly puzzleRepositoryService: PuzzleRepositoryService,
-
-    @Inject(ItemRepositoryService)
-    private readonly itemRepositoryService: ItemRepositoryService,
 
     @Inject(CacheService)
     private readonly memory: CacheService,
@@ -112,49 +104,13 @@ export class SchedulerService {
       const txLogsToUpsert: Partial<LogTransactionEntity>[] =
         await this.blockchainTransactionService.processLog(collectedLogs);
 
-      let puzzlePieceMintedLogs: Partial<LogTransactionEntity>[] = [];
-      let blueprintMintedLogs: Partial<LogTransactionEntity>[] = [];
-      let materialMintedLogs: Partial<LogTransactionEntity>[] = [];
-
-      txLogsToUpsert.map((log) => {
-        let contractKey = nftContracts.find(
-          (e) => e.address === log.contractAddress,
-        ).key;
-        switch (contractKey) {
-          case ContractKey.PUZZLE_PIECE:
-            puzzlePieceMintedLogs.push(log);
-            break;
-          case ContractKey.ITEM_BLUEPRINT:
-            blueprintMintedLogs.push(log);
-            break;
-          case ContractKey.ITEM_MATERIAL:
-            materialMintedLogs.push(log);
-        }
-      });
-
       Promise.all([
-        ...puzzlePieceMintedLogs.map((e) =>
-          this.puzzleRepositoryService.updateOwner(
-            e.tokenId,
-            ethers.getAddress(e.to),
-          ),
+        this.blockchainTransactionService.syncAllNftOwnersOfLogs(
+          txLogsToUpsert,
         ),
-        ...blueprintMintedLogs.map((e) => {
-          this.itemRepositoryService.updateBlueprintOwner(
-            e.tokenId,
-            ethers.getAddress(e.to),
-          );
-        }),
-        ...materialMintedLogs.map((e) => {
-          this.itemRepositoryService.upsertMaterialOnwer(
-            e.tokenId,
-            ethers.getAddress(e.to),
-            e.contractAddress,
-          );
-        }),
         this.blockchainTransactionService.upsertTransactionLogs(txLogsToUpsert),
       ]);
-      // await this.memory.set(RedisKey.LastSyncedBlock, latestBlock);
+      await this.memory.set(RedisKey.LastSyncedBlock, latestBlock);
     } catch (error) {
       Logger.error(error.stack);
       Logger.error(error);

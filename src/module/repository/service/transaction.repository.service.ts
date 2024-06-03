@@ -11,6 +11,10 @@ export class TransactionRepositoryService {
     private txLogRepository: Repository<LogTransactionEntity>,
   ) {}
 
+  async getAllLogs() {
+    return await this.txLogRepository.find();
+  }
+
   async upsertLogs(entities: Partial<LogTransactionEntity>[]) {
     await this.txLogRepository.upsert(entities, [
       'transactionHash',

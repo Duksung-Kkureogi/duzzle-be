@@ -7,6 +7,10 @@ import { LogTransactionEntity } from '../repository/entity/log-transaction.entit
 import { BlockchainCoreService } from './blockchain.core.service';
 import { NULL_ADDRESS, TopicToAbi } from './dto/blockchain.dto';
 import { EventTopicName } from '../repository/enum/transaction.enum';
+import { ContractKey, ContractType } from '../repository/enum/contract.enum';
+import { NftRepositoryService } from '../repository/service/nft.repository.service';
+import { ItemRepositoryService } from '../repository/service/item.repository.service';
+import { PuzzleRepositoryService } from './../repository/service/puzzle.repository.service';
 
 @Injectable()
 export class BlockchainTransactionService {
@@ -14,9 +18,70 @@ export class BlockchainTransactionService {
     @Inject(TransactionRepositoryService)
     private readonly txnRepositoryService: TransactionRepositoryService,
 
+    @Inject(NftRepositoryService)
+    private readonly nftRepositoryService: NftRepositoryService,
+
+    @Inject(ItemRepositoryService)
+    private readonly itemRepositoryService: ItemRepositoryService,
+
+    @Inject(PuzzleRepositoryService)
+    private readonly puzzleRepositoryService: PuzzleRepositoryService,
+
     @Inject(BlockchainCoreService)
     private readonly coreService: BlockchainCoreService,
   ) {}
+
+  async getAllTxLogs() {
+    return await this.txnRepositoryService.getAllLogs();
+  }
+
+  async syncAllNftOwnersOfLogs(logs: Partial<LogTransactionEntity>[]) {
+    const nftContracts = await this.nftRepositoryService.findContractsByType(
+      ContractType.ERC721,
+    );
+
+    let puzzlePieceMintedLogs: Partial<LogTransactionEntity>[] = [];
+    let blueprintMintedLogs: Partial<LogTransactionEntity>[] = [];
+    let materialMintedLogs: Partial<LogTransactionEntity>[] = [];
+
+    logs.forEach((log) => {
+      let contractKey = nftContracts.find(
+        (e) => e.address === log.contractAddress,
+      ).key;
+      switch (contractKey) {
+        case ContractKey.PUZZLE_PIECE:
+          puzzlePieceMintedLogs.push(log);
+          break;
+        case ContractKey.ITEM_BLUEPRINT:
+          blueprintMintedLogs.push(log);
+          break;
+        case ContractKey.ITEM_MATERIAL:
+          materialMintedLogs.push(log);
+      }
+    });
+
+    await Promise.all([
+      ...puzzlePieceMintedLogs.map((e) =>
+        this.puzzleRepositoryService.updateOwner(
+          e.tokenId,
+          ethers.getAddress(e.to),
+        ),
+      ),
+      ...blueprintMintedLogs.map((e) => {
+        this.itemRepositoryService.updateBlueprintOwner(
+          e.tokenId,
+          ethers.getAddress(e.to),
+        );
+      }),
+      ...materialMintedLogs.map((e) => {
+        this.itemRepositoryService.upsertMaterialOnwer(
+          e.tokenId,
+          ethers.getAddress(e.to),
+          e.contractAddress,
+        );
+      }),
+    ]);
+  }
 
   decodeLogData(log: ethers.Log, abi: InterfaceAbi): ethers.LogDescription {
     const iface = new ethers.Interface(abi);
