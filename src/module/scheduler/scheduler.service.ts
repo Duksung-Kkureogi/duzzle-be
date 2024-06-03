@@ -34,9 +34,9 @@ export class SchedulerService {
   ) {}
 
   // TODO: 우선 Mint Transaction 만 수집
-  @Cron(CronExpression.EVERY_MINUTE, {
-    timeZone: 'UTC',
-  })
+  // @Cron(CronExpression.EVERY_MINUTE, {
+  //   timeZone: 'UTC',
+  // })
   async collectBlockchainTransaction() {
     try {
       // 블록체인 네트워크의 최신 블록 가져오기
