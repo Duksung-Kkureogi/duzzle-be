@@ -23,7 +23,7 @@ export class ContractEntity extends BaseEntity {
   @Column('varchar')
   name: string;
 
-  @Column('enum', { enum: ContractKey, default: ContractKey.BLUEPRINT_ITEM })
+  @Column('enum', { enum: ContractKey })
   key: ContractKey;
 
   @Column('varchar', { nullable: true })

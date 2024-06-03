@@ -19,9 +19,8 @@ export enum ContractKey {
   DAL = 'dal',
 
   // Item NFT Contract
-  BLUEPRINT_ITEM = 'blueprint_item',
-  REDBRICK_ITEM = 'redbrick_item',
-  SAND_ITEM = 'sand_item',
+  ITEM_MATERIAL = 'item_material',
+  ITEM_BLUEPRINT = 'item_blueprint',
 
   // Puzzle Piece NFT Contract
   PUZZLE_PIECE = 'puzzle_piece',
