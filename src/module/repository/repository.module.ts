@@ -16,7 +16,6 @@ import { SeasonEntity } from './entity/season.entity';
 import { SeasonZoneEntity } from './entity/season-zone.entity';
 import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
 import { PuzzleRepositoryService } from './service/puzzle.repository.service';
-import { RequiredItemsEntity } from './entity/required-items.entity';
 import { StoryEntity } from './entity/story.entity';
 import { StoryRepositoryService } from './service/story.repository.service';
 import { UserStoryEntity } from './entity/user-story.entity';
