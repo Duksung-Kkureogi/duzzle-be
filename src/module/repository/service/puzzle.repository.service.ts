@@ -1,12 +1,14 @@
 import { UserRepositoryService } from './user.repository.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindManyOptions, FindOptionsWhere } from 'typeorm';
 
 import { PuzzlePieceEntity } from '../entity/puzzle-piece.entity';
 import { SeasonEntity } from '../entity/season.entity';
 import { ServiceError } from 'src/types/exception';
 import { ExceptionCode } from 'src/constant/exception';
+import { UserPuzzleRequest } from 'src/module/puzzle/user.puzzle.dto';
+import { PaginatedList } from 'src/dto/response.dto';
 
 @Injectable()
 export class PuzzleRepositoryService {
@@ -76,5 +78,90 @@ export class PuzzleRepositoryService {
                     LIMIT 1);`,
       [userName, walletAddress, tokenId],
     );
+  }
+
+  async findPuzzlesByUserId(
+    userId: number,
+    params: UserPuzzleRequest,
+  ): Promise<PaginatedList<PuzzlePieceEntity>> {
+    const userWalletAddress = (
+      await this.userRepositoryService.findUserById(userId)
+    ).walletAddress;
+
+    const { count, page } = params;
+    const offset = count * page;
+
+    const where: FindOptionsWhere<PuzzlePieceEntity> = {
+      holerWalletAddress: userWalletAddress,
+    };
+
+    if (params?.season !== undefined) {
+      where.seasonZone = {
+        season: {
+          id: params.season,
+        },
+      };
+    }
+
+    if (params?.zone !== undefined) {
+      where.seasonZone = {
+        zone: {
+          id: params.zone,
+        },
+      };
+    }
+
+    const findOption: FindManyOptions<PuzzlePieceEntity> = {
+      where,
+      relations: {
+        metadata: true,
+        seasonZone: {
+          season: true,
+          zone: true,
+        },
+      },
+      skip: offset,
+      take: count,
+      order: { createdAt: 'DESC' },
+    };
+
+    const [list, total] =
+      await this.puzzlePieceRepository.findAndCount(findOption);
+
+    const result: PaginatedList<PuzzlePieceEntity> = {
+      list,
+      total,
+    };
+
+    return result;
+  }
+
+  async getPuzzleByIdAndUserId(
+    userId: number,
+    puzzleId: number,
+  ): Promise<PuzzlePieceEntity> {
+    const userWalletAddress = (
+      await this.userRepositoryService.findUserById(userId)
+    ).walletAddress;
+
+    const puzzle = await this.puzzlePieceRepository.findOne({
+      where: {
+        id: puzzleId,
+        holerWalletAddress: userWalletAddress,
+      },
+      relations: {
+        metadata: true,
+        seasonZone: {
+          season: true,
+          zone: true,
+        },
+      },
+    });
+
+    if (!puzzle) {
+      throw new ServiceError(ExceptionCode.NotFound);
+    }
+
+    return puzzle;
   }
 }
