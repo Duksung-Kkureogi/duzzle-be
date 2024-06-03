@@ -9,12 +9,12 @@ import { CacheService } from '../cache/cache.service';
 import { RedisKey } from '../cache/enum/cache.enum';
 import { LogTransactionEntity } from '../repository/entity/log-transaction.entity';
 import { CollectRangeDto, EventTopic } from '../blockchain/dto/blockchain.dto';
-import { ContractType } from '../repository/enum/contract.enum';
+import { ContractKey, ContractType } from '../repository/enum/contract.enum';
 import { PuzzleRepositoryService } from '../repository/service/puzzle.repository.service';
 
 @Injectable()
 export class SchedulerService {
-  private readonly MAX_BLOCK_RANGE = 17_000;
+  private readonly MAX_BLOCK_RANGE = 2_000;
 
   constructor(
     @Inject(BlockchainCoreService)
@@ -34,9 +34,9 @@ export class SchedulerService {
   ) {}
 
   // TODO: 우선 Mint Transaction 만 수집
-  // @Cron(CronExpression.EVERY_MINUTE, {
-  //   timeZone: 'UTC',
-  // })
+  @Cron(CronExpression.EVERY_MINUTE, {
+    timeZone: 'UTC',
+  })
   async collectBlockchainTransaction() {
     try {
       // 블록체인 네트워크의 최신 블록 가져오기
@@ -53,7 +53,9 @@ export class SchedulerService {
           await this.blockchainTransactionService.findLastSyncedBlock();
         if (!_lastSyncedBlock) {
           const birthBlockOfContract = (
-            await this.nftRepositoryService.findContractByName('PlayDuzzle')
+            await this.nftRepositoryService.findContractByKey(
+              ContractKey.PLAY_DUZZLE,
+            )
           ).birthBlock;
           lastSyncedBlock = birthBlockOfContract;
         }
@@ -109,7 +111,7 @@ export class SchedulerService {
         (log) =>
           log.contractAddress ===
           nftContracts.find(
-            (contract) => contract.name === 'Duzzle Puzzle Pieces', // TODO: DB contract table 에 enum 으로 enum 마다 다른 테이블에 insert (혹은 테이블명 매핑?)
+            (contract) => contract.key === ContractKey.PUZZLE_PIECE,
           ).address,
       );
 
