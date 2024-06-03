@@ -12,7 +12,6 @@ import { ZoneEntity } from './entity/zone.entity';
 import { ZoneRepositoryService } from './service/zone.repository.service';
 import { NftMetadataEntity } from './entity/nft-metadata.entity';
 import { NftRepositoryService } from './service/nft.repository.service';
-import { ItemEntity } from './entity/item.entity';
 import { SeasonEntity } from './entity/season.entity';
 import { SeasonZoneEntity } from './entity/season-zone.entity';
 import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
@@ -25,6 +24,11 @@ import { StoryContentEntity } from './entity/story-content.entity';
 import { ContractEntity } from './entity/contract.entity';
 import { LogTransactionEntity } from './entity/log-transaction.entity';
 import { TransactionRepositoryService } from './service/transaction.repository.service';
+import { MaterialItemEntity } from './entity/material-item.entity';
+import { RequiredMaterialItemsEntity } from './entity/required-material-items.entity';
+import { BlueprintItemEntity } from './entity/blueprint-item.entity';
+import { UserMaterialItemEntity } from './entity/user-material-item.entity';
+import { ItemRepositoryService } from './service/item.repository.service';
 
 @Module({
   imports: [
@@ -38,14 +42,21 @@ import { TransactionRepositoryService } from './service/transaction.repository.s
       ContractEntity,
       NftMetadataEntity,
       SeasonEntity,
-      ItemEntity,
+      MaterialItemEntity,
       SeasonZoneEntity,
       PuzzlePieceEntity,
-      RequiredItemsEntity,
+      RequiredMaterialItemsEntity,
+      StoryEntity,
+      StoryContentEntity,
+      UserStoryEntity,
+      RequiredMaterialItemsEntity,
       StoryEntity,
       StoryContentEntity,
       UserStoryEntity,
       LogTransactionEntity,
+      MaterialItemEntity,
+      BlueprintItemEntity,
+      UserMaterialItemEntity,
     ]),
   ],
   providers: [
@@ -57,6 +68,7 @@ import { TransactionRepositoryService } from './service/transaction.repository.s
     PuzzleRepositoryService,
     StoryRepositoryService,
     TransactionRepositoryService,
+    ItemRepositoryService,
   ],
   exports: [
     UserRepositoryService,
@@ -67,6 +79,7 @@ import { TransactionRepositoryService } from './service/transaction.repository.s
     PuzzleRepositoryService,
     StoryRepositoryService,
     TransactionRepositoryService,
+    ItemRepositoryService,
   ],
 })
 export class RepositoryModule {}

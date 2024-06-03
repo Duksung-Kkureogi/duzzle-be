@@ -2,30 +2,31 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
-import { OpenseaStandardMetadata } from 'src/module/metadata/dto/metadata.dto';
 import { BaseEntity } from './base.entity';
 import { ContractEntity } from './contract.entity';
 
-@Entity('nft_metadata', {
+@Entity('material_item', {
   comment:
-    'NFT메타데이터, 퍼즐조각, 설계도면 NFT 는 발행될 모든 토큰의 metadata 가 유일하고,\
-  아이템 NFT 는 똑같음',
+    '해당 컨트랙트에서 발행되는 아이템, 최대 발행량과 이미지를 커스터마이징',
 })
-export class NftMetadataEntity extends BaseEntity {
+export class MaterialItemEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
+
+  @Column('varchar')
+  nameKr: string;
 
   @Column('int')
   contractId: number;
 
-  @Column('int')
-  tokenId: number;
+  @Column('varchar')
+  imageUrl: string;
 
-  @Column('jsonb', { nullable: true })
-  metadata: OpenseaStandardMetadata;
+  @Column('int')
+  maxSupply: number;
 
   @ManyToOne(() => ContractEntity, {
     onDelete: 'CASCADE',

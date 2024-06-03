@@ -16,7 +16,9 @@ export class Point {
   y: number;
 }
 
-@Entity('puzzle_piece')
+@Entity('puzzle_piece', {
+  comment: 'season_zone 의 모든 퍼즐 조각 목록, 조각의 민트 여부와 NFT 소유자',
+})
 export class PuzzlePieceEntity extends BaseEntity {
   @Column('int', { primary: true })
   seasonZoneId: number;

@@ -1,11 +1,14 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { Expose, plainToInstance, Type } from 'class-transformer';
 import { IsNumber } from 'class-validator';
+import { BLUEPRINT_ITEM_IMAGE_URL } from 'src/constant/item';
 import {
   Point,
   PuzzlePieceEntity,
 } from 'src/module/repository/entity/puzzle-piece.entity';
-import { RequiredItemsEntity } from 'src/module/repository/entity/required-items.entity';
+import { RequiredMaterialItemsEntity } from 'src/module/repository/entity/required-material-items.entity';
+
+export const NON_MEMBER_USER_NAME = 'Unknown';
 
 export const NON_MEMBER_USER_NAME = 'Unknown';
 
@@ -22,10 +25,10 @@ export class RequiredItem {
   @Expose()
   count: number;
 
-  static from(entity: RequiredItemsEntity) {
+  static from(entity: RequiredMaterialItemsEntity) {
     return plainToInstance(this, {
-      name: entity.item.contract.name,
-      image: entity.item.imageUrl,
+      name: entity.materialItem.nameKr,
+      image: entity.materialItem.imageUrl,
       count: entity.itemCount,
     });
   }
@@ -43,9 +46,13 @@ export class Unminted {
 
   static from(entity: PuzzlePieceEntity) {
     return plainToInstance(this, {
-      requiredItems: entity.seasonZone.requiredItems.map((e) =>
-        RequiredItem.from(e),
-      ),
+      requiredItems: entity.seasonZone.requiredMaterialItems
+        .map((e) => RequiredItem.from(e))
+        .concat({
+          name: `설계도면(${entity.seasonZone.zone.nameKr})`,
+          image: BLUEPRINT_ITEM_IMAGE_URL,
+          count: 1,
+        }),
     });
   }
 }

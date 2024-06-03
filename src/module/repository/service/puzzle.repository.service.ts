@@ -43,8 +43,8 @@ export class PuzzleRepositoryService {
         seasonZone: {
           season: true,
           zone: true,
-          requiredItems: {
-            item: {
+          requiredMaterialItems: {
+            materialItem: {
               contract: true,
             },
           },

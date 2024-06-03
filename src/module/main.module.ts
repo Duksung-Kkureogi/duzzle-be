@@ -29,6 +29,7 @@ import { EnvironmentModule } from './config/config.module';
 import { StoryModule } from './story/story.module';
 import { HttpClientModule } from './http-client/http-client.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
+import { ItemModule } from './item/item.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { SchedulerModule } from './scheduler/scheduler.module';
     StoryModule,
     HttpClientModule,
     SchedulerModule,
+    ItemModule,
   ],
   controllers: [HealthController],
   providers: [
