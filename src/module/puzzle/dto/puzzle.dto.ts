@@ -10,6 +10,8 @@ import { RequiredMaterialItemsEntity } from 'src/module/repository/entity/requir
 
 export const NON_MEMBER_USER_NAME = 'Unknown';
 
+export const NON_MEMBER_USER_NAME = 'Unknown';
+
 export class RequiredItem {
   @ApiProperty({ description: '아이템 이름' })
   @Expose()
