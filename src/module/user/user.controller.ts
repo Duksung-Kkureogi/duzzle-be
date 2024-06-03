@@ -30,9 +30,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import {
   ImageUploadDto,
   UpdateUserNameRequest,
-  UpdateUserStoryProgressRequest,
   UserInfoResponse,
-  UserStoryProgressResponse,
 } from './dto/user.dto';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { ExceptionCode } from 'src/constant/exception';
@@ -102,41 +100,6 @@ export class UserController {
       throw new HttpError(HttpStatus.CONFLICT, ExceptionCode.LimitExceeded);
     }
     const result = await this.userService.updateUserName(user.id, dto.name);
-
-    return new ResponsesDataDto(result);
-  }
-
-  @ApiTags('User')
-  @ApiOperation({ summary: '특정 시즌의 유저 스토리 진행도 조회' })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
-  @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @ResponseData(UserStoryProgressResponse)
-  @Get('story/:seasonId')
-  async getUserStoryProgress(
-    @Param('seasonId') seasonId: number,
-  ): Promise<ResponsesDataDto<UserStoryProgressResponse>> {
-    const { user } = this.req;
-    const result = await this.userService.getUserStoryProgress(
-      user.id,
-      seasonId,
-    );
-
-    return new ResponsesDataDto(result);
-  }
-
-  @ApiTags('User')
-  @ApiOperation({ summary: '유저 스토리(구역)별 진행도 수정' })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
-  @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @ResponseData(UserStoryProgressResponse)
-  @Patch('storyProgress')
-  async updateUserStoryProgress(
-    @Body() dto: UpdateUserStoryProgressRequest,
-  ): Promise<ResponsesDataDto<UserStoryProgressResponse>> {
-    const { user } = this.req;
-    const result = await this.userService.updateUserStoryProgress(user.id, dto);
 
     return new ResponsesDataDto(result);
   }

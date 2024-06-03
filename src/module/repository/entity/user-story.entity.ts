@@ -1,40 +1,30 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { StoryProgressDto } from 'src/module/story/dto/story.dto';
-import { SeasonEntity } from './season.entity';
 import { UserEntity } from './user.entity';
+import { StoryEntity } from './story.entity';
 
 @Entity('user_story')
 export class UserStoryEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id: number;
-
-  @Column('int')
-  seasonId: number;
-
-  @Column('int')
+  @PrimaryColumn('int')
   userId: number;
 
-  @Column('json')
-  storyProgress: StoryProgressDto[];
+  @PrimaryColumn('int')
+  storyId: number;
 
-  @ManyToOne(() => SeasonEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-  })
-  @JoinColumn({ name: 'season_id' })
-  season: SeasonEntity;
+  @Column('int')
+  readPage: number;
 
   @ManyToOne(() => UserEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
+
+  @ManyToOne(() => StoryEntity, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'story_id' })
+  story: StoryEntity;
 }

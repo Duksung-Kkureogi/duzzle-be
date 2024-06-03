@@ -22,6 +22,7 @@ import { RequiredItemsEntity } from './entity/required-items.entity';
 import { StoryEntity } from './entity/story.entity';
 import { StoryRepositoryService } from './service/story.repository.service';
 import { UserStoryEntity } from './entity/user-story.entity';
+import { StoryContentEntity } from './entity/story-content.entity';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { UserStoryEntity } from './entity/user-story.entity';
       PuzzlePieceEntity,
       RequiredItemsEntity,
       StoryEntity,
+      StoryContentEntity,
       UserStoryEntity,
     ]),
   ],

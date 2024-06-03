@@ -1,52 +1,53 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type, plainToInstance } from 'class-transformer';
-import { IsInt, IsOptional } from 'class-validator';
-import { StoryEntity } from 'src/module/repository/entity/story.entity';
+import { IsInt, IsNotEmpty, IsOptional, IsPositive } from 'class-validator';
+import { StoryDto } from 'src/module/repository/dto/story.dto';
+import { StoryContentEntity } from 'src/module/repository/entity/story-content.entity';
+import { UserStoryEntity } from 'src/module/repository/entity/user-story.entity';
 
 export class StoryRequest {
+  @ApiProperty()
   @IsInt()
   @Type(() => Number)
-  seasonId: number;
+  storyId: number;
 
-  @IsInt()
-  @Type(() => Number)
-  zoneId: number;
-
+  @ApiProperty({ required: false })
   @IsOptional()
+  @IsPositive()
   @IsInt()
   @Type(() => Number)
   page?: number = 1;
 }
 
 export class StoryResponse {
-  @ApiProperty({ description: '시즌 타이틀' })
+  @ApiProperty()
   @Expose()
-  season: string;
-
-  @ApiProperty({ description: '구역 이름' })
-  @Expose()
-  zoneNameKr: string;
-
-  @ApiProperty({ description: '구역 이름(영문)' })
-  @Expose()
-  zoneNameUs: string;
-
-  @ApiProperty({ description: '페이지 번호' })
-  @Expose()
-  page: number;
+  storyId: number;
 
   @ApiProperty()
   @Expose()
-  story: StoryDto[];
+  zoneId: number;
 
-  static from(entity: StoryEntity) {
+  @ApiProperty()
+  @Expose()
+  currentPage: number;
+
+  @ApiProperty()
+  @Expose()
+  totalPage: number;
+
+  @ApiProperty()
+  @Expose()
+  content: StoryDto[];
+
+  static from(entity: StoryContentEntity) {
     return plainToInstance(
       this,
       {
         ...entity,
-        season: entity.season.title,
-        zoneNameKr: entity.zone.nameKr,
-        zoneNameUs: entity.zone.nameUs,
+        zoneId: entity.story.zoneId,
+        currentPage: entity.page,
+        totalPage: entity.story.totalPage,
       },
       {
         excludeExtraneousValues: true,
@@ -55,30 +56,54 @@ export class StoryResponse {
   }
 }
 
-export class StoryDto {
+export class UserStoryProgressResponse {
   @ApiProperty()
   @Expose()
-  id: number;
+  storyId: number;
 
-  @ApiProperty()
-  @Expose()
-  speaker: string;
-
-  @ApiProperty()
-  @Expose()
-  content: string;
-
-  @ApiProperty()
-  @Expose()
-  image?: string;
-}
-
-export class StoryProgressDto {
   @ApiProperty()
   @Expose()
   zoneId: number;
 
   @ApiProperty()
   @Expose()
-  page: number;
+  zoneNameKr: string;
+
+  @ApiProperty()
+  @Expose()
+  zoneNameUs: string;
+
+  @ApiProperty()
+  @Expose()
+  totalPage: number;
+
+  @ApiProperty()
+  @Expose()
+  readPage: number;
+
+  static from(entity: UserStoryEntity) {
+    return plainToInstance(
+      this,
+      {
+        ...entity,
+        zoneId: entity.story.zoneId,
+        zoneNameKr: entity.story.zone.nameKr,
+        zoneNameUs: entity.story.zone.nameUs,
+        totalPage: entity.story.totalPage,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
+  }
+}
+
+export class UpdateUserStoryProgressRequest {
+  @ApiProperty()
+  @IsNotEmpty()
+  storyId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  readPage: number;
 }

@@ -2,25 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../entity/user.entity';
-import {
-  InsertUserDto,
-  InsertUserStoryDto,
-  UpdateUserDto,
-  UpdateUserStoryDto,
-} from '../dto/user.dto';
+import { InsertUserDto, UpdateUserDto } from '../dto/user.dto';
 import { ServiceError } from 'src/types/exception';
 import { ExceptionCode } from 'src/constant/exception';
 import { PostgresqlErrorCodes } from 'src/constant/postgresql-error-codes';
-import { UserStoryEntity } from '../entity/user-story.entity';
 
 @Injectable()
 export class UserRepositoryService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
-
-    @InjectRepository(UserStoryEntity)
-    private userStoryRepository: Repository<UserStoryEntity>,
   ) {}
 
   async getUserById(id: number): Promise<UserEntity> {
@@ -44,18 +35,6 @@ export class UserRepositoryService {
     return user;
   }
 
-  async findUserStoryBySeason(
-    userId: number,
-    seasonId: number,
-  ): Promise<UserStoryEntity> {
-    const userStory = await this.userStoryRepository.findOneBy({
-      userId,
-      seasonId,
-    });
-
-    return userStory;
-  }
-
   async insertUser(dto: InsertUserDto): Promise<UserEntity> {
     const user = this.userRepository.create(dto);
     await this.userRepository.insert(user);
@@ -77,14 +56,6 @@ export class UserRepositoryService {
           throw new ServiceError(ExceptionCode.InternalServerError, error);
       }
     }
-  }
-
-  async insertUserStory(dto: InsertUserStoryDto): Promise<void> {
-    await this.userStoryRepository.insert(dto);
-  }
-
-  async updateUserStory(dto: UpdateUserStoryDto): Promise<void> {
-    await this.userStoryRepository.update(dto.id, dto);
   }
 
   // TODO: 개발용 메서드(관리자 페이지 작업시 삭제 예정)

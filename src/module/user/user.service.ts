@@ -1,24 +1,18 @@
 import { Injectable } from '@nestjs/common';
 
 import { UserRepositoryService } from '../repository/service/user.repository.service';
-import {
-  UpdateUserStoryProgressRequest,
-  UserInfoResponse,
-  UserStoryProgressResponse,
-} from './dto/user.dto';
+import { UserInfoResponse } from './dto/user.dto';
 import { UserEntity } from '../repository/entity/user.entity';
 import { uuid } from 'uuidv4';
 import { CloudStorageService } from '../cloudStorage/cloudStorage.service';
 import { CacheService } from './../cache/cache.service';
 import { EditUserNameKey } from '../cache/dto/cache.dto';
 import { RedisTTL } from '../cache/enum/cache.enum';
-import { ZoneRepositoryService } from '../repository/service/zone.repository.service';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepositoryService: UserRepositoryService,
-    private readonly zoneRepositoryService: ZoneRepositoryService,
     private readonly cloudStorageService: CloudStorageService,
     private readonly cacheService: CacheService,
   ) {}
@@ -27,20 +21,6 @@ export class UserService {
     const result = await this.userRepositoryService.getUserById(userId);
 
     return UserInfoResponse.from(result);
-  }
-
-  async getUserStoryProgress(
-    userId: number,
-    seasonId: number,
-  ): Promise<UserStoryProgressResponse> {
-    await this.initUserStoryProgress(userId, seasonId);
-
-    const result = await this.userRepositoryService.findUserStoryBySeason(
-      userId,
-      seasonId,
-    );
-
-    return UserStoryProgressResponse.from(result);
   }
 
   async updateUserName(
@@ -103,61 +83,9 @@ export class UserService {
     return UserInfoResponse.from(result);
   }
 
-  async updateUserStoryProgress(
-    userId: number,
-    params: UpdateUserStoryProgressRequest,
-  ): Promise<UserStoryProgressResponse> {
-    const { seasonId, zoneId, page } = params;
-
-    const currentProgress =
-      await this.userRepositoryService.findUserStoryBySeason(userId, seasonId);
-    const updatedProgress = currentProgress.storyProgress;
-    updatedProgress.find((e) => e.zoneId === zoneId).page = page;
-
-    await this.userRepositoryService.updateUserStory({
-      id: currentProgress.id,
-      storyProgress: updatedProgress,
-    });
-
-    return UserStoryProgressResponse.from({
-      ...currentProgress,
-      storyProgress: updatedProgress,
-    });
-  }
-
   async canEditName(userId: number): Promise<boolean> {
     const value = await this.cacheService.find(EditUserNameKey.get(userId));
 
     return !!!value;
-  }
-
-  async initUserStoryProgress(userId: number, seasonId: number): Promise<void> {
-    const userStory = await this.userRepositoryService.findUserStoryBySeason(
-      userId,
-      seasonId,
-    );
-    let storyProgress = userStory ? userStory.storyProgress : [];
-
-    const zoneIds = (await this.zoneRepositoryService.getZones()).map(
-      (zone) => zone.id,
-    );
-    for (const id of zoneIds) {
-      if (!storyProgress.some((e) => e.zoneId === id)) {
-        storyProgress.push({ zoneId: id, page: 0 });
-      }
-    }
-
-    if (userStory) {
-      this.userRepositoryService.updateUserStory({
-        id: userStory.id,
-        storyProgress,
-      });
-    } else {
-      this.userRepositoryService.insertUserStory({
-        seasonId,
-        userId,
-        storyProgress,
-      });
-    }
   }
 }

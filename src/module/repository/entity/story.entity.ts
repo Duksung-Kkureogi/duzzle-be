@@ -6,9 +6,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { SeasonEntity } from './season.entity';
 import { ZoneEntity } from './zone.entity';
-import { StoryDto } from 'src/module/story/dto/story.dto';
 
 @Entity('story')
 export class StoryEntity extends BaseEntity {
@@ -16,27 +14,14 @@ export class StoryEntity extends BaseEntity {
   id: number;
 
   @Column('int')
-  seasonId: number;
-
-  @Column('int')
   zoneId: number;
 
   @Column('int')
-  page: number;
-
-  @Column('json')
-  story: StoryDto[];
-
-  @ManyToOne(() => SeasonEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
-  })
-  @JoinColumn({ name: 'season_id' })
-  season: SeasonEntity;
+  totalPage: number;
 
   @ManyToOne(() => ZoneEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'zone_id' })
   zone: ZoneEntity;
