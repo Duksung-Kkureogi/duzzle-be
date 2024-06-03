@@ -6,7 +6,7 @@ export const multerOptions: MulterOptions = {
   fileFilter: (req, file, cb) => {
     const originName = Buffer.from(file.originalname, 'ascii').toString('utf8');
 
-    const allowedCharacters = /^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣.]+$/;
+    const allowedCharacters = /^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣._-]+$/;
     if (!allowedCharacters.test(originName)) {
       return cb(
         new BadRequestException('파일명에 특수문자를 포함할 수 없습니다.'),
