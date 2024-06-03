@@ -27,6 +27,8 @@ import { CacheModule } from './cache/cache.module';
 import { PuzzleModule } from './puzzle/puzzle.module';
 import { EnvironmentModule } from './config/config.module';
 import { StoryModule } from './story/story.module';
+import { HttpClientModule } from './http-client/http-client.module';
+import { SchedulerModule } from './scheduler/scheduler.module';
 
 @Module({
   imports: [
@@ -66,6 +68,8 @@ import { StoryModule } from './story/story.module';
     CacheModule,
     PuzzleModule,
     StoryModule,
+    HttpClientModule,
+    SchedulerModule,
   ],
   controllers: [HealthController],
   providers: [

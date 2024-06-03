@@ -21,18 +21,18 @@ export class RequiredItemsEntity extends BaseEntity {
   itemId: number;
 
   @Column('int')
-  itemAmount: number;
+  itemCount: number;
 
   @ManyToOne(() => SeasonZoneEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'season_zone_id' })
   seasonZone: SeasonZoneEntity;
 
   @ManyToOne(() => ItemEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'item_id' })
   item: ItemEntity;

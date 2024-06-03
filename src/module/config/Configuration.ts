@@ -37,12 +37,7 @@ export interface Configuration {
   readonly MAILGUN_KEY: string;
 
   // RPC URL
-  readonly RPC_URL_POLYGON: string;
-
-  readonly CONTRACT_ADDRESS_PLAY_DUZZLE: string;
-  readonly CONTRACT_ADDRESS_DAL: string;
-  readonly CONTRACT_ADDRESS_BLUEPRINT: string;
-  readonly CONTRACT_ADDRESS_PUZZLE_PIECE: string;
+  readonly BLOCKCHAIN_POLYGON_RPC_ENDPOINT: string;
 
   // In-momory DB
   readonly REDIS_HOST: string;

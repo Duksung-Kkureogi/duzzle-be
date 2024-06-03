@@ -10,7 +10,6 @@ import { QuestEntity } from './entity/quest.entity';
 import { LogQuestEntity } from './entity/log-quest.entity';
 import { ZoneEntity } from './entity/zone.entity';
 import { ZoneRepositoryService } from './service/zone.repository.service';
-import { NftContractEntity } from './entity/nft-contract.entity';
 import { NftMetadataEntity } from './entity/nft-metadata.entity';
 import { NftRepositoryService } from './service/nft.repository.service';
 import { ItemEntity } from './entity/item.entity';
@@ -23,6 +22,9 @@ import { StoryEntity } from './entity/story.entity';
 import { StoryRepositoryService } from './service/story.repository.service';
 import { UserStoryEntity } from './entity/user-story.entity';
 import { StoryContentEntity } from './entity/story-content.entity';
+import { ContractEntity } from './entity/contract.entity';
+import { LogTransactionEntity } from './entity/log-transaction.entity';
+import { TransactionRepositoryService } from './service/transaction.repository.service';
 
 @Module({
   imports: [
@@ -33,7 +35,7 @@ import { StoryContentEntity } from './entity/story-content.entity';
       QuestEntity,
       LogQuestEntity,
       ZoneEntity,
-      NftContractEntity,
+      ContractEntity,
       NftMetadataEntity,
       SeasonEntity,
       ItemEntity,
@@ -43,6 +45,7 @@ import { StoryContentEntity } from './entity/story-content.entity';
       StoryEntity,
       StoryContentEntity,
       UserStoryEntity,
+      LogTransactionEntity,
     ]),
   ],
   providers: [
@@ -53,6 +56,7 @@ import { StoryContentEntity } from './entity/story-content.entity';
     NftRepositoryService,
     PuzzleRepositoryService,
     StoryRepositoryService,
+    TransactionRepositoryService,
   ],
   exports: [
     UserRepositoryService,
@@ -62,6 +66,7 @@ import { StoryContentEntity } from './entity/story-content.entity';
     NftRepositoryService,
     PuzzleRepositoryService,
     StoryRepositoryService,
+    TransactionRepositoryService,
   ],
 })
 export class RepositoryModule {}

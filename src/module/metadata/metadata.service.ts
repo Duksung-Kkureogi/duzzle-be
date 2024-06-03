@@ -14,7 +14,7 @@ export class MetadataService {
   ): Promise<OpenseaStandardMetadata | null> {
     const { contractId, tokenId } = dto;
     const contract =
-      await this.nftRepositoryService.findNftContractById(contractId);
+      await this.nftRepositoryService.findContractById(contractId);
 
     const metadata: OpenseaStandardMetadata = contract.isTokenIdAutoIncremented
       ? await this.nftRepositoryService.findMetadataByContractId(contractId)

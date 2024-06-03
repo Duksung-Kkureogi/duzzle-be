@@ -68,13 +68,13 @@ export const DummyData = {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
           ],
         },
@@ -97,13 +97,13 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
           ],
         },
@@ -134,19 +134,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -177,19 +177,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -220,19 +220,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -263,19 +263,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -306,19 +306,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -349,19 +349,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -392,19 +392,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -435,19 +435,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -478,19 +478,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -521,19 +521,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -564,19 +564,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -607,19 +607,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -650,19 +650,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -693,19 +693,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -736,19 +736,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -779,19 +779,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -822,19 +822,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -865,19 +865,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
@@ -908,19 +908,19 @@ export const DummyData = {
               name: 'red brick',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/redbrick.png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'Blueprint Item',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint+(1).png',
-              amount: 1,
+              count: 1,
             },
             {
               name: 'sand',
               image:
                 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/sand.png',
-              amount: 2,
+              count: 2,
             },
           ],
         },
