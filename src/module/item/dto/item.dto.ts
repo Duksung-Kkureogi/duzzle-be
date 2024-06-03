@@ -20,30 +20,16 @@ export class Item {
   @Expose()
   image: string;
 
-  @ApiProperty({
-    description: '구역명 (설계도면의 경우에만 해당)',
-    nullable: true,
-  })
-  @Expose()
-  zone?: string | null;
-
-  @ApiProperty({
-    description: '시즌명 (설계도면의 경우에만 해당)',
-    nullable: true,
-  })
-  @Expose()
-  season?: string | null;
-
-  static from(dto: UserBlueprintItemsDto | Item) {
-    const item = dto.zone
-      ? {
-          ...dto,
-          image: BLUEPRINT_ITEM_IMAGE_URL,
-          name: BLUEPRINT_ITEM_NAME,
-        }
-      : dto;
-
-    return plainToInstance(this, item);
+  static fromBlueprintDto(dto: UserBlueprintItemsDto) {
+    return plainToInstance(
+      this,
+      {
+        ...dto,
+        image: BLUEPRINT_ITEM_IMAGE_URL,
+        name: `${BLUEPRINT_ITEM_NAME}(${dto.zone})`,
+      },
+      { excludeExtraneousValues: true },
+    );
   }
 }
 

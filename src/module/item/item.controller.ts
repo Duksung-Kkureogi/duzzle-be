@@ -26,7 +26,7 @@ export class ItemController {
   ) {}
 
   @ApiTags('Item')
-  @ApiOperation({ summary: '유저 보유 아이템 NFT 현황' })
+  @ApiOperation({ summary: '유저 보유 아이템 NFT 현황(현재 시즌만 해당)' })
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)

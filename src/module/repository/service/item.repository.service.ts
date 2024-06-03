@@ -32,7 +32,12 @@ export class ItemRepositoryService {
       .addGroupBy('mi.image_url')
       .execute();
 
-    return userMaterialItems;
+    return userMaterialItems.map((e) => {
+      return {
+        ...e,
+        count: parseInt(e.count),
+      };
+    });
   }
 
   async findUserBlueprintItems(
@@ -41,14 +46,13 @@ export class ItemRepositoryService {
     const userBlueprintItems: UserBlueprintItemsDto[] =
       await this.blueprintItemRepository
         .createQueryBuilder('bi')
-        .select(['s.title AS season', 'z.nameKr AS zone', 'count(*)'])
+        .select(['z.nameKr AS zone', 'count(*)'])
         .innerJoin(SeasonZoneEntity, 'sz', 'bi.seasonZoneId = sz.id')
-        .innerJoin(SeasonEntity, 's', 'sz.seasonId = s.id')
         .innerJoin(ZoneEntity, 'z', 'sz.zoneId = z.id')
         .where('bi.userId = :userId', { userId })
+        .andWhere('sz.seasonId = (select max(id) from season)')
         .andWhere('bi.minted')
-        .groupBy('s.title')
-        .addGroupBy('z.nameKr')
+        .groupBy('z.nameKr')
         .execute();
 
     return userBlueprintItems;

@@ -13,13 +13,19 @@ export class ItemService {
     ]);
 
     let totalItems: number = 0;
-    let items: Item[] = [...userMaterialItems, ...userBlueprintItems].map(
-      (e) => {
-        let item = Item.from(e);
+    let items: Item[] = userMaterialItems.map((e) => {
+      totalItems += e.count;
+
+      return e;
+    });
+
+    items.push(
+      ...userBlueprintItems.map((e) => {
+        let item = Item.fromBlueprintDto(e);
         totalItems += item.count;
 
         return item;
-      },
+      }),
     );
 
     const result: MyItemsResponse = {
