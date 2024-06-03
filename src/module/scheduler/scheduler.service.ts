@@ -11,6 +11,7 @@ import { LogTransactionEntity } from '../repository/entity/log-transaction.entit
 import { CollectRangeDto, EventTopic } from '../blockchain/dto/blockchain.dto';
 import { ContractKey, ContractType } from '../repository/enum/contract.enum';
 import { PuzzleRepositoryService } from '../repository/service/puzzle.repository.service';
+import { ItemRepositoryService } from '../repository/service/item.repository.service';
 
 @Injectable()
 export class SchedulerService {
@@ -28,6 +29,9 @@ export class SchedulerService {
 
     @Inject(PuzzleRepositoryService)
     private readonly puzzleRepositoryService: PuzzleRepositoryService,
+
+    @Inject(ItemRepositoryService)
+    private readonly itemRepositoryService: ItemRepositoryService,
 
     @Inject(CacheService)
     private readonly memory: CacheService,
@@ -105,23 +109,52 @@ export class SchedulerService {
         return;
       }
 
-      const rowsToUpsert: Partial<LogTransactionEntity>[] =
+      const txLogsToUpsert: Partial<LogTransactionEntity>[] =
         await this.blockchainTransactionService.processLog(collectedLogs);
-      const puzzlePieceMintedLogs = rowsToUpsert.filter(
-        (log) =>
-          log.contractAddress ===
-          nftContracts.find(
-            (contract) => contract.key === ContractKey.PUZZLE_PIECE,
-          ).address,
-      );
+
+      let puzzlePieceMintedLogs: Partial<LogTransactionEntity>[] = [];
+      let blueprintMintedLogs: Partial<LogTransactionEntity>[] = [];
+      let materialMintedLogs: Partial<LogTransactionEntity>[] = [];
+
+      txLogsToUpsert.map((log) => {
+        let contractKey = nftContracts.find(
+          (e) => e.address === log.contractAddress,
+        ).key;
+        switch (contractKey) {
+          case ContractKey.PUZZLE_PIECE:
+            puzzlePieceMintedLogs.push(log);
+            break;
+          case ContractKey.ITEM_BLUEPRINT:
+            blueprintMintedLogs.push(log);
+            break;
+          case ContractKey.ITEM_MATERIAL:
+            materialMintedLogs.push(log);
+        }
+      });
 
       Promise.all([
         ...puzzlePieceMintedLogs.map((e) =>
-          this.puzzleRepositoryService.updateOwner(e.tokenId, e.to),
+          this.puzzleRepositoryService.updateOwner(
+            e.tokenId,
+            ethers.getAddress(e.to),
+          ),
         ),
-        this.blockchainTransactionService.upsertTransactionLogs(rowsToUpsert),
-      ]),
-        await this.memory.set(RedisKey.LastSyncedBlock, latestBlock);
+        ...blueprintMintedLogs.map((e) => {
+          this.itemRepositoryService.updateBlueprintOwner(
+            e.tokenId,
+            ethers.getAddress(e.to),
+          );
+        }),
+        ...materialMintedLogs.map((e) => {
+          this.itemRepositoryService.upsertMaterialOnwer(
+            e.tokenId,
+            ethers.getAddress(e.to),
+            e.contractAddress,
+          );
+        }),
+        this.blockchainTransactionService.upsertTransactionLogs(txLogsToUpsert),
+      ]);
+      // await this.memory.set(RedisKey.LastSyncedBlock, latestBlock);
     } catch (error) {
       Logger.error(error.stack);
       Logger.error(error);

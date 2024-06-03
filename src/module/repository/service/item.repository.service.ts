@@ -8,12 +8,18 @@ import { UserMaterialItemEntity } from '../entity/user-material-item.entity';
 import { Item } from 'src/module/item/dto/item.dto';
 import { SeasonZoneEntity } from '../entity/season-zone.entity';
 import { ZoneEntity } from '../entity/zone.entity';
-import { SeasonEntity } from '../entity/season.entity';
 import { UserBlueprintItemsDto } from '../dto/item.dto';
+import { UserEntity } from '../entity/user.entity';
 
 @Injectable()
 export class ItemRepositoryService {
   constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+
+    @InjectRepository(MaterialItemEntity)
+    private materialItemRepository: Repository<MaterialItemEntity>,
+
     @InjectRepository(UserMaterialItemEntity)
     private userMaterialItemRepository: Repository<UserMaterialItemEntity>,
 
@@ -56,5 +62,49 @@ export class ItemRepositoryService {
         .execute();
 
     return userBlueprintItems;
+  }
+
+  async updateBlueprintOwner(
+    tokenId: number,
+    walletAddress: string,
+  ): Promise<void> {
+    await this.blueprintItemRepository.query(
+      `
+      UPDATE blueprint_item bi
+      SET minted  = true,
+          user_id = (select id from "user" where wallet_address = $1)
+      FROM nft_metadata nm
+      WHERE nm.id = bi.nft_metadata_id
+        AND nm.token_id = $2;`,
+      [walletAddress, tokenId],
+    );
+  }
+
+  async upsertMaterialOnwer(
+    tokenId: number,
+    walletAddress: string,
+    materialContractAddress: string,
+  ) {
+    const userExists = await this.userRepository.findOneBy({ walletAddress });
+    const materialItemId = (
+      await this.materialItemRepository.findOne({
+        where: { contract: { address: materialContractAddress } },
+      })
+    ).id;
+    if (userExists) {
+      await this.userMaterialItemRepository.upsert(
+        {
+          tokenId,
+          materialItemId,
+          userId: userExists.id,
+        },
+        {
+          conflictPaths: {
+            tokenId: true,
+            materialItemId: true,
+          },
+        },
+      );
+    }
   }
 }
