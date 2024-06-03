@@ -18,6 +18,10 @@ import { SeasonZoneEntity } from './entity/season-zone.entity';
 import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
 import { PuzzleRepositoryService } from './service/puzzle.repository.service';
 import { RequiredItemsEntity } from './entity/required-items.entity';
+import { StoryEntity } from './entity/story.entity';
+import { StoryRepositoryService } from './service/story.repository.service';
+import { UserStoryEntity } from './entity/user-story.entity';
+import { StoryContentEntity } from './entity/story-content.entity';
 import { ContractEntity } from './entity/contract.entity';
 import { LogTransactionEntity } from './entity/log-transaction.entity';
 import { TransactionRepositoryService } from './service/transaction.repository.service';
@@ -38,6 +42,9 @@ import { TransactionRepositoryService } from './service/transaction.repository.s
       SeasonZoneEntity,
       PuzzlePieceEntity,
       RequiredItemsEntity,
+      StoryEntity,
+      StoryContentEntity,
+      UserStoryEntity,
       LogTransactionEntity,
     ]),
   ],
@@ -48,6 +55,7 @@ import { TransactionRepositoryService } from './service/transaction.repository.s
     ZoneRepositoryService,
     NftRepositoryService,
     PuzzleRepositoryService,
+    StoryRepositoryService,
     TransactionRepositoryService,
   ],
   exports: [
@@ -57,6 +65,7 @@ import { TransactionRepositoryService } from './service/transaction.repository.s
     ZoneRepositoryService,
     NftRepositoryService,
     PuzzleRepositoryService,
+    StoryRepositoryService,
     TransactionRepositoryService,
   ],
 })
