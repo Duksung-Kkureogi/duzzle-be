@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { BaseEntity } from './base.entity';
@@ -20,11 +27,11 @@ export class Point {
   comment: 'season_zone 의 모든 퍼즐 조각 목록, 조각의 민트 여부와 NFT 소유자',
 })
 export class PuzzlePieceEntity extends BaseEntity {
-  @Column('int', { primary: true })
-  seasonZoneId: number;
-
-  @Column('int', { primary: true })
+  @PrimaryGeneratedColumn('increment')
   id: number;
+
+  @Column('int')
+  seasonZoneId: number;
 
   // 토큰 보유자가 더즐 유저일 경우, user 테이블의 name 값
   // 아닐 경우 null

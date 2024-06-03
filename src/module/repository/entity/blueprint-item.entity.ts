@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToOne,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { SeasonZoneEntity } from './season-zone.entity';
 import { UserEntity } from './user.entity';
@@ -9,7 +16,7 @@ import { NftMetadataEntity } from './nft-metadata.entity';
     'season_zone 의 모든 설계도면 아이템 목록, 아이템의 민트 여부와 NFT 소유자  ',
 })
 export class BlueprintItemEntity extends BaseEntity {
-  @Column('int', { primary: true })
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column('int')
