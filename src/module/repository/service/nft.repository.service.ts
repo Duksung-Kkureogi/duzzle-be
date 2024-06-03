@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { NftMetadataEntity } from '../entity/nft-metadata.entity';
 import { OpenseaStandardMetadata } from 'src/module/metadata/dto/metadata.dto';
 import { ContractEntity } from '../entity/contract.entity';
-import { ContractType } from '../enum/contract.enum';
+import { ContractKey, ContractType } from '../enum/contract.enum';
 
 @Injectable()
 export class NftRepositoryService {
@@ -23,8 +23,8 @@ export class NftRepositoryService {
     return contract;
   }
 
-  async findContractByName(name: string): Promise<ContractEntity | null> {
-    const contract = await this.contractRepository.findOneBy({ name });
+  async findContractByKey(key: ContractKey): Promise<ContractEntity | null> {
+    const contract = await this.contractRepository.findOneBy({ key });
 
     return contract;
   }

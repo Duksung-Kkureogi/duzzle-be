@@ -10,3 +10,18 @@ export enum ContractType {
   // Utility Contract
   SERVICE = 'service',
 }
+
+export enum ContractKey {
+  // Service Contract
+  PLAY_DUZZLE = 'play_duzzle',
+
+  // ERC-20
+  DAL = 'dal',
+
+  // Item NFT Contract
+  ITEM_MATERIAL = 'item_material',
+  ITEM_BLUEPRINT = 'item_blueprint',
+
+  // Puzzle Piece NFT Contract
+  PUZZLE_PIECE = 'puzzle_piece',
+}

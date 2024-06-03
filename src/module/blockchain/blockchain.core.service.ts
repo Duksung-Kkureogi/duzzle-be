@@ -14,6 +14,7 @@ import {
   JsonRpcSupportedVersion,
   MostRecentBlock,
 } from './dto/blockchain.dto';
+import { ContractKey } from '../repository/enum/contract.enum';
 
 @Injectable()
 export class BlockchainCoreService {
@@ -36,7 +37,7 @@ export class BlockchainCoreService {
 
   async mintDalToken(to: string, count: number): Promise<void> {
     const dalContractAddress: string = (
-      await this.nftRepositoryService.findContractByName('Dal')
+      await this.nftRepositoryService.findContractByKey(ContractKey.DAL)
     ).address;
     const dalContract: Dal = new Contract(
       dalContractAddress,

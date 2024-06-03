@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { UserRepositoryService } from './user.repository.service';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -15,6 +16,9 @@ export class PuzzleRepositoryService {
 
     @InjectRepository(SeasonEntity)
     private seasonRepository: Repository<SeasonEntity>,
+
+    @Inject(UserRepositoryService)
+    private userRepositoryService: UserRepositoryService,
   ) {}
 
   async getSeasonById(seasonId: number): Promise<SeasonEntity> {
@@ -48,7 +52,6 @@ export class PuzzleRepositoryService {
         metadata: {
           contract: true,
         },
-        owner: true,
       },
     });
 
@@ -56,22 +59,22 @@ export class PuzzleRepositoryService {
   }
 
   async updateOwner(tokenId: number, walletAddress: string): Promise<void> {
+    const userName = (
+      await this.userRepositoryService.findUserByWalletAddress(walletAddress)
+    )?.name;
     await this.puzzlePieceRepository.query(
       `
     UPDATE puzzle_piece pp
-    SET user_id = (
-                    SELECT id
-                    FROM "user"
-                    WHERE
-                      wallet_address = $1),
-        minted  = true
+    SET minted               = true,
+        holder_name          = $1,
+        holer_wallet_address = $2
     WHERE pp.id = (
                     SELECT pp_inner.id
                     FROM puzzle_piece pp_inner
                         JOIN nft_metadata nft ON pp_inner.nft_metadata_id = nft.id
-                    WHERE nft.token_id = $2
+                    WHERE nft.token_id = $3
                     LIMIT 1);`,
-      [walletAddress, tokenId],
+      [userName, walletAddress, tokenId],
     );
   }
 }

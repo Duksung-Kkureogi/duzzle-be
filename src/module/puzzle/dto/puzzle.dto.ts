@@ -8,6 +8,8 @@ import {
 } from 'src/module/repository/entity/puzzle-piece.entity';
 import { RequiredMaterialItemsEntity } from 'src/module/repository/entity/required-material-items.entity';
 
+export const NON_MEMBER_USER_NAME = 'Unknown';
+
 export class RequiredItem {
   @ApiProperty({ description: '아이템 이름' })
   @Expose()
@@ -87,7 +89,8 @@ export class Minted {
       {
         ...entity?.metadata,
         owner: {
-          ...entity?.owner,
+          name: entity.holderName ?? NON_MEMBER_USER_NAME,
+          walletAddress: entity.holerWalletAddress,
         },
         season: entity.seasonZone.season.title,
         nftThumbnailUrl: entity?.metadata.metadata?.image,
