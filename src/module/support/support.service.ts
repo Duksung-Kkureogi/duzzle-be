@@ -6,8 +6,6 @@ import {
   PostQuestionRequest,
   QnaResponse,
 } from './dto/support.dto';
-import { ServiceError } from 'src/types/exception';
-import { ExceptionCode } from 'src/constant/exception';
 
 @Injectable()
 export class SupportService {

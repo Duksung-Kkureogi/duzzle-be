@@ -12,6 +12,12 @@ export class ZoneRepositoryService {
     private zoneRepository: Repository<ZoneEntity>,
   ) {}
 
+  async getZones(): Promise<ZoneEntity[]> {
+    const zones = await this.zoneRepository.find();
+
+    return zones;
+  }
+
   // 정의된 zone 목록을 DB 에 새롭게 세팅
   async setZones() {
     await this.zoneRepository.delete({});

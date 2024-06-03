@@ -16,6 +16,10 @@ import { SeasonEntity } from './entity/season.entity';
 import { SeasonZoneEntity } from './entity/season-zone.entity';
 import { PuzzlePieceEntity } from './entity/puzzle-piece.entity';
 import { PuzzleRepositoryService } from './service/puzzle.repository.service';
+import { StoryEntity } from './entity/story.entity';
+import { StoryRepositoryService } from './service/story.repository.service';
+import { UserStoryEntity } from './entity/user-story.entity';
+import { StoryContentEntity } from './entity/story-content.entity';
 import { ContractEntity } from './entity/contract.entity';
 import { LogTransactionEntity } from './entity/log-transaction.entity';
 import { TransactionRepositoryService } from './service/transaction.repository.service';
@@ -41,6 +45,9 @@ import { ItemRepositoryService } from './service/item.repository.service';
       SeasonZoneEntity,
       PuzzlePieceEntity,
       RequiredMaterialItemsEntity,
+      StoryEntity,
+      StoryContentEntity,
+      UserStoryEntity,
       LogTransactionEntity,
       MaterialItemEntity,
       BlueprintItemEntity,
@@ -54,6 +61,7 @@ import { ItemRepositoryService } from './service/item.repository.service';
     ZoneRepositoryService,
     NftRepositoryService,
     PuzzleRepositoryService,
+    StoryRepositoryService,
     TransactionRepositoryService,
     ItemRepositoryService,
   ],
@@ -64,6 +72,7 @@ import { ItemRepositoryService } from './service/item.repository.service';
     ZoneRepositoryService,
     NftRepositoryService,
     PuzzleRepositoryService,
+    StoryRepositoryService,
     TransactionRepositoryService,
     ItemRepositoryService,
   ],

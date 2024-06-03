@@ -73,7 +73,7 @@ export class UserService {
       await this.cloudStorageService.deleteFile(user.image.split('/').pop());
     }
 
-    await this.userRepositoryService.updateUserImage({
+    await this.userRepositoryService.updateUser({
       id: userId,
       image: imageUrl,
     });

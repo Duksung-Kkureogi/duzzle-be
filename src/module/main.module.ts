@@ -26,6 +26,7 @@ import { MetadataModule } from './metadata/metadata.module';
 import { CacheModule } from './cache/cache.module';
 import { PuzzleModule } from './puzzle/puzzle.module';
 import { EnvironmentModule } from './config/config.module';
+import { StoryModule } from './story/story.module';
 import { HttpClientModule } from './http-client/http-client.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { ItemModule } from './item/item.module';
@@ -67,6 +68,7 @@ import { ItemModule } from './item/item.module';
     MetadataModule,
     CacheModule,
     PuzzleModule,
+    StoryModule,
     HttpClientModule,
     SchedulerModule,
     ItemModule,
