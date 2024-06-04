@@ -28,9 +28,13 @@ export class ItemService {
       }),
     );
 
+    const itemsSortedByCount = items.sort(function (a, b) {
+      return b.count - a.count;
+    });
+
     const result: MyItemsResponse = {
       totalItems,
-      items,
+      items: itemsSortedByCount,
     };
 
     return result;
