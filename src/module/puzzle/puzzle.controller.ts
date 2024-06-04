@@ -26,7 +26,10 @@ import {
   UserPuzzleRequest,
   UserPuzzleResponse,
 } from './user.puzzle.dto';
+import { SeasonEntity } from '../repository/entity/season.entity';
+import { Zone, ZONES } from 'src/constant/zones';
 
+@ApiTags('Puzzle')
 @Controller()
 export class PuzzleController {
   constructor(
@@ -35,7 +38,24 @@ export class PuzzleController {
     private readonly puzzleService: PuzzleService,
   ) {}
 
-  @ApiTags('Puzzle')
+  @ApiOperation({ summary: '전체 시즌 목록' })
+  @HttpCode(HttpStatus.OK)
+  @ResponseList(SeasonEntity)
+  @Get('seasons')
+  async getAllSeasons(): Promise<ResponsesListDto<SeasonEntity>> {
+    const seaons = await this.puzzleService.getAllSeasons();
+
+    return new ResponsesListDto(seaons);
+  }
+
+  @ApiOperation({ summary: '전체 구역 목록' })
+  @HttpCode(HttpStatus.OK)
+  @ResponseList(Zone)
+  @Get('zones')
+  async getAllZones(): Promise<ResponsesListDto<Zone>> {
+    return new ResponsesListDto(ZONES);
+  }
+
   @ApiOperation({ summary: '퍼즐 현황 데이터' })
   @HttpCode(HttpStatus.OK)
   @ResponseData(PuzzleResponse)
@@ -68,7 +88,7 @@ export class PuzzleController {
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ResponseData(UserPuzzleResponse)
+  @ResponseData(UserPuzzleDetailResponse)
   @Get('my/nft-puzzles/:id')
   async getUserPuzzleById(
     @Param() params: UserPuzzlePathParams,

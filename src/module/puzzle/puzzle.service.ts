@@ -19,6 +19,10 @@ export class PuzzleService {
     private readonly nftRepositoryService: NftRepositoryService,
   ) {}
 
+  async getAllSeasons() {
+    return this.puzzleRepositoryService.getAllSeasons();
+  }
+
   async getSeasonById(id: number): Promise<SeasonEntity> {
     const season = await this.puzzleRepositoryService.getSeasonById(id);
 

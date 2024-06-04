@@ -23,6 +23,10 @@ export class PuzzleRepositoryService {
     private userRepositoryService: UserRepositoryService,
   ) {}
 
+  async getAllSeasons(): Promise<SeasonEntity[]> {
+    return await this.seasonRepository.find();
+  }
+
   async getSeasonById(seasonId: number): Promise<SeasonEntity> {
     const season = await this.seasonRepository.findOneBy({ id: seasonId });
     if (!season) {
@@ -55,6 +59,7 @@ export class PuzzleRepositoryService {
           contract: true,
         },
       },
+      order: { id: 'ASC' },
     });
 
     return allPiecesInSeason;
