@@ -32,7 +32,18 @@ export class UserPuzzleResponse {
   @Expose()
   image: string;
 
+  @ApiProperty()
+  @Expose()
+  zoneUs: string;
+
+  @ApiProperty()
+  @Expose()
+  zoneKr: string;
+
   static from(entity: PuzzlePieceEntity) {
+    // zone name
+    const { nameKr, nameUs } = entity.seasonZone.zone;
+
     const name: string = `${entity.metadata.metadata.name}#${entity.metadata.tokenId}`;
     return plainToInstance(
       this,
@@ -40,6 +51,8 @@ export class UserPuzzleResponse {
         ...entity,
         name,
         image: entity.metadata.metadata.image,
+        zoneUs: nameUs,
+        zoneKr: nameKr,
       },
       { excludeExtraneousValues: true },
     );
