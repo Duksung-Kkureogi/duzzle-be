@@ -6,10 +6,11 @@ import { HttpStatus } from '@nestjs/common';
 export const multerOptions: MulterOptions = {
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const originName = Buffer.from(file.originalname, 'ascii').toString('utf8');
+    const originName = Buffer.from(file.originalname, 'ascii')
+      .toString('utf-8')
+      .normalize('NFC');
 
     const allowedCharacters = /^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣._-]+$/;
-    console.log(allowedCharacters.test(originName));
     if (!allowedCharacters.test(originName)) {
       return cb(
         new HttpError(
