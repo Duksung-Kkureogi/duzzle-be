@@ -19,6 +19,11 @@ export class TransactionRepositoryService {
     await this.txLogRepository.upsert(entities, [
       'transactionHash',
       'transactionIndex',
+      'topic',
+      'contractAddress',
+      'from',
+      'to',
+      'tokenId',
     ]);
   }
 

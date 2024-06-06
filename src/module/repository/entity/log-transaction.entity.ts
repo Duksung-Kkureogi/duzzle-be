@@ -2,7 +2,15 @@ import { Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { EventTopicName } from '../enum/transaction.enum';
 
-@Unique(['transactionHash', 'transactionIndex'])
+@Unique([
+  'transactionHash',
+  'transactionIndex',
+  'topic',
+  'contractAddress',
+  'from',
+  'to',
+  'tokenId',
+])
 @Entity('log_transaction')
 export class LogTransactionEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')

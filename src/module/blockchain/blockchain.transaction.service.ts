@@ -48,15 +48,51 @@ export class BlockchainTransactionService {
       let contractKey = nftContracts.find(
         (e) => e.address === log.contractAddress,
       ).key;
+      let sameTokenLogs: Partial<LogTransactionEntity>[];
+
       switch (contractKey) {
         case ContractKey.PUZZLE_PIECE:
-          puzzlePieceMintedLogs.push(log);
+          // 동일한 tokenId 에 대한 로그가 여러 개 존재한다면,
+          // 가장 최신 로그만 반영
+          sameTokenLogs = puzzlePieceMintedLogs.filter(
+            (e) => e.tokenId === log.tokenId,
+          );
+          if (sameTokenLogs.length < 1) {
+            puzzlePieceMintedLogs.push(log);
+          } else {
+            if (sameTokenLogs[0].timestamp <= log.timestamp) {
+              puzzlePieceMintedLogs.push(log);
+            }
+          }
           break;
         case ContractKey.ITEM_BLUEPRINT:
-          blueprintMintedLogs.push(log);
+          // 동일한 tokenId 에 대한 로그가 여러 개 존재한다면,
+          // 가장 최신 로그만 반영
+          sameTokenLogs = blueprintMintedLogs.filter(
+            (e) => e.tokenId === log.tokenId,
+          );
+          if (sameTokenLogs.length < 1) {
+            blueprintMintedLogs.push(log);
+          } else {
+            if (sameTokenLogs[0].timestamp <= log.timestamp) {
+              blueprintMintedLogs.push(log);
+            }
+          }
           break;
         case ContractKey.ITEM_MATERIAL:
-          materialMintedLogs.push(log);
+          // 동일한 tokenId 에 대한 로그가 여러 개 존재한다면,
+          // 가장 최신 로그만 반영
+          sameTokenLogs = materialMintedLogs.filter(
+            (e) => e.tokenId === log.tokenId,
+          );
+          if (sameTokenLogs.length < 1) {
+            materialMintedLogs.push(log);
+          } else {
+            if (sameTokenLogs[0].timestamp <= log.timestamp) {
+              materialMintedLogs.push(log);
+            }
+          }
+          break;
       }
     });
 
@@ -119,17 +155,25 @@ export class BlockchainTransactionService {
 
         blockNumberToTimestamp[blockNumber] = block.timestamp;
       }
-      const decodedLog = this.decodeLogData(log, TopicToAbi.mint);
-      const [to, tokenId] = decodedLog.args;
+      const decodedLog = this.decodeLogData(log, TopicToAbi.transfer);
+      const [from, to, tokenId] = decodedLog.args;
+      let topic: EventTopicName;
+      if (to === NULL_ADDRESS) {
+        topic = EventTopicName.Burn;
+      } else if (from === NULL_ADDRESS) {
+        topic = EventTopicName.Mint;
+      } else {
+        topic = EventTopicName.Transfer;
+      }
 
       rowsToInsert.push({
         contractAddress: ethers.getAddress(address),
         blockHash,
         blockNumber,
-        from: NULL_ADDRESS,
+        from: ethers.getAddress(from),
         to: ethers.getAddress(to),
         tokenId: parseInt(tokenId),
-        topic: EventTopicName.Mint,
+        topic,
         timestamp: blockNumberToTimestamp[blockNumber],
         transactionHash,
         transactionIndex,
