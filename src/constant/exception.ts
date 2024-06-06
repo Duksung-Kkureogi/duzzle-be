@@ -7,6 +7,8 @@ export enum ExceptionCode {
   LimitExceeded = 'LIMIT_EXCEEDED',
   InvalidDate = 'INVALID_DATE',
   NoOngoingQuest = 'NO_ONGOING_QUEST',
+  InvalidFileNameExtension = 'FILE_NAME_EXTENSION',
+  InvalidFilenameCharacters = 'FILE_NAME_CHARACTERS',
 
   // 401 (Unauthorized)
   MissingAuthToken = 'MISSING_AUTHENTICATION_TOKEN',
@@ -37,6 +39,9 @@ export const ExceptionMessage: {
   // 400 (Bad Request)
   [ExceptionCode.InvalidParameter]: 'Invalid Parameter',
   [ExceptionCode.LimitExceeded]: 'Limit Exceeded',
+  [ExceptionCode.InvalidFileNameExtension]: '지원되지 않는 파일 형식입니다.',
+  [ExceptionCode.InvalidFilenameCharacters]:
+    '파일명에 특수문자를 포함할 수 없습니다.',
 
   // 401 (Unauthorized)
   // token is null/undefined
@@ -80,4 +85,6 @@ export const CodeToStatus: {
   [ExceptionCode.InvalidAddress]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.InvalidLoginInfo]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.NoOngoingQuest]: HttpStatus.BAD_REQUEST,
+  [ExceptionCode.InvalidFileNameExtension]: HttpStatus.BAD_REQUEST,
+  [ExceptionCode.InvalidFilenameCharacters]: HttpStatus.BAD_REQUEST,
 };

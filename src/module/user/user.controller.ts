@@ -125,6 +125,10 @@ export class UserController {
   @UseInterceptors(FileInterceptor('file', multerOptions))
   @HttpCode(HttpStatus.OK)
   @ResponseData(UserInfoResponse)
+  @ResponseException(HttpStatus.BAD_REQUEST, [
+    ExceptionCode.InvalidFileNameExtension,
+    ExceptionCode.InvalidFilenameCharacters,
+  ])
   @Patch('image')
   async updateUserImage(
     @UploadedFile() file: Express.Multer.File,

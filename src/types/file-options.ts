@@ -1,5 +1,7 @@
-import { BadRequestException } from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { ExceptionCode } from 'src/constant/exception';
+import { HttpError } from './http-exceptions';
+import { HttpStatus } from '@nestjs/common';
 
 export const multerOptions: MulterOptions = {
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -7,9 +9,13 @@ export const multerOptions: MulterOptions = {
     const originName = Buffer.from(file.originalname, 'ascii').toString('utf8');
 
     const allowedCharacters = /^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣._-]+$/;
+    console.log(allowedCharacters.test(originName));
     if (!allowedCharacters.test(originName)) {
       return cb(
-        new BadRequestException('파일명에 특수문자를 포함할 수 없습니다.'),
+        new HttpError(
+          HttpStatus.BAD_REQUEST,
+          ExceptionCode.InvalidFilenameCharacters,
+        ),
         false,
       );
     }
@@ -17,7 +23,10 @@ export const multerOptions: MulterOptions = {
     const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
     if (!allowedExtensions.test(file.originalname)) {
       return cb(
-        new BadRequestException('지원되지 않는 파일 형식입니다.'),
+        new HttpError(
+          HttpStatus.BAD_REQUEST,
+          ExceptionCode.InvalidFileNameExtension,
+        ),
         false,
       );
     }
