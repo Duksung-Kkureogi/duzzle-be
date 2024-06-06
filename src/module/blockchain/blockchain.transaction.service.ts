@@ -114,6 +114,7 @@ export class BlockchainTransactionService {
           e.tokenId,
           ethers.getAddress(e.to),
           e.contractAddress,
+          e.from,
         );
       }),
     ]);

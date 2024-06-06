@@ -29,16 +29,15 @@ export class SchedulerService {
     private readonly memory: CacheService,
   ) {}
 
-  // TODO: 우선 Mint Transaction 만 수집
   // @Cron(CronExpression.EVERY_MINUTE, {
   //   timeZone: 'UTC',
   // })
   async collectBlockchainTransaction() {
-    try {
-      // 블록체인 네트워크의 최신 블록 가져오기
-      const latestBlock =
-        await this.blockchainCoreService.getLatestBlockNumberHex();
+    // 블록체인 네트워크의 최신 블록 가져오기
+    const latestBlock =
+      await this.blockchainCoreService.getLatestBlockNumberHex();
 
+    try {
       // 마지막으로 수집된 블록넘버 가져오기
       let lastSyncedBlock: number = parseInt(
         await this.memory.find(RedisKey.LastSyncedBlock),
@@ -72,14 +71,14 @@ export class SchedulerService {
         let collectLogDtos: CollectRangeDto[] = [];
         for (
           let i = 0;
-          i < Math.floor(blockRange / this.MAX_BLOCK_RANGE);
+          i < Math.floor(blockRange / this.MAX_BLOCK_RANGE) + 1;
           i++
         ) {
           collectLogDtos.push({
             contractAddress: nftContractAddresses,
             fromBlock: lastSyncedBlock + this.MAX_BLOCK_RANGE * i,
             toBlock: lastSyncedBlock + this.MAX_BLOCK_RANGE * (i + 1) - 1,
-            topics: [EventTopic.mint],
+            topics: [EventTopic.transfer],
           });
         }
         collectedLogs = (
@@ -94,7 +93,7 @@ export class SchedulerService {
           contractAddress: nftContractAddresses,
           fromBlock: lastSyncedBlock,
           toBlock: parseInt(latestBlock, 16),
-          topics: [EventTopic.mint],
+          topics: [EventTopic.transfer],
         });
       }
       if (collectedLogs.length < 1) {
@@ -104,7 +103,7 @@ export class SchedulerService {
       const txLogsToUpsert: Partial<LogTransactionEntity>[] =
         await this.blockchainTransactionService.processLog(collectedLogs);
 
-      Promise.all([
+      await Promise.all([
         this.blockchainTransactionService.syncAllNftOwnersOfLogs(
           txLogsToUpsert,
         ),

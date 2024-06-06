@@ -31,6 +31,9 @@ export class BlueprintItemEntity extends BaseEntity {
   @Column('boolean', { default: false })
   minted: boolean;
 
+  @Column('boolean', { default: false })
+  burned: boolean;
+
   @ManyToOne(() => SeasonZoneEntity, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

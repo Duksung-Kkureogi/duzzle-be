@@ -15,6 +15,7 @@ import {
   MostRecentBlock,
 } from './dto/blockchain.dto';
 import { ContractKey } from '../repository/enum/contract.enum';
+import { LogProvider } from 'src/provider/log.provider';
 
 @Injectable()
 export class BlockchainCoreService {
@@ -75,6 +76,13 @@ export class BlockchainCoreService {
       topics: dto.topics,
     };
     const logs = await this.provider.getLogs(filter);
+    LogProvider.info(
+      'getLogs',
+      {
+        filter,
+      },
+      BlockchainCoreService.name,
+    );
 
     return logs;
   }

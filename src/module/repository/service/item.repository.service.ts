@@ -10,6 +10,7 @@ import { SeasonZoneEntity } from '../entity/season-zone.entity';
 import { ZoneEntity } from '../entity/zone.entity';
 import { UserBlueprintItemsDto } from '../dto/item.dto';
 import { UserEntity } from '../entity/user.entity';
+import { NULL_ADDRESS } from 'src/module/blockchain/dto/blockchain.dto';
 
 @Injectable()
 export class ItemRepositoryService {
@@ -64,47 +65,84 @@ export class ItemRepositoryService {
     return userBlueprintItems;
   }
 
+  private async nullifyBurnedTokenOwnershipOfBlueprint(tokenId: number) {
+    await this.blueprintItemRepository.query(
+      `
+      UPDATE blueprint_item bi
+      SET burned  = true,
+          user_id = null
+      FROM nft_metadata nm
+      WHERE nm.id = bi.nft_metadata_id
+        AND nm.token_id = $1;`,
+      [tokenId],
+    );
+  }
+
   async updateBlueprintOwner(
     tokenId: number,
     walletAddress: string,
   ): Promise<void> {
-    await this.blueprintItemRepository.query(
-      `
-      UPDATE blueprint_item bi
-      SET minted  = true,
-          user_id = (select id from "user" where wallet_address = $1)
-      FROM nft_metadata nm
-      WHERE nm.id = bi.nft_metadata_id
-        AND nm.token_id = $2;`,
-      [walletAddress, tokenId],
-    );
+    if (walletAddress === NULL_ADDRESS) {
+      await this.nullifyBurnedTokenOwnershipOfBlueprint(tokenId);
+    } else {
+      await this.blueprintItemRepository.query(
+        `
+        UPDATE blueprint_item bi
+        SET minted  = true,
+            user_id = (select id from "user" where wallet_address = $1)
+        FROM nft_metadata nm
+        WHERE nm.id = bi.nft_metadata_id
+          AND nm.token_id = $2;`,
+        [walletAddress, tokenId],
+      );
+    }
+  }
+
+  // burn
+  private async deleteUserBurnedMaterialToken(
+    tokenId: number,
+    materialItemId: number,
+  ) {
+    await this.userMaterialItemRepository.delete({
+      materialItemId,
+      tokenId,
+    });
   }
 
   async upsertMaterialOnwer(
     tokenId: number,
-    walletAddress: string,
+    ownerWalletAddress: string, // 최종 토큰 보유 지갑
     materialContractAddress: string,
+    from?: string,
   ) {
-    const userExists = await this.userRepository.findOneBy({ walletAddress });
+    let userExists = await this.userRepository.findOneBy({
+      walletAddress:
+        ownerWalletAddress === NULL_ADDRESS ? from : ownerWalletAddress,
+    });
     const materialItemId = (
       await this.materialItemRepository.findOne({
         where: { contract: { address: materialContractAddress } },
       })
     ).id;
+
     if (userExists) {
-      await this.userMaterialItemRepository.upsert(
-        {
-          tokenId,
-          materialItemId,
-          userId: userExists.id,
-        },
-        {
-          conflictPaths: {
-            tokenId: true,
-            materialItemId: true,
+      if (ownerWalletAddress === NULL_ADDRESS) {
+        await this.deleteUserBurnedMaterialToken(tokenId, materialItemId);
+      } else {
+        await this.userMaterialItemRepository.upsert(
+          {
+            tokenId,
+            materialItemId,
+            userId: userExists.id,
           },
-        },
-      );
+          {
+            conflictPaths: {
+              tokenId: true,
+              materialItemId: true,
+            },
+          },
+        );
+      }
     }
   }
 }
