@@ -44,6 +44,13 @@ export class PuzzleService {
     return result;
   }
 
+  async getTotalPiecesByUser(userId: number): Promise<number> {
+    const totalPieces =
+      await this.puzzleRepositoryService.getTotalPiecesByUser(userId);
+
+    return totalPieces;
+  }
+
   async getPuzzlesByUserId(
     userId: number,
     params: UserPuzzleRequest,

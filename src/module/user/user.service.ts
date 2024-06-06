@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { UserRepositoryService } from '../repository/service/user.repository.service';
-import { UserInfoResponse } from './dto/user.dto';
+import { UserInfoResponse, UserProfileResponse } from './dto/user.dto';
 import { UserEntity } from '../repository/entity/user.entity';
 import { uuid } from 'uuidv4';
 import { CloudStorageService } from '../cloudStorage/cloudStorage.service';
 import { CacheService } from './../cache/cache.service';
 import { EditUserNameKey } from '../cache/dto/cache.dto';
 import { RedisTTL } from '../cache/enum/cache.enum';
+import { ItemService } from '../item/item.service';
+import { PuzzleService } from '../puzzle/puzzle.service';
 
 @Injectable()
 export class UserService {
@@ -15,12 +17,28 @@ export class UserService {
     private readonly userRepositoryService: UserRepositoryService,
     private readonly cloudStorageService: CloudStorageService,
     private readonly cacheService: CacheService,
+
+    @Inject(ItemService)
+    private readonly itemService: ItemService,
+
+    @Inject(PuzzleService)
+    private readonly puzzleService: PuzzleService,
   ) {}
 
-  async getUserInfo(userId: number): Promise<UserInfoResponse> {
-    const result = await this.userRepositoryService.getUserById(userId);
+  async getUserInfo(userId: number): Promise<UserProfileResponse> {
+    const [profile, totalItems, totalPieces] = await Promise.all([
+      this.userRepositoryService.getUserById(userId),
+      this.itemService.getUserItemTotals(userId),
+      this.puzzleService.getTotalPiecesByUser(userId),
+    ]);
 
-    return UserInfoResponse.from(result);
+    const result: UserProfileResponse = {
+      ...UserInfoResponse.from(profile),
+      totalItems,
+      totalPieces,
+    };
+
+    return result;
   }
 
   async updateUserName(

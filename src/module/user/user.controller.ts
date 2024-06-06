@@ -31,6 +31,7 @@ import {
   ImageUploadDto,
   UpdateUserNameRequest,
   UserInfoResponse,
+  UserProfileResponse,
 } from './dto/user.dto';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { ExceptionCode } from 'src/constant/exception';
@@ -64,9 +65,9 @@ export class UserController {
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ResponseData(UserInfoResponse)
+  @ResponseData(UserProfileResponse)
   @Get()
-  async getUserInfo(): Promise<ResponsesDataDto<UserInfoResponse>> {
+  async getUserInfo(): Promise<ResponsesDataDto<UserProfileResponse>> {
     const { user } = this.req;
     const result = await this.userService.getUserInfo(user.id);
 

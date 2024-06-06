@@ -6,6 +6,15 @@ import { Item, MyItemsResponse } from './dto/item.dto';
 export class ItemService {
   constructor(readonly itemRepositoryService: ItemRepositoryService) {}
 
+  async getUserItemTotals(userId: number): Promise<number> {
+    const [materialTotals, blueprintTotals] = await Promise.all([
+      this.itemRepositoryService.getUserMaterialItemTotals(userId),
+      this.itemRepositoryService.getUserBlueprintItemTotals(userId),
+    ]);
+
+    return materialTotals + blueprintTotals;
+  }
+
   async getUserItems(userId: number): Promise<MyItemsResponse> {
     const [userMaterialItems, userBlueprintItems] = await Promise.all([
       await this.itemRepositoryService.findUserMaterialItems(userId),

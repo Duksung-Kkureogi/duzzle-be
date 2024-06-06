@@ -20,12 +20,15 @@ export class UserPuzzleRequest extends PaginationDto {
 }
 
 export class UserPuzzleResponse {
+  @ApiProperty()
   @Expose()
   id: number;
 
+  @ApiProperty()
   @Expose()
   name: string;
 
+  @ApiProperty()
   @Expose()
   image: string;
 

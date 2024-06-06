@@ -28,6 +28,22 @@ export class ItemRepositoryService {
     private blueprintItemRepository: Repository<BlueprintItemEntity>,
   ) {}
 
+  async getUserMaterialItemTotals(userId: number): Promise<number> {
+    const materialTotals = await this.userMaterialItemRepository.countBy({
+      userId,
+    });
+
+    return materialTotals;
+  }
+
+  async getUserBlueprintItemTotals(userId: number): Promise<number> {
+    const blueprintTotals = await this.blueprintItemRepository.countBy({
+      userId,
+    });
+
+    return blueprintTotals;
+  }
+
   async findUserMaterialItems(userId: number): Promise<Item[]> {
     const userMaterialItems = await this.userMaterialItemRepository
       .createQueryBuilder('ui')

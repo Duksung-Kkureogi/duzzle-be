@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, IntersectionType } from '@nestjs/swagger';
 import { Expose, plainToInstance } from 'class-transformer';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { UserEntity } from 'src/module/repository/entity/user.entity';
@@ -38,6 +38,21 @@ export class UserInfoResponse {
     });
   }
 }
+
+export class UserNftTotals {
+  @ApiProperty()
+  @Expose()
+  totalItems: number;
+
+  @ApiProperty()
+  @Expose()
+  totalPieces: number;
+}
+
+export class UserProfileResponse extends IntersectionType(
+  UserInfoResponse,
+  UserNftTotals,
+) {}
 
 export class UpdateUserNameRequest {
   @ApiProperty()

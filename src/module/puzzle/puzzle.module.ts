@@ -7,5 +7,6 @@ import { PuzzleController } from './puzzle.controller';
   imports: [RepositoryModule],
   controllers: [PuzzleController],
   providers: [PuzzleService],
+  exports: [PuzzleService],
 })
 export class PuzzleModule {}

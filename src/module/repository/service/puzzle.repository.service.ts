@@ -169,4 +169,16 @@ export class PuzzleRepositoryService {
 
     return puzzle;
   }
+
+  async getTotalPiecesByUser(userId: number): Promise<number> {
+    const userWalletAddress = (
+      await this.userRepositoryService.findUserById(userId)
+    ).walletAddress;
+
+    const totalPieces = await this.puzzlePieceRepository.countBy({
+      holerWalletAddress: userWalletAddress,
+    });
+
+    return totalPieces;
+  }
 }
