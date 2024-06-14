@@ -18,12 +18,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build project
-        run: npm run build
-
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -35,7 +29,7 @@ jobs:
 
       - name: Copy files via scp
         run: |
-          scp -r ./dist ${{ secrets.DO_SSH_USER }}@${{ secrets.DROPLET_IP }}:/home/${{ secrets.DO_SSH_USER }}/duzzle-be
+          scp -r * ${{ secrets.DO_SSH_USER }}@${{ secrets.DROPLET_IP }}:/home/${{ secrets.DO_SSH_USER }}/duzzle-be
 
       - name: Install PM2 if not installed and restart application
         run: |
@@ -43,7 +37,7 @@ jobs:
           if ! command -v pm2 > /dev/null; then
             npm install -g pm2
           fi
-          cd /home/${{ secrets.DO_SSH_USER }}/duzzle-be/dist
+          cd /home/${{ secrets.DO_SSH_USER }}/duzzle-be
           npm install --production
           npm run build NODE_ENV=dev && npm run start
           EOF
