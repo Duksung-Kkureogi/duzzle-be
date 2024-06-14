@@ -19,7 +19,6 @@ export interface Configuration {
   // DB
   readonly DB_HOST: string;
   readonly DB_PORT: number;
-  readonly DB_MAX: number;
   readonly DB_NAME: string;
   readonly DB_USER: string;
   readonly DB_PASSWORD: string;

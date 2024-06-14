@@ -4,31 +4,56 @@ on:
     branches: [ dev ]
 
   workflow_dispatch:
-
+  
 jobs:
-  deploy-dev:
+  deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
 
-    name: Deploy Dev Duzzle
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Generate deployment package
-        run: zip -r deploy.zip . -x '*.git*'
-
-      - name: Generate unique variable based on timestamp
-        run: echo TIME_VAR=PDIM-$(date +%Y-%m-%d-%H:%M:%S) >> $GITHUB_ENV
-
-      - name: Deploy dev to EB
-        uses: einaregilsson/beanstalk-deploy@v20
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: duzzle-dev
-          environment_name: Duzzle-dev-env
-          version_label: ${{ env.TIME_VAR }}
-          region: ap-northeast-2
-          deployment_package: deploy.zip
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.DO_SSH_KEY }}
+
+      - name: Add Droplet to known_hosts
+        run: |
+          ssh-keyscan -H ${{ secrets.DROPLET_IP }} >> ~/.ssh/known_hosts
+
+      - name: Copy files via scp
+        run: |
+          scp -r ./dist ${{ secrets.DO_SSH_USER }}@${{ secrets.DROPLET_IP }}:/home/${{ secrets.DO_SSH_USER }}/duzzle-be
+
+      - name: Install PM2 if not installed and restart application
+        run: |
+          ssh ${{ secrets.DO_SSH_USER }}@${{ secrets.DROPLET_IP }} << 'EOF'
+          if ! command -v pm2 > /dev/null; then
+            npm install -g pm2
+          fi
+          cd /home/${{ secrets.DO_SSH_USER }}/duzzle-be
+          npm install --production
+          pm2 restart all || pm2 start dist/src/main.js --name duzzle-be
+          EOF
+      - name: Install dependencies on server
+        run: |
+          ssh ${{ secrets.DO_SSH_USER }}@${{ secrets.DROPLET_IP }} << 'EOF'
+          cd /home/${{ secrets.DO_SSH_USER }}/duzzle-be
+          npm install --production
+          pm2 restart all || pm2 start dist/src/main.js --name duzzle-be
+          EOF
+        env:
+          SSH_USER: ${{ secrets.DO_SSH_USER }}
+          DROPLET_IP: ${{ secrets.DROPLET_IP }}
