@@ -52,7 +52,7 @@ jobs:
           ssh ${{ secrets.DO_SSH_USER }}@${{ secrets.DROPLET_IP }} << 'EOF'
           cd /home/${{ secrets.DO_SSH_USER }}/duzzle-be/dist
           npm install --production
-          pm2 restart all || pm2 start dist/src/main.js --name duzzle-be
+          npm run NODE_ENV=dev build && npm run start
           EOF
         env:
           SSH_USER: ${{ secrets.DO_SSH_USER }}
