@@ -30,6 +30,8 @@ import { StoryModule } from './story/story.module';
 import { HttpClientModule } from './http-client/http-client.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { ItemModule } from './item/item.module';
+import { WebSocketModule } from 'src/websocket/websocket.module';
+import { WebSocketExceptionFilter } from 'src/filter/websocket-exception-filter';
 
 @Module({
   imports: [
@@ -72,9 +74,14 @@ import { ItemModule } from './item/item.module';
     HttpClientModule,
     SchedulerModule,
     ItemModule,
+    WebSocketModule,
   ],
   controllers: [HealthController],
   providers: [
+    {
+      provide: APP_FILTER,
+      useClass: WebSocketExceptionFilter,
+    },
     {
       provide: APP_FILTER,
       useClass: InternalServerErrorFilter,

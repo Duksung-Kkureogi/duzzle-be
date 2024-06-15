@@ -48,4 +48,8 @@ export class CacheService {
   async incrbyfloat(key: string, increment: number): Promise<number> {
     return parseFloat(await this.memory.incrbyfloat(key, increment));
   }
+
+  async exists(...keys: string[]): Promise<number> {
+    return await this.memory.exists(keys);
+  }
 }
