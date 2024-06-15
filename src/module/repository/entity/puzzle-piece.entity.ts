@@ -45,10 +45,8 @@ export class PuzzlePieceEntity extends BaseEntity {
   @Column('int', { nullable: true })
   nftMetadataId?: number;
 
-  @Column({
-    type: 'jsonb',
-  })
-  points: Point[];
+  @Column('varchar', { nullable: true })
+  coordinates: string;
 
   @Column('boolean', { default: false })
   minted: boolean;

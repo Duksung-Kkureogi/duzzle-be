@@ -122,8 +122,7 @@ export class PuzzlePieceDto {
 
   @ApiProperty({ type: Point, description: '퍼즐 조각 좌표 목록' })
   @Expose()
-  @Type(() => Point)
-  points: Point[];
+  coordinates: string;
 
   @ApiProperty({ description: 'minted=이미 민트됨(잠금해제 완료)' })
   @Expose()
