@@ -94,7 +94,10 @@ export class QuestRepositoryService {
     await this.logRepository.update(log.id, log);
   }
 
-  async getLogByIdAndUser(id: number, userId: number): Promise<LogQuestEntity> {
+  async findLogByIdAndUser(
+    id: number,
+    userId: number,
+  ): Promise<LogQuestEntity> {
     const log = await this.logRepository.findOne({
       where: { id, userId },
       relations: { quest: true, user: true },
