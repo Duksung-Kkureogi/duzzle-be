@@ -43,7 +43,8 @@ export class QuestService {
   ): Promise<{ isAlreadyOngoing: boolean; log?: LogQuestEntity }> {
     const logs =
       await this.questRepositoryService.findNotCompletedLogsByUser(userId);
-    if (logs.length) {
+    // quest 가 삭제되어도, log 는 남아있기 때문에 quest !== null 일 경우만 체크
+    if (logs.length && logs[0].quest) {
       const isTimedOut: boolean = dayjs().isAfter(
         dayjs(logs[0].createdAt).add(
           logs[0].quest.timeLimit * 1000 + this.latency,
@@ -57,9 +58,16 @@ export class QuestService {
     return { isAlreadyOngoing: false };
   }
 
+  async findLogByIdAndUser(
+    id: number,
+    userId: number,
+  ): Promise<LogQuestEntity> {
+    return await this.questRepositoryService.findLogByIdAndUser(id, userId);
+  }
+
   async getResult(userId: number, params: GetResultRequest): Promise<boolean> {
     const { logId, answer } = params;
-    const log = await this.questRepositoryService.getLogByIdAndUser(
+    const log = await this.questRepositoryService.findLogByIdAndUser(
       logId,
       userId,
     );
@@ -75,6 +83,12 @@ export class QuestService {
         ),
       ) && log.quest.answer === answer.map((e) => e.trim()).join(',');
 
+    this.handleResult(isSucceeded, log);
+
+    return isSucceeded;
+  }
+
+  async handleResult(isSucceeded: boolean, log: LogQuestEntity) {
     log.isCompleted = true;
     log.isSucceeded = isSucceeded;
 
@@ -92,8 +106,6 @@ export class QuestService {
     }
 
     await this.questRepositoryService.updateLog(log);
-
-    return isSucceeded;
   }
 
   async completeLog(log: LogQuestEntity): Promise<void> {

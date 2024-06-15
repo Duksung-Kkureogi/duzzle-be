@@ -14,7 +14,7 @@ export class LogQuestEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column('int')
+  @Column('int', { nullable: true })
   questId: number;
 
   @Column('int')
@@ -37,8 +37,8 @@ export class LogQuestEntity extends BaseEntity {
   user: UserEntity;
 
   @ManyToOne(() => QuestEntity, {
-    onDelete: 'NO ACTION',
-    onUpdate: 'NO ACTION',
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'quest_id' })
   quest: QuestEntity;

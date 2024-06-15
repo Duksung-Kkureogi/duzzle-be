@@ -13,7 +13,7 @@ export class CacheService {
   /**
    * @param ttl 밀리초
    */
-  async set(key: string, value: string, ttl?: number): Promise<void> {
+  async set(key: string, value: string | number, ttl?: number): Promise<void> {
     if (ttl) {
       await this.memory.set(key, value, 'PX', ttl);
     } else {
@@ -27,5 +27,21 @@ export class CacheService {
 
   async remove(key: string): Promise<void> {
     await this.memory.del(key);
+  }
+
+  async incr(key: string): Promise<number> {
+    return await this.memory.incr(key);
+  }
+
+  async incrBy(key: string, increment: number): Promise<number> {
+    return await this.memory.incrby(key, increment);
+  }
+
+  async incrbyfloat(key: string, increment: number): Promise<number> {
+    return parseFloat(await this.memory.incrbyfloat(key, increment));
+  }
+
+  async exists(...keys: string[]): Promise<number> {
+    return await this.memory.exists(keys);
   }
 }
