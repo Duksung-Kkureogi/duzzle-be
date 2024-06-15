@@ -39,9 +39,7 @@ export interface Configuration {
   readonly BLOCKCHAIN_POLYGON_RPC_ENDPOINT: string;
 
   // In-momory DB
-  readonly REDIS_HOST: string;
-  readonly REDIS_PORT: number;
-  readonly REDIS_PASSWORD: string;
+  readonly REDIS_PATH: string;
 
   // AWS
   readonly AWS_REGION: string;

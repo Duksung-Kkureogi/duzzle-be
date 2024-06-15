@@ -7,15 +7,7 @@ export class CacheService {
   private memory: Redis;
 
   constructor(private readonly configService: ConfigService) {
-    this.memory = new Redis({
-      host: this.configService.get<string>('REDIS_HOST'),
-      port: this.configService.get<number>('REDIS_PORT'),
-      lazyConnect: true,
-      connectTimeout: 3000,
-      commandTimeout: 1500,
-      maxRetriesPerRequest: 1,
-      password: this.configService.get<string>('REDIS_PASSWORD'),
-    });
+    this.memory = new Redis(this.configService.get<string>('REDIS_PATH'));
   }
 
   /**
