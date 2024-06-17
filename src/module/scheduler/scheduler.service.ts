@@ -29,9 +29,9 @@ export class SchedulerService {
     private readonly memory: CacheService,
   ) {}
 
-  @Cron(CronExpression.EVERY_4_HOURS, {
-    timeZone: 'UTC',
-  })
+  // @Cron(CronExpression.EVERY_MINUTE, {
+  //   timeZone: 'UTC',
+  // })
   async collectBlockchainTransaction() {
     // 블록체인 네트워크의 최신 블록 가져오기
     const latestBlock =
@@ -42,7 +42,6 @@ export class SchedulerService {
       let lastSyncedBlock: number = parseInt(
         await this.memory.find(RedisKey.LastSyncedBlock),
       );
-      lastSyncedBlock = null;
 
       if (!lastSyncedBlock) {
         const _lastSyncedBlock =

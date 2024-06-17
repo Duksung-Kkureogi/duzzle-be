@@ -10,6 +10,7 @@ import { EditUserNameKey } from '../cache/dto/cache.dto';
 import { RedisTTL } from '../cache/enum/cache.enum';
 import { ItemService } from '../item/item.service';
 import { PuzzleService } from '../puzzle/puzzle.service';
+import { USER_PROFILE_DEFAULT_IMG } from 'src/constant/image';
 
 @Injectable()
 export class UserService {
@@ -69,8 +70,7 @@ export class UserService {
     userId: number,
     file: Express.Multer.File,
   ): Promise<UserInfoResponse> {
-    let imageUrl =
-      'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/default.png';
+    let imageUrl = USER_PROFILE_DEFAULT_IMG;
 
     if (file) {
       const imageName = uuid();
@@ -83,11 +83,7 @@ export class UserService {
     }
 
     const user = await this.userRepositoryService.getUserById(userId);
-    if (
-      user.image &&
-      user.image !==
-        'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/default.png'
-    ) {
+    if (user.image && user.image !== USER_PROFILE_DEFAULT_IMG) {
       await this.cloudStorageService.deleteFile(user.image.split('/').pop());
     }
 
