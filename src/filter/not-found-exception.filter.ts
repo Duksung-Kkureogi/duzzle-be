@@ -6,12 +6,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ExceptionCode } from 'src/constant/exception';
+import { ConfigService } from 'src/module/config/config.service';
 
 @Catch(NotFoundException)
 export class NotFoundExceptionFilter implements ExceptionFilter {
+  constructor(private readonly configService: ConfigService) {}
+
   catch(exception: NotFoundException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
+    const isProduction = this.configService.isProduction();
 
     response
       .status(
@@ -19,8 +23,8 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
       )
       .json({
         result: false,
-        code: ExceptionCode.PageNotFound,
-        message: exception.message,
+        code: isProduction ? 'error' : ExceptionCode.PageNotFound,
+        message: isProduction ? 'error' : exception.message,
       });
   }
 }
