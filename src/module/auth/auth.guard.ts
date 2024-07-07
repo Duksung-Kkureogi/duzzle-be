@@ -3,18 +3,17 @@ import {
   CanActivate,
   ExecutionContext,
   Inject,
-  applyDecorators,
-  UseGuards,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { LoginJwtPayload } from './dto/auth.dto';
 import { UserRepositoryService } from '../repository/service/user.repository.service';
-import { ResponseExceptionAuth } from 'src/decorator/auth-exception.decorator';
 import {
   InvalidAccessTokenError,
   MissingAuthTokenError,
 } from 'src/types/error/application-exceptions/401-unautorized';
+import { validateSync } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -43,7 +42,18 @@ export class AuthGuard implements CanActivate {
     }
 
     // Get payload by auth token
-    const payload: LoginJwtPayload = this.jwtService.decode(token);
+    const payload: LoginJwtPayload = plainToInstance(
+      LoginJwtPayload,
+      this.jwtService.decode(token),
+      {
+        excludeExtraneousValues: true,
+      },
+    );
+    const errors = validateSync(payload, { skipMissingProperties: false });
+
+    if (errors.length) {
+      throw new InvalidAccessTokenError();
+    }
 
     // Get User by id
     const user = await this.userRepositoryService.findUserById(payload.id);
