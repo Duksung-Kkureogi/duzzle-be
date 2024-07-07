@@ -10,10 +10,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { uuid } from 'uuidv4';
 import { CloudStorageService } from './cloudStorage.service';
 import { multerOptions } from 'src/types/file-options';
+import { ApiDescription } from 'src/decorator/api-description.decorator';
 
 @Controller({
   path: 'aws',
@@ -24,8 +25,10 @@ export class CloudStorageController {
     private readonly cloudStorageService: CloudStorageService,
   ) {}
 
-  @ApiTags('Aws')
-  @ApiOperation({ summary: 'AWS 이미지 등록 테스트용' })
+  @ApiDescription({
+    tags: 'Tmp',
+    summary: 'AWS 이미지 등록 테스트용',
+  })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -55,8 +58,10 @@ export class CloudStorageController {
     return { imageUrl };
   }
 
-  @ApiTags('Aws')
-  @ApiOperation({ summary: 'AWS 이미지 삭제 테스트용' })
+  @ApiDescription({
+    tags: 'Tmp',
+    summary: 'AWS 이미지 삭제 테스트용',
+  })
   @HttpCode(HttpStatus.OK)
   @Delete('image/:imageName')
   async deleteImage(@Param('imageName') imageName: string) {

@@ -5,7 +5,8 @@ import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
 export const ResponseData = <TModel extends Type<unknown>>(
   model: TModel,
   status = HttpStatus.OK,
-) => applyDecorators(
+) =>
+  applyDecorators(
     HttpCode(status),
     ApiExtraModels(model),
     ApiOkResponse({

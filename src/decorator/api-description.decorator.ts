@@ -3,6 +3,7 @@ import {
   ApiBearerAuth,
   ApiExtraModels,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -14,6 +15,7 @@ import {
   InvalidAccessTokenError,
   MissingAuthTokenError,
 } from 'src/types/error/application-exceptions/401-unautorized';
+import { AuthorizationToken } from 'src/constant/authorization-token';
 
 interface ApiDescriptionDto<TModel, TException> {
   tags?: string | string[];
@@ -22,7 +24,7 @@ interface ApiDescriptionDto<TModel, TException> {
   auth?: string;
   dataResponse?: {
     status: HttpStatus;
-    schema: TModel;
+    schema: TModel | boolean;
   };
   listResponse?: {
     status: HttpStatus;
@@ -55,7 +57,7 @@ export function ApiDescription<
   }
 
   // AuthGuard 에서 throw 하는 예외들
-  if (dto.auth) {
+  if (dto?.auth === AuthorizationToken.BearerUserToken) {
     const authenticationExceptions = [
       MissingAuthTokenError,
       InvalidAccessTokenError,
@@ -71,24 +73,45 @@ export function ApiDescription<
     ApiOperation({ summary: dto.summary, description }),
   ];
 
-  if (
-    (typeof dto.tags === 'string' && dto.tags) ||
-    (Array.isArray(dto.tags) && dto.tags.length)
-  ) {
+  if (typeof dto.tags === 'string' && dto.tags) {
+    decorators.push(ApiTags(dto.tags));
+  }
+
+  if (Array.isArray(dto.tags) && dto.tags.length) {
     decorators.push(ApiTags(...dto.tags));
   }
 
   if (dto.dataResponse) {
-    decorators.push(
-      ApiExtraModels(dto.dataResponse.schema),
-      ResponseData(dto.dataResponse.schema),
-    );
+    if (typeof dto.dataResponse.schema === 'boolean') {
+      decorators.push(
+        ApiResponse({
+          status: dto.dataResponse.status,
+          schema: {
+            properties: {
+              result: {
+                type: 'boolean',
+                example: true,
+              },
+              data: {
+                type: 'boolean',
+                example: true,
+              },
+            },
+          },
+        }),
+      );
+    } else {
+      decorators.push(
+        ApiExtraModels(<TModel>dto.dataResponse.schema),
+        ResponseData(<TModel>dto.dataResponse.schema, dto.dataResponse.status),
+      );
+    }
   }
 
   if (dto.listResponse) {
     decorators.push(
       ApiExtraModels(dto.listResponse.schema),
-      ResponseList(dto.listResponse.schema),
+      ResponseList(dto.listResponse.schema, dto.listResponse.status),
     );
   }
 

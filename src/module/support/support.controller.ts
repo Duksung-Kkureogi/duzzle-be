@@ -12,16 +12,8 @@ import {
   Put,
 } from '@nestjs/common';
 
-import {
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-
 import { AuthGuard } from 'src/module/auth/auth.guard';
 import { SupportService } from './support.service';
-import { ResponseList } from 'src/decorator/response-list.decorators';
 import {
   FaqResponse,
   PostQuestionRequest,
@@ -30,12 +22,10 @@ import {
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
-import { ResponseException } from 'src/decorator/response-exception.decorator';
-import { ExceptionCode } from 'src/constant/exception';
-import { ResponseData } from 'src/decorator/response-data.decorator';
 import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
 import { UserEntity } from '../repository/entity/user.entity';
-import { ApiResponseBooleanTrue } from 'src/constant/api-ok-response-boolean';
+import { ApiDescription } from 'src/decorator/api-description.decorator';
+import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 
 @Controller({
   path: 'support',
@@ -46,10 +36,15 @@ export class SupportController {
     private readonly supportService: SupportService,
   ) {}
 
-  @ApiTags('Support')
-  @ApiOperation({ summary: '자주 묻는 질문(FAQ) 목록' })
+  @ApiDescription({
+    tags: 'Support',
+    summary: '자주 묻는 질문(FAQ) 목록',
+    listResponse: {
+      status: HttpStatus.OK,
+      schema: FaqResponse,
+    },
+  })
   @HttpCode(HttpStatus.OK)
-  @ResponseList(FaqResponse)
   @Get('faq')
   async getFaqs(): Promise<ResponsesListDto<FaqResponse>> {
     const result = await this.supportService.getFaqs();
@@ -57,12 +52,17 @@ export class SupportController {
     return new ResponsesListDto(result);
   }
 
-  @ApiTags('Support')
-  @ApiOperation({ summary: '1:1 문의 등록' })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
+  @ApiDescription({
+    tags: 'Support',
+    summary: '1:1 문의 등록',
+    auth: AuthorizationToken.BearerUserToken,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: true,
+    },
+  })
   @HttpCode(HttpStatus.CREATED)
-  @ApiOkResponse(ApiResponseBooleanTrue)
   @Post('qna')
   async postQuestion(
     @AuthenticatedUser() user: UserEntity,
@@ -73,13 +73,18 @@ export class SupportController {
     return new ResponsesDataDto(true);
   }
 
-  @ApiTags('Support')
-  @ApiOperation({ summary: '1:1 문의 수정' })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
+  @ApiDescription({
+    tags: 'Support',
+    summary: '1:1 문의 수정',
+    auth: AuthorizationToken.BearerUserToken,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: true,
+    },
+    exceptions: [ContentNotFoundError],
+  })
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse(ApiResponseBooleanTrue)
-  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.ContentNotFound])
   @Put('qna/:questionId')
   async updateQuestion(
     @AuthenticatedUser() user: UserEntity,
@@ -91,13 +96,18 @@ export class SupportController {
     return new ResponsesDataDto(true);
   }
 
-  @ApiTags('Support')
-  @ApiOperation({ summary: '1:1 문의 삭제' })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
+  @ApiDescription({
+    tags: 'Support',
+    summary: '1:1 문의 삭제',
+    auth: AuthorizationToken.BearerUserToken,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: true,
+    },
+    exceptions: [ContentNotFoundError],
+  })
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse(ApiResponseBooleanTrue)
-  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.ContentNotFound])
   @Delete('qna/:questionId')
   async deleteQuestion(
     @AuthenticatedUser() user: UserEntity,
@@ -108,15 +118,18 @@ export class SupportController {
     return new ResponsesDataDto(true);
   }
 
-  @ApiTags('Support')
-  @ApiOperation({
+  @UseGuards(AuthGuard)
+  @ApiDescription({
+    tags: 'Support',
     summary: '1:1 문의 목록',
     description: '유저가 등록한 1:1 문의 목록, 마지막 수정 시간 내림차순 정렬',
+    auth: AuthorizationToken.BearerUserToken,
+    listResponse: {
+      status: HttpStatus.OK,
+      schema: QnaResponse,
+    },
+    exceptions: [ContentNotFoundError],
   })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
-  @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @ResponseList(QnaResponse)
   @Get('qna')
   async getQnas(
     @AuthenticatedUser() user: UserEntity,
@@ -126,14 +139,18 @@ export class SupportController {
     return new ResponsesListDto(result);
   }
 
-  @ApiTags('Support')
-  @ApiOperation({
-    summary: '특정 1:1 문의 조회',
-  })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @ResponseData(QnaResponse)
+  @ApiDescription({
+    tags: 'Support',
+    summary: '특정 1:1 문의 조회',
+    description: '유저가 등록한 1:1 문의 목록, 마지막 수정 시간 내림차순 정렬',
+    auth: AuthorizationToken.BearerUserToken,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: QnaResponse,
+    },
+    exceptions: [ContentNotFoundError],
+  })
   @Get('qna/:id')
   async getQnaById(
     @AuthenticatedUser() user: UserEntity,

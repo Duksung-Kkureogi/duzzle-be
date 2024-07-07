@@ -7,16 +7,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { PuzzleService } from './puzzle.service';
-import { ResponseData } from 'src/decorator/response-data.decorator';
 import { PuzzleRequest, PuzzleResponse } from './dto/puzzle.dto';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
 import { AuthGuard } from '../auth/auth.guard';
-import { ResponseList } from 'src/decorator/response-list.decorators';
 import {
   UserPuzzleDetailResponse,
   UserPuzzlePathParams,
@@ -26,15 +23,21 @@ import {
 import { SeasonEntity } from '../repository/entity/season.entity';
 import { Zone, ZONES } from 'src/constant/zones';
 import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
+import { ApiDescription } from 'src/decorator/api-description.decorator';
 
-@ApiTags('Puzzle')
 @Controller()
 export class PuzzleController {
   constructor(private readonly puzzleService: PuzzleService) {}
 
-  @ApiOperation({ summary: '전체 시즌 목록' })
+  @ApiDescription({
+    tags: 'Puzzle',
+    summary: '전체 시즌 목록',
+    listResponse: {
+      status: HttpStatus.OK,
+      schema: SeasonEntity,
+    },
+  })
   @HttpCode(HttpStatus.OK)
-  @ResponseList(SeasonEntity)
   @Get('seasons')
   async getAllSeasons(): Promise<ResponsesListDto<SeasonEntity>> {
     const seaons = await this.puzzleService.getAllSeasons();
@@ -42,17 +45,29 @@ export class PuzzleController {
     return new ResponsesListDto(seaons);
   }
 
-  @ApiOperation({ summary: '전체 구역 목록' })
+  @ApiDescription({
+    tags: 'Puzzle',
+    summary: '전체 구역 목록',
+    listResponse: {
+      status: HttpStatus.OK,
+      schema: Zone,
+    },
+  })
   @HttpCode(HttpStatus.OK)
-  @ResponseList(Zone)
   @Get('zones')
   async getAllZones(): Promise<ResponsesListDto<Zone>> {
     return new ResponsesListDto(ZONES);
   }
 
-  @ApiOperation({ summary: '퍼즐 현황 데이터' })
+  @ApiDescription({
+    tags: 'Puzzle',
+    summary: '퍼즐 현황 데이터',
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: PuzzleResponse,
+    },
+  })
   @HttpCode(HttpStatus.OK)
-  @ResponseData(PuzzleResponse)
   @Get('puzzle/:seasonId')
   async getPuzzleData(
     @Param() dto: PuzzleRequest,
@@ -63,11 +78,17 @@ export class PuzzleController {
     return new ResponsesDataDto(result);
   }
 
-  @ApiOperation({ summary: '유저 보유 퍼즐 조각 NFT 목록' })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @ApiDescription({
+    tags: 'Puzzle',
+    auth: AuthorizationToken.BearerUserToken,
+    summary: '유저 보유 퍼즐 조각 NFT 목록',
+    listResponse: {
+      status: HttpStatus.OK,
+      schema: UserPuzzleResponse,
+    },
+  })
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ResponseList(UserPuzzleResponse)
   @Get('my/nft-puzzles')
   async getUserPuzzles(
     @AuthenticatedUser('id') userId: number,
@@ -78,11 +99,17 @@ export class PuzzleController {
     return new ResponsesListDto(result.list, result.total);
   }
 
-  @ApiOperation({ summary: '유저 보유 퍼즐 조각 NFT 상세' })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
+  @ApiDescription({
+    tags: 'Puzzle',
+    auth: AuthorizationToken.BearerUserToken,
+    summary: '유저 보유 퍼즐 조각 NFT 상세',
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: UserPuzzleDetailResponse,
+    },
+  })
   @HttpCode(HttpStatus.OK)
-  @ResponseData(UserPuzzleDetailResponse)
   @Get('my/nft-puzzles/:id')
   async getUserPuzzleById(
     @AuthenticatedUser('id') userId: number,

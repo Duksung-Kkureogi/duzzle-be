@@ -19,7 +19,7 @@ import { MailService } from '../email/email.service';
 import { MailTemplate } from '../repository/enum/mail.enum';
 import {
   IncorrectLoginInfo,
-  InvalidAccessTokenError,
+  InvalidIdTokenError,
   InvalidWalletAddress,
 } from 'src/types/error/application-exceptions/401-unautorized';
 
@@ -65,7 +65,7 @@ export class AuthService {
     } catch (e) {
       Logger.error(this.verifyLoginIdToken.name, e.stack);
 
-      throw new InvalidAccessTokenError();
+      throw new InvalidIdTokenError();
     }
 
     // TODO: Social Login 일 경우 body.app_pub_key, payload.wallets.app_pub_key 확인 필요

@@ -57,7 +57,3 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 }
-
-export function UserGuard() {
-  return applyDecorators(UseGuards(AuthGuard), ResponseExceptionAuth());
-}

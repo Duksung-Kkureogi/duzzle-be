@@ -1,12 +1,27 @@
 import { ExceptionCode } from 'src/constant/exception';
 import { ApplicationException } from '../application-exceptions.base';
 
+export class MissingWeb3IdTokenError extends ApplicationException {
+  constructor() {
+    super(
+      ExceptionCode.MissingAuthToken,
+      'Web3 ID Token is missing in the request header.',
+    );
+  }
+}
+
 export class MissingAuthTokenError extends ApplicationException {
   constructor() {
     super(
       ExceptionCode.MissingAuthToken,
       'Access token is missing in the request header.',
     );
+  }
+}
+
+export class InvalidIdTokenError extends ApplicationException {
+  constructor() {
+    super(ExceptionCode.InvalidAccessToken, 'Invalid Id Token');
   }
 }
 

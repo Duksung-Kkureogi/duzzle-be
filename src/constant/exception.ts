@@ -9,6 +9,7 @@ export enum ExceptionCode {
   InvalidFilenameCharacters = 'FILE_NAME_CHARACTERS',
 
   // 401 (Unauthorized)
+  MissingWeb3IdToken = 'MISSING_WEB3_ID_TOKEN',
   MissingAuthToken = 'MISSING_AUTHENTICATION_TOKEN',
   InvalidAccessToken = 'INVLID_ACCESS_TOKEN',
   InvalidRefreshToken = 'INVALID_REFRESH_TOKEN',
@@ -35,6 +36,7 @@ export const CodeToStatus: {
   [ExceptionCode.InvalidParameter]: HttpStatus.BAD_REQUEST,
   [ExceptionCode.LimitExceeded]: HttpStatus.CONFLICT,
   [ExceptionCode.MissingAuthToken]: HttpStatus.UNAUTHORIZED,
+  [ExceptionCode.MissingWeb3IdToken]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.InvalidAccessToken]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.ContentNotFound]: HttpStatus.NOT_FOUND,
   [ExceptionCode.AlreadyExists]: HttpStatus.CONFLICT,

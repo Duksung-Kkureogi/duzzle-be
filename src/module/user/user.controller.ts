@@ -12,16 +12,9 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiConsumes,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
-import { ResponseData } from 'src/decorator/response-data.decorator';
 import { AuthorizationToken } from 'src/constant/authorization-token';
 import { AuthGuard } from '../auth/auth.guard';
 import {
@@ -30,15 +23,21 @@ import {
   UserInfoResponse,
   UserProfileResponse,
 } from './dto/user.dto';
-import { ResponseException } from 'src/decorator/response-exception.decorator';
-import { ExceptionCode } from 'src/constant/exception';
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { UserEntity } from '../repository/entity/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/types/file-options';
 import { RedisTTL } from '../cache/enum/cache.enum';
-import { LimitExceededError } from 'src/types/error/application-exceptions/409-conflict';
+import {
+  DuplicateValueError,
+  LimitExceededError,
+} from 'src/types/error/application-exceptions/409-conflict';
 import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
+import { ApiDescription } from 'src/decorator/api-description.decorator';
+import {
+  InvalidFileNameCharatersError,
+  InvalidFileNameExtensionError,
+} from 'src/types/error/application-exceptions/400-bad-request';
 
 @Controller({
   path: 'user',
@@ -49,15 +48,18 @@ export class UserController {
     private readonly userService: UserService,
   ) {}
 
-  @ApiTags('User')
-  @ApiOperation({
+  @UseGuards(AuthGuard)
+  @ApiDescription({
+    tags: 'User',
     summary: '유저 정보 조회',
     description: '로그인한 유저 정보 조회',
+    auth: AuthorizationToken.BearerUserToken,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: UserProfileResponse,
+    },
   })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
-  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ResponseData(UserProfileResponse)
   @Get()
   async getUserInfo(
     @AuthenticatedUser() user: UserEntity,
@@ -67,24 +69,24 @@ export class UserController {
     return new ResponsesDataDto(result);
   }
 
-  @ApiTags('User')
-  @ApiOperation({
+  @UseGuards(AuthGuard)
+  @ApiDescription({
+    tags: 'User',
     summary: '유저 이름 변경',
+    auth: AuthorizationToken.BearerUserToken,
     description: `
     이미 존재하는 이름일 경우 409 ALREADY_EXISTS\n
     ${RedisTTL.EditUserName / 1000} 초가 지나기 전에 이름을 바꾸는 경우\n
     -> 409 LIMIT_EXCEEDED\n
     [이름 변경 제한] dev 서버 10분, prod 24시간
     `,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: UserInfoResponse,
+    },
+    exceptions: [DuplicateValueError, LimitExceededError],
   })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
-  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ResponseData(UserInfoResponse)
-  @ResponseException(HttpStatus.CONFLICT, [
-    ExceptionCode.DuplicateValues,
-    ExceptionCode.LimitExceeded,
-  ])
   @Patch('name')
   async updateUserName(
     @AuthenticatedUser() user: UserEntity,
@@ -99,7 +101,7 @@ export class UserController {
   }
 
   @ApiTags('Tmp')
-  @ApiOperation({
+  @ApiDescription({
     summary: '개발용 전체 유저 목록',
   })
   @Get('list')
@@ -109,19 +111,21 @@ export class UserController {
     return new ResponsesListDto(users);
   }
 
-  @ApiTags('User')
-  @ApiOperation({ summary: '유저 프로필 이미지 변경' })
-  @ApiBearerAuth(AuthorizationToken.BearerUserToken)
+  @ApiDescription({
+    tags: 'User',
+    summary: '유저 프로필 이미지 변경',
+    auth: AuthorizationToken.BearerUserToken,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: UserInfoResponse,
+    },
+    exceptions: [InvalidFileNameCharatersError, InvalidFileNameExtensionError],
+  })
   @UseGuards(AuthGuard)
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: ImageUploadDto, required: false })
   @UseInterceptors(FileInterceptor('file', multerOptions))
   @HttpCode(HttpStatus.OK)
-  @ResponseData(UserInfoResponse)
-  @ResponseException(HttpStatus.BAD_REQUEST, [
-    ExceptionCode.InvalidFileNameExtension,
-    ExceptionCode.InvalidFilenameCharacters,
-  ])
   @Patch('image')
   async updateUserImage(
     @AuthenticatedUser() user: UserEntity,

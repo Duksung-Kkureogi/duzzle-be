@@ -6,11 +6,12 @@ import {
   Inject,
   Post,
 } from '@nestjs/common';
+
 import { MailService } from './email.service';
-import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { WelcomeMailData } from 'src/types/mail-data';
 import { SendMailRequest } from './dto/email.dto';
 import { MailTemplate } from '../repository/enum/mail.enum';
+import { ApiDescription } from 'src/decorator/api-description.decorator';
 
 @Controller({
   path: 'email',
@@ -21,10 +22,11 @@ export class MailController {
     private readonly mailService: MailService,
   ) {}
 
-  @ApiTags('Mail')
-  @ApiOperation({ summary: '가입 환영 메일 발송 테스트용' })
+  @ApiDescription({
+    tags: 'Tmp',
+    summary: '가입 환영 메일 발송 테스트용',
+  })
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse()
   @Post('mail')
   async sendWelcomeMail(@Body() dto: SendMailRequest) {
     const mailData: WelcomeMailData = {

@@ -9,16 +9,17 @@ import {
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-
 import { AuthService } from './auth.service';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { LoginRequest, LoginResponse } from './dto/auth.dto';
-import { ResponseData } from 'src/decorator/response-data.decorator';
 import { AuthorizationToken } from 'src/constant/authorization-token';
-import { ExceptionCode } from 'src/constant/exception';
-import { ResponseException } from 'src/decorator/response-exception.decorator';
-import { MissingAuthTokenError } from 'src/types/error/application-exceptions/401-unautorized';
+import {
+  IncorrectLoginInfo,
+  InvalidIdTokenError,
+  InvalidWalletAddress,
+  MissingWeb3IdTokenError,
+} from 'src/types/error/application-exceptions/401-unautorized';
+import { ApiDescription } from 'src/decorator/api-description.decorator';
 
 @Controller({
   path: 'auth',
@@ -32,17 +33,22 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
-  @ApiTags('Auth')
-  @ApiOperation({ summary: '로그인' })
-  @ApiBearerAuth(AuthorizationToken.BearerLoginIdToken)
+  @ApiDescription({
+    tags: 'Auth',
+    summary: '로그인',
+    auth: AuthorizationToken.BearerLoginIdToken,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: LoginResponse,
+    },
+    exceptions: [
+      MissingWeb3IdTokenError,
+      InvalidIdTokenError,
+      InvalidWalletAddress,
+      IncorrectLoginInfo,
+    ],
+  })
   @HttpCode(HttpStatus.OK)
-  @ResponseData(LoginResponse)
-  @ResponseException(HttpStatus.UNAUTHORIZED, [
-    ExceptionCode.MissingAuthToken,
-    ExceptionCode.InvalidLoginInfo,
-    ExceptionCode.InvalidAddress,
-    ExceptionCode.InvalidAccessToken,
-  ])
   @Post()
   async login(
     @Body() params: LoginRequest,
@@ -52,7 +58,7 @@ export class AuthController {
       this.req.headers.authorization!;
 
     if (!idToken) {
-      throw new MissingAuthTokenError();
+      throw new MissingWeb3IdTokenError();
     }
 
     const result: LoginResponse = await this.authService.login(idToken, params);
