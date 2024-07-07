@@ -22,7 +22,9 @@ export class ValidationExceptionFilter
     response.status(exception.getStatus()).json({
       result: false,
       code: ExceptionCode.InvalidParameter,
-      message: isProduction ? exceptionObj.error : exceptionObj.message,
+      message: isProduction
+        ? exceptionObj.error
+        : exceptionObj.message.toString(),
     });
   }
 }

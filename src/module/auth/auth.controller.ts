@@ -3,14 +3,11 @@ import {
   HttpCode,
   Inject,
   Post,
-  Get,
   HttpStatus,
   Body,
-  Render,
-  Res,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -19,9 +16,9 @@ import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { LoginRequest, LoginResponse } from './dto/auth.dto';
 import { ResponseData } from 'src/decorator/response-data.decorator';
 import { AuthorizationToken } from 'src/constant/authorization-token';
-import { HttpError } from 'src/types/http-exceptions';
 import { ExceptionCode } from 'src/constant/exception';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
+import { MissingAuthTokenError } from 'src/types/error/application-exceptions/401-unautorized';
 
 @Controller({
   path: 'auth',
@@ -55,10 +52,7 @@ export class AuthController {
       this.req.headers.authorization!;
 
     if (!idToken) {
-      throw new HttpError(
-        HttpStatus.UNAUTHORIZED,
-        ExceptionCode.MissingAuthToken,
-      );
+      throw new MissingAuthTokenError();
     }
 
     const result: LoginResponse = await this.authService.login(idToken, params);

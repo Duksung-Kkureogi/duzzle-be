@@ -1,13 +1,11 @@
 import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Response } from 'express';
-import { ExceptionMessage } from 'src/constant/exception';
-import { ServiceError } from 'src/types/exception';
-import { HttpError } from 'src/types/http-exceptions';
+import { ApplicationException } from 'src/types/error/application-exceptions.base';
 
-@Catch(HttpError, ServiceError)
+@Catch(ApplicationException)
 export class HttpExceptionFilter extends BaseExceptionFilter {
-  catch(exception: HttpError | ServiceError, host: ArgumentsHost) {
+  catch(exception: ApplicationException, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse<Response>();
 
     response
@@ -18,8 +16,8 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
       )
       .json({
         result: false,
-        code: exception.code || 'INTERNAL_SERVER_ERROR',
-        message: exception.message || ExceptionMessage[exception.code],
+        code: exception.code,
+        message: exception.message,
       });
   }
 }

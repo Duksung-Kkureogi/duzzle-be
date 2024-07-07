@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { StoryEntity } from '../entity/story.entity';
-import { ServiceError } from 'src/types/exception';
-import { ExceptionCode } from 'src/constant/exception';
 import { UserStoryEntity } from '../entity/user-story.entity';
 import { InsertUserStoryDto, UpdateUserStoryDto } from '../dto/story.dto';
 import { StoryContentEntity } from '../entity/story-content.entity';
+import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 
 @Injectable()
 export class StoryRepositoryService {
@@ -39,7 +39,7 @@ export class StoryRepositoryService {
     });
 
     if (!story) {
-      throw new ServiceError(ExceptionCode.NotFound);
+      throw new ContentNotFoundError('story:page', `${storyId}:${page}`);
     }
 
     return story;

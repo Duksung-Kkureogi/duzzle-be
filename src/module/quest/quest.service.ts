@@ -1,12 +1,13 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { ServiceError } from 'src/types/exception';
-import { ExceptionCode } from 'src/constant/exception';
+import dayjs from 'dayjs';
+
 import { QuestRepositoryService } from '../repository/service/quest.repository.service';
 import { BlockchainCoreService } from '../blockchain/blockchain.core.service';
 import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
-import dayjs from 'dayjs';
 import { QuestTokenReward } from 'src/constant/quest';
 import { LogQuestEntity } from '../repository/entity/log-quest.entity';
+import { LimitExceededError } from 'src/types/error/application-exceptions/409-conflict';
+import { NoOngoingQuestError } from 'src/types/error/application-exceptions/400-bad-request';
 
 @Injectable()
 export class QuestService {
@@ -27,7 +28,7 @@ export class QuestService {
     );
 
     if (!quests.length) {
-      throw new ServiceError(ExceptionCode.LimitExceeded);
+      throw new LimitExceededError();
     }
 
     const randomQuestIndex = Math.floor(Math.random() * quests.length);
@@ -72,7 +73,7 @@ export class QuestService {
       userId,
     );
     if (!log || log.isCompleted) {
-      throw new ServiceError(ExceptionCode.NoOngoingQuest);
+      throw new NoOngoingQuestError();
     }
 
     const isSucceeded: boolean =

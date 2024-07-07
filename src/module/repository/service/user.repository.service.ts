@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { UserEntity } from '../entity/user.entity';
 import { InsertUserDto, UpdateUserDto } from '../dto/user.dto';
-import { ServiceError } from 'src/types/exception';
-import { ExceptionCode } from 'src/constant/exception';
 import { PostgresqlErrorCodes } from 'src/constant/postgresql-error-codes';
+import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
+import { AlreadyExistsError } from 'src/types/error/application-exceptions/409-conflict';
 
 @Injectable()
 export class UserRepositoryService {
@@ -17,7 +18,7 @@ export class UserRepositoryService {
   async getUserById(id: number): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id });
     if (!user) {
-      throw new ServiceError(ExceptionCode.NotFound);
+      throw new ContentNotFoundError('user', id);
     }
 
     return user;
@@ -48,12 +49,10 @@ export class UserRepositoryService {
     } catch (error) {
       switch (error.code) {
         case PostgresqlErrorCodes.UniqueViolation:
-          throw new ServiceError(
-            ExceptionCode.AlreadyExists,
-            Error('동일한 이름의 유저 존재'),
-          );
+          throw new AlreadyExistsError('user:name', dto.name);
+
         default:
-          throw new ServiceError(ExceptionCode.InternalServerError, error);
+          throw error;
       }
     }
   }

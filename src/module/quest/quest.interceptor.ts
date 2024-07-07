@@ -8,9 +8,7 @@ import {
   Scope,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { ExceptionCode } from 'src/constant/exception';
 import { QuestService } from './quest.service';
-import { HttpError } from 'src/types/http-exceptions';
 
 @Injectable({ scope: Scope.REQUEST })
 export class StartQuestInterceptor implements NestInterceptor {

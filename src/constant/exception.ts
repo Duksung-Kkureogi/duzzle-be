@@ -17,6 +17,7 @@ export enum ExceptionCode {
 
   // 404 (Not Found)
   ContentNotFound = 'CONTENT_NOT_FOUND',
+  PageNotFound = 'PAGE_NOT_FOUND',
 
   // 409 (Confict)
   AlreadyExists = 'ALREADY_EXISTS',
@@ -45,4 +46,5 @@ export const CodeToStatus: {
   [ExceptionCode.InvalidFileNameExtension]: HttpStatus.BAD_REQUEST,
   [ExceptionCode.InvalidFilenameCharacters]: HttpStatus.BAD_REQUEST,
   [ExceptionCode.InvalidRefreshToken]: HttpStatus.UNAUTHORIZED,
+  [ExceptionCode.PageNotFound]: HttpStatus.NOT_FOUND,
 };

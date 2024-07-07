@@ -19,7 +19,7 @@ export class NotFoundExceptionFilter implements ExceptionFilter {
       )
       .json({
         result: false,
-        code: ExceptionCode.NotFound,
+        code: ExceptionCode.PageNotFound,
         message: exception.message,
       });
   }

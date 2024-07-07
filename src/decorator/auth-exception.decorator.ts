@@ -6,8 +6,6 @@ import { ResponseException } from 'src/decorator/response-exception.decorator';
 export function ResponseExceptionAuth() {
   return applyDecorators(
     ResponseException(HttpStatus.UNAUTHORIZED, [
-      ExceptionCode.MissingAuthToken,
-      ExceptionCode.TokenExpired,
       ExceptionCode.InvalidAccessToken,
     ]),
   );

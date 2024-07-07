@@ -13,12 +13,15 @@ import {
   LoginResponse,
   UserDto,
 } from './dto/auth.dto';
-import { ServiceError } from 'src/types/exception';
-import { ExceptionCode } from 'src/constant/exception';
 import { LoginType } from '../repository/enum/user.enum';
 import { WelcomeMailData } from 'src/types/mail-data';
 import { MailService } from '../email/email.service';
 import { MailTemplate } from '../repository/enum/mail.enum';
+import {
+  IncorrectLoginInfo,
+  InvalidAccessTokenError,
+  InvalidWalletAddress,
+} from 'src/types/error/application-exceptions/401-unautorized';
 
 @Injectable()
 export class AuthService {
@@ -62,7 +65,7 @@ export class AuthService {
     } catch (e) {
       Logger.error(this.verifyLoginIdToken.name, e.stack);
 
-      throw new ServiceError(ExceptionCode.InvalidAccessToken, e);
+      throw new InvalidAccessTokenError();
     }
 
     // TODO: Social Login 일 경우 body.app_pub_key, payload.wallets.app_pub_key 확인 필요
@@ -71,12 +74,12 @@ export class AuthService {
       (payload?.['wallets'][0]?.['address'] as string).toLowerCase() !==
         params.walletAddress.toLowerCase()
     ) {
-      throw new ServiceError(ExceptionCode.InvalidAddress);
+      throw new InvalidWalletAddress();
     }
 
     const loginProvider: string = payload?.aggregateVerifier || payload?.iss;
     if (!loginProvider.includes(params.loginType.toLowerCase())) {
-      throw new ServiceError(ExceptionCode.InvalidLoginInfo);
+      throw new IncorrectLoginInfo();
     }
 
     return payload;
@@ -117,7 +120,7 @@ export class AuthService {
 
     // 이미 등록된 지갑 주소인데 요청 로그인 타입이 다름
     if (user && user?.loginType !== params.loginType) {
-      throw new ServiceError(ExceptionCode.InvalidLoginInfo);
+      throw new IncorrectLoginInfo();
     }
     if (!user) {
       user = await this.userRepositoryService.insertUser({

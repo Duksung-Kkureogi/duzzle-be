@@ -39,9 +39,8 @@ import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { UserEntity } from '../repository/entity/user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/types/file-options';
-import { HttpError } from 'src/types/http-exceptions';
-import { ConfigService } from '../config/config.service';
 import { RedisTTL } from '../cache/enum/cache.enum';
+import { LimitExceededError } from 'src/types/error/application-exceptions/409-conflict';
 
 @Controller({
   path: 'user',
@@ -53,8 +52,6 @@ export class UserController {
 
     @Inject(UserService)
     private readonly userService: UserService,
-
-    private readonly configService: ConfigService,
   ) {}
 
   @ApiTags('User')
@@ -98,7 +95,7 @@ export class UserController {
   ): Promise<ResponsesDataDto<UserInfoResponse>> {
     const { user } = this.req;
     if (!(await this.userService.canEditName(user.id))) {
-      throw new HttpError(HttpStatus.CONFLICT, ExceptionCode.LimitExceeded);
+      throw new LimitExceededError();
     }
     const result = await this.userService.updateUserName(user.id, dto.name);
 

@@ -20,10 +20,14 @@ export class DuplicateValueError extends ApplicationException {
 }
 
 export class AlreadyExistsError extends ApplicationException {
-  constructor(resource: string = '$resource') {
-    const message = !!resource
-      ? `${resource} already exists`
-      : 'Same value already exists';
+  constructor(
+    resource: string = '$resource',
+    value: string | number = '$value',
+  ) {
+    const message =
+      !!resource && !!value
+        ? `${resource}-${value} already exists`
+        : 'Same value already exists';
     super(ExceptionCode.AlreadyExists, message);
   }
 }

@@ -5,10 +5,9 @@ import { Repository, FindManyOptions, FindOptionsWhere } from 'typeorm';
 
 import { PuzzlePieceEntity } from '../entity/puzzle-piece.entity';
 import { SeasonEntity } from '../entity/season.entity';
-import { ServiceError } from 'src/types/exception';
-import { ExceptionCode } from 'src/constant/exception';
 import { UserPuzzleRequest } from 'src/module/puzzle/user.puzzle.dto';
 import { PaginatedList } from 'src/dto/response.dto';
+import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 
 @Injectable()
 export class PuzzleRepositoryService {
@@ -30,7 +29,7 @@ export class PuzzleRepositoryService {
   async getSeasonById(seasonId: number): Promise<SeasonEntity> {
     const season = await this.seasonRepository.findOneBy({ id: seasonId });
     if (!season) {
-      throw new ServiceError(ExceptionCode.NotFound);
+      throw new ContentNotFoundError('seasonId', seasonId);
     }
 
     return season;
@@ -164,7 +163,7 @@ export class PuzzleRepositoryService {
     });
 
     if (!puzzle) {
-      throw new ServiceError(ExceptionCode.NotFound);
+      throw new ContentNotFoundError('puzzle', puzzleId);
     }
 
     return puzzle;

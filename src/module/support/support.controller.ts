@@ -81,7 +81,7 @@ export class SupportController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
-  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
+  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.ContentNotFound])
   @Put('qna/:questionId')
   async updateQuestion(
     @Param('questionId') questionId: number,
@@ -99,7 +99,7 @@ export class SupportController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse()
-  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
+  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.ContentNotFound])
   @Delete('qna/:questionId')
   async deleteQuestion(@Param('questionId') questionId: number): Promise<void> {
     const { user } = this.req;

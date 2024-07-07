@@ -54,7 +54,7 @@ export class StoryController {
   })
   @HttpCode(HttpStatus.OK)
   @ResponseData(StoryResponse)
-  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.NotFound])
+  @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.ContentNotFound])
   @Get('')
   async getStory(
     @Query() query: StoryRequest,
