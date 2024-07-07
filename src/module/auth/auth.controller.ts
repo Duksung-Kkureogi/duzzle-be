@@ -11,10 +11,16 @@ import { Request } from 'express';
 
 import { AuthService } from './auth.service';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
-import { LoginRequest, LoginResponse } from './dto/auth.dto';
+import {
+  JWT,
+  LoginRequest,
+  LoginResponse,
+  RefreshTokenDto,
+} from './dto/auth.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
 import {
   IncorrectLoginInfo,
+  InvalidatedRefreshTokenError,
   InvalidIdTokenError,
   InvalidWalletAddress,
   MissingWeb3IdTokenError,
@@ -64,5 +70,20 @@ export class AuthController {
     const result: LoginResponse = await this.authService.login(idToken, params);
 
     return new ResponsesDataDto(result);
+  }
+
+  @ApiDescription({
+    tags: 'Auth',
+    summary: '액세스 토큰 재발급',
+    exceptions: [InvalidatedRefreshTokenError],
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: JWT,
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh-tokens')
+  async refreshTokens(@Body() refreshTokenDto: RefreshTokenDto): Promise<JWT> {
+    return await this.authService.refreshTokens(refreshTokenDto);
   }
 }

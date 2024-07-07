@@ -2,11 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, plainToInstance } from 'class-transformer';
 import {
   IsDefined,
-  IsEmail,
   IsEnum,
   IsEthereumAddress,
-  IsJWT,
-  IsOptional,
+  IsNotEmpty,
+  IsPositive,
   IsString,
 } from 'class-validator';
 import { UserEntity } from 'src/module/repository/entity/user.entity';
@@ -66,7 +65,14 @@ export class LoginResponse {
 }
 
 export class LoginJwtPayload {
+  @IsPositive()
+  @IsNotEmpty()
+  @Expose()
   id: number;
+
+  @IsEthereumAddress()
+  @IsNotEmpty()
+  @Expose()
   walletAddress: string;
 }
 export class JWT {
@@ -78,5 +84,17 @@ export class JWT {
   @ApiProperty()
   @IsString()
   @IsDefined()
+  refreshToken: string;
+}
+
+export class RefreshTokenPayload {
+  sub: number;
+  refreshTokenId: string;
+}
+
+export class RefreshTokenDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
   refreshToken: string;
 }

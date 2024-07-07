@@ -3,6 +3,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { verify, JwtHeader, decode } from 'jsonwebtoken';
 import jwksClient from 'jwks-rsa';
 import Web3 from 'web3';
+import { randomUUID } from 'crypto';
 
 import { ConfigService } from 'src/module/config/config.service';
 import { UserRepositoryService } from '../repository/service/user.repository.service';
@@ -11,6 +12,8 @@ import {
   LoginJwtPayload,
   LoginRequest,
   LoginResponse,
+  RefreshTokenDto,
+  RefreshTokenPayload,
   UserDto,
 } from './dto/auth.dto';
 import { LoginType } from '../repository/enum/user.enum';
@@ -19,9 +22,11 @@ import { MailService } from '../email/email.service';
 import { MailTemplate } from '../repository/enum/mail.enum';
 import {
   IncorrectLoginInfo,
+  InvalidatedRefreshTokenError,
   InvalidIdTokenError,
   InvalidWalletAddress,
 } from 'src/types/error/application-exceptions/401-unautorized';
+import { RefreshTokenIdsStorage } from './refresh-token-ids.storage';
 
 @Injectable()
 export class AuthService {
@@ -32,6 +37,7 @@ export class AuthService {
     @Inject(JwtService)
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage,
   ) {}
 
   private async getKey(
@@ -85,30 +91,6 @@ export class AuthService {
     return payload;
   }
 
-  private async generateLoginJwt(dto: LoginJwtPayload): Promise<JWT> {
-    const payload = JSON.parse(
-      JSON.stringify({
-        id: dto.id,
-        walletAddress: dto.walletAddress,
-      }),
-    );
-
-    const accessToken = await this.jwtService.signAsync(payload, {
-      expiresIn: this.configService.get<number>('JWT_ACCESS_EXPIRES_IN'),
-    });
-
-    const refreshToken = await this.jwtService.signAsync(payload, {
-      expiresIn: this.configService.get<number>('JWT_REFRESH_EXPIRES_IN'),
-    });
-
-    const result = {
-      accessToken,
-      refreshToken,
-    };
-
-    return result;
-  }
-
   async login(idToken: string, params: LoginRequest): Promise<LoginResponse> {
     const payload = await this.verifyLoginIdToken(idToken, params);
     const { walletAddress, loginType } = params;
@@ -147,7 +129,7 @@ export class AuthService {
       }
     }
 
-    const jwt: JWT = await this.generateLoginJwt({
+    const jwt: JWT = await this.generateTokens({
       walletAddress,
       id: user.id,
     });
@@ -155,6 +137,60 @@ export class AuthService {
     return {
       ...jwt,
       user: UserDto.from(user),
+    };
+  }
+
+  async refreshTokens(refreshTokenDto: RefreshTokenDto) {
+    try {
+      const { sub, refreshTokenId } =
+        await this.jwtService.verifyAsync<RefreshTokenPayload>(
+          refreshTokenDto.refreshToken,
+        );
+      const user = await this.userRepositoryService.getUserById(sub);
+      const isValid = await this.refreshTokenIdsStorage.validate(
+        user.id,
+        refreshTokenId,
+      );
+
+      if (!isValid) {
+        throw Error();
+      }
+
+      // Refresh Token Rotation
+      // 한 번 사용된 refresh token 은 무효화 시키기
+      await this.refreshTokenIdsStorage.invalidate(user.id);
+
+      return this.generateTokens({
+        id: user.id,
+        walletAddress: user.walletAddress,
+      });
+    } catch {
+      throw new InvalidatedRefreshTokenError();
+    }
+  }
+
+  private async generateTokens(payload: LoginJwtPayload): Promise<JWT> {
+    const refreshTokenPayload: RefreshTokenPayload = {
+      refreshTokenId: randomUUID(),
+      sub: payload.id,
+    };
+
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, {
+        expiresIn: this.configService.get<number>('JWT_ACCESS_EXPIRES_IN'),
+      }),
+      this.jwtService.signAsync(refreshTokenPayload, {
+        expiresIn: this.configService.get<number>('JWT_REFRESH_EXPIRES_IN'),
+      }),
+    ]);
+    await this.refreshTokenIdsStorage.insert(
+      payload.id,
+      refreshTokenPayload.refreshTokenId,
+    );
+
+    return {
+      accessToken,
+      refreshToken,
     };
   }
 }
