@@ -3,7 +3,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Inject,
   Param,
   Query,
   UseGuards,
@@ -17,8 +16,6 @@ import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
 import { AuthGuard } from '../auth/auth.guard';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 import { ResponseList } from 'src/decorator/response-list.decorators';
 import {
   UserPuzzleDetailResponse,
@@ -28,15 +25,12 @@ import {
 } from './user.puzzle.dto';
 import { SeasonEntity } from '../repository/entity/season.entity';
 import { Zone, ZONES } from 'src/constant/zones';
+import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
 
 @ApiTags('Puzzle')
 @Controller()
 export class PuzzleController {
-  constructor(
-    @Inject(REQUEST)
-    private req: Request,
-    private readonly puzzleService: PuzzleService,
-  ) {}
+  constructor(private readonly puzzleService: PuzzleService) {}
 
   @ApiOperation({ summary: '전체 시즌 목록' })
   @HttpCode(HttpStatus.OK)
@@ -76,10 +70,10 @@ export class PuzzleController {
   @ResponseList(UserPuzzleResponse)
   @Get('my/nft-puzzles')
   async getUserPuzzles(
+    @AuthenticatedUser('id') userId: number,
     @Query() params: UserPuzzleRequest,
   ): Promise<ResponsesListDto<UserPuzzleResponse>> {
-    const user = this.req.user;
-    const result = await this.puzzleService.getPuzzlesByUserId(user.id, params);
+    const result = await this.puzzleService.getPuzzlesByUserId(userId, params);
 
     return new ResponsesListDto(result.list, result.total);
   }
@@ -91,10 +85,10 @@ export class PuzzleController {
   @ResponseData(UserPuzzleDetailResponse)
   @Get('my/nft-puzzles/:id')
   async getUserPuzzleById(
+    @AuthenticatedUser('id') userId: number,
     @Param() params: UserPuzzlePathParams,
   ): Promise<ResponsesDataDto<UserPuzzleDetailResponse>> {
-    const user = this.req.user;
-    const puzzle = await this.puzzleService.getPuzzleById(user.id, params.id);
+    const puzzle = await this.puzzleService.getPuzzleById(userId, params.id);
 
     return new ResponsesDataDto(puzzle);
   }

@@ -11,8 +11,6 @@ import {
   Param,
   Put,
 } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 
 import {
   ApiOkResponse,
@@ -35,15 +33,15 @@ import { AuthorizationToken } from 'src/constant/authorization-token';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { ExceptionCode } from 'src/constant/exception';
 import { ResponseData } from 'src/decorator/response-data.decorator';
+import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
+import { UserEntity } from '../repository/entity/user.entity';
+import { ApiResponseBooleanTrue } from 'src/constant/api-ok-response-boolean';
 
 @Controller({
   path: 'support',
 })
 export class SupportController {
   constructor(
-    @Inject(REQUEST)
-    private req: Request,
-
     @Inject(SupportService)
     private readonly supportService: SupportService,
   ) {}
@@ -64,12 +62,12 @@ export class SupportController {
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.CREATED)
-  @ApiOkResponse()
+  @ApiOkResponse(ApiResponseBooleanTrue)
   @Post('qna')
   async postQuestion(
+    @AuthenticatedUser() user: UserEntity,
     @Body() dto: PostQuestionRequest,
   ): Promise<ResponsesDataDto<boolean>> {
-    const { user } = this.req;
     await this.supportService.postQuestion(user.id, dto);
 
     return new ResponsesDataDto(true);
@@ -80,14 +78,14 @@ export class SupportController {
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse()
+  @ApiOkResponse(ApiResponseBooleanTrue)
   @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.ContentNotFound])
   @Put('qna/:questionId')
   async updateQuestion(
+    @AuthenticatedUser() user: UserEntity,
     @Param('questionId') questionId: number,
     @Body() dto: PostQuestionRequest,
   ): Promise<ResponsesDataDto<boolean>> {
-    const { user } = this.req;
     await this.supportService.updateQuestion(user.id, questionId, dto);
 
     return new ResponsesDataDto(true);
@@ -98,12 +96,16 @@ export class SupportController {
   @ApiBearerAuth(AuthorizationToken.BearerUserToken)
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse()
+  @ApiOkResponse(ApiResponseBooleanTrue)
   @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.ContentNotFound])
   @Delete('qna/:questionId')
-  async deleteQuestion(@Param('questionId') questionId: number): Promise<void> {
-    const { user } = this.req;
+  async deleteQuestion(
+    @AuthenticatedUser() user: UserEntity,
+    @Param('questionId') questionId: number,
+  ): Promise<ResponsesDataDto<boolean>> {
     await this.supportService.deleteQuestion(user.id, questionId);
+
+    return new ResponsesDataDto(true);
   }
 
   @ApiTags('Support')
@@ -116,8 +118,9 @@ export class SupportController {
   @HttpCode(HttpStatus.OK)
   @ResponseList(QnaResponse)
   @Get('qna')
-  async getQnas(): Promise<ResponsesListDto<QnaResponse>> {
-    const { user } = this.req;
+  async getQnas(
+    @AuthenticatedUser() user: UserEntity,
+  ): Promise<ResponsesListDto<QnaResponse>> {
     const result = await this.supportService.getQnasByUserId(user.id);
 
     return new ResponsesListDto(result);
@@ -133,9 +136,9 @@ export class SupportController {
   @ResponseData(QnaResponse)
   @Get('qna/:id')
   async getQnaById(
+    @AuthenticatedUser() user: UserEntity,
     @Param('id') id: number,
   ): Promise<ResponsesDataDto<QnaResponse>> {
-    const { user } = this.req;
     const result = await this.supportService.getQnaById(user.id, id);
 
     return new ResponsesDataDto(result);

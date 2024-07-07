@@ -7,8 +7,6 @@ import {
   Body,
   UseInterceptors,
 } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 
 import {
   ApiBearerAuth,
@@ -27,15 +25,14 @@ import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
 import { UserGuard } from '../auth/auth.guard';
 import { ApiResponseBooleanTrue } from 'src/constant/api-ok-response-boolean';
 import { StartQuestInterceptor } from './quest.interceptor';
+import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
+import { UserEntity } from '../repository/entity/user.entity';
 
 @Controller({
   path: 'quest',
 })
 export class QuestController {
   constructor(
-    @Inject(REQUEST)
-    private req: Request,
-
     @Inject(QuestService)
     private readonly questService: QuestService,
   ) {}
@@ -49,10 +46,9 @@ export class QuestController {
   @UseInterceptors(StartQuestInterceptor)
   @UserGuard()
   @Post('start')
-  async startRandomQuest(): Promise<
-    ResponsesDataDto<StartRandomQuestResponse>
-  > {
-    const { user } = this.req;
+  async startRandomQuest(
+    @AuthenticatedUser() user: UserEntity,
+  ): Promise<ResponsesDataDto<StartRandomQuestResponse>> {
     const quest = await this.questService.getRandomQuest(user.id);
 
     return new ResponsesDataDto(quest);
@@ -67,9 +63,9 @@ export class QuestController {
   @UserGuard()
   @Post('result')
   async getResult(
+    @AuthenticatedUser() user: UserEntity,
     @Body() params: GetResultRequest,
   ): Promise<ResponsesDataDto<boolean>> {
-    const { user } = this.req;
     const result = await this.questService.getResult(user.id, params);
 
     return new ResponsesDataDto(result);

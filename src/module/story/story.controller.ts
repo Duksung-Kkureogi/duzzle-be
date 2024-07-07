@@ -20,8 +20,6 @@ import { ResponseData } from 'src/decorator/response-data.decorator';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { ExceptionCode } from 'src/constant/exception';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 import {
   StoryRequest,
   StoryResponse,
@@ -31,15 +29,14 @@ import {
 import { AuthorizationToken } from 'src/constant/authorization-token';
 import { AuthGuard } from '../auth/auth.guard';
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
+import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
+import { UserEntity } from '../repository/entity/user.entity';
 
 @Controller({
   path: 'story',
 })
 export class StoryController {
   constructor(
-    @Inject(REQUEST)
-    private req: Request,
-
     @Inject(StoryService)
     private readonly storyService: StoryService,
   ) {}
@@ -55,7 +52,7 @@ export class StoryController {
   @HttpCode(HttpStatus.OK)
   @ResponseData(StoryResponse)
   @ResponseException(HttpStatus.NOT_FOUND, [ExceptionCode.ContentNotFound])
-  @Get('')
+  @Get()
   async getStory(
     @Query() query: StoryRequest,
   ): Promise<ResponsesDataDto<StoryResponse>> {
@@ -72,10 +69,9 @@ export class StoryController {
   @HttpCode(HttpStatus.OK)
   @ResponseData(UserStoryProgressResponse)
   @Get('progress')
-  async getUserStoryProgress(): Promise<
-    ResponsesListDto<UserStoryProgressResponse>
-  > {
-    const { user } = this.req;
+  async getUserStoryProgress(
+    @AuthenticatedUser() user: UserEntity,
+  ): Promise<ResponsesListDto<UserStoryProgressResponse>> {
     const result = await this.storyService.getUserStoryProgress(user.id);
 
     return new ResponsesListDto(result);
@@ -89,10 +85,10 @@ export class StoryController {
   @ApiOkResponse()
   @Patch('progress')
   async updateUserStoryProgress(
+    @AuthenticatedUser() user: UserEntity,
+
     @Body() dto: UpdateUserStoryProgressRequest,
   ): Promise<ResponsesDataDto<boolean>> {
-    const { user } = this.req;
-
     await this.storyService.updateUserStoryProgress(user.id, dto);
 
     return new ResponsesDataDto(true);

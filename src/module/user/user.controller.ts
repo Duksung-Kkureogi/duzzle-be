@@ -10,10 +10,7 @@ import {
   Patch,
   UseInterceptors,
   UploadedFile,
-  Param,
 } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 
 import {
   ApiBearerAuth,
@@ -41,15 +38,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/types/file-options';
 import { RedisTTL } from '../cache/enum/cache.enum';
 import { LimitExceededError } from 'src/types/error/application-exceptions/409-conflict';
+import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
 
 @Controller({
   path: 'user',
 })
 export class UserController {
   constructor(
-    @Inject(REQUEST)
-    private req: Request,
-
     @Inject(UserService)
     private readonly userService: UserService,
   ) {}
@@ -64,8 +59,9 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @ResponseData(UserProfileResponse)
   @Get()
-  async getUserInfo(): Promise<ResponsesDataDto<UserProfileResponse>> {
-    const { user } = this.req;
+  async getUserInfo(
+    @AuthenticatedUser() user: UserEntity,
+  ): Promise<ResponsesDataDto<UserProfileResponse>> {
     const result = await this.userService.getUserInfo(user.id);
 
     return new ResponsesDataDto(result);
@@ -91,9 +87,9 @@ export class UserController {
   ])
   @Patch('name')
   async updateUserName(
+    @AuthenticatedUser() user: UserEntity,
     @Body() dto: UpdateUserNameRequest,
   ): Promise<ResponsesDataDto<UserInfoResponse>> {
-    const { user } = this.req;
     if (!(await this.userService.canEditName(user.id))) {
       throw new LimitExceededError();
     }
@@ -128,9 +124,9 @@ export class UserController {
   ])
   @Patch('image')
   async updateUserImage(
+    @AuthenticatedUser() user: UserEntity,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<ResponsesDataDto<UserInfoResponse>> {
-    const { user } = this.req;
     const result = await this.userService.updateUserImage(user.id, file);
 
     return new ResponsesDataDto(result);
