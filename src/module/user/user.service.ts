@@ -76,7 +76,7 @@ export class UserService {
       const imageName = uuid();
       const ext = file.originalname.split('.').pop();
       imageUrl = await this.cloudStorageService.uploadFile(
-        `${imageName}.${ext}`,
+        `user/${imageName}.${ext}`,
         file,
         ext,
       );
@@ -84,7 +84,7 @@ export class UserService {
 
     const user = await this.userRepositoryService.getUserById(userId);
     if (user.image && user.image !== USER_PROFILE_DEFAULT_IMG) {
-      await this.cloudStorageService.deleteFile(user.image.split('/').pop());
+      await this.cloudStorageService.deleteFile(`user/${user.image.split('/').pop()}`);
     }
 
     await this.userRepositoryService.updateUser({
