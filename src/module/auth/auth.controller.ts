@@ -3,25 +3,29 @@ import {
   HttpCode,
   Inject,
   Post,
-  Get,
   HttpStatus,
   Body,
-  Render,
-  Res,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { Request, Response } from 'express';
-
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
 
 import { AuthService } from './auth.service';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
-import { LoginRequest, LoginResponse } from './dto/auth.dto';
-import { ResponseData } from 'src/decorator/response-data.decorator';
+import {
+  JWT,
+  LoginRequest,
+  LoginResponse,
+  RefreshTokenDto,
+} from './dto/auth.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
-import { HttpError } from 'src/types/http-exceptions';
-import { ExceptionCode } from 'src/constant/exception';
-import { ResponseException } from 'src/decorator/response-exception.decorator';
+import {
+  IncorrectLoginInfo,
+  InvalidatedRefreshTokenError,
+  InvalidIdTokenError,
+  InvalidWalletAddress,
+  MissingWeb3IdTokenError,
+} from 'src/types/error/application-exceptions/401-unautorized';
+import { ApiDescription } from 'src/decorator/api-description.decorator';
 
 @Controller({
   path: 'auth',
@@ -35,17 +39,22 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
-  @ApiTags('Auth')
-  @ApiOperation({ summary: '로그인' })
-  @ApiBearerAuth(AuthorizationToken.BearerLoginIdToken)
+  @ApiDescription({
+    tags: 'Auth',
+    summary: '로그인',
+    auth: AuthorizationToken.BearerLoginIdToken,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: LoginResponse,
+    },
+    exceptions: [
+      MissingWeb3IdTokenError,
+      InvalidIdTokenError,
+      InvalidWalletAddress,
+      IncorrectLoginInfo,
+    ],
+  })
   @HttpCode(HttpStatus.OK)
-  @ResponseData(LoginResponse)
-  @ResponseException(HttpStatus.UNAUTHORIZED, [
-    ExceptionCode.MissingAuthToken,
-    ExceptionCode.InvalidLoginInfo,
-    ExceptionCode.InvalidAddress,
-    ExceptionCode.InvalidAccessToken,
-  ])
   @Post()
   async login(
     @Body() params: LoginRequest,
@@ -55,14 +64,26 @@ export class AuthController {
       this.req.headers.authorization!;
 
     if (!idToken) {
-      throw new HttpError(
-        HttpStatus.UNAUTHORIZED,
-        ExceptionCode.MissingAuthToken,
-      );
+      throw new MissingWeb3IdTokenError();
     }
 
     const result: LoginResponse = await this.authService.login(idToken, params);
 
     return new ResponsesDataDto(result);
+  }
+
+  @ApiDescription({
+    tags: 'Auth',
+    summary: '액세스 토큰 재발급',
+    exceptions: [InvalidatedRefreshTokenError],
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: JWT,
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh-tokens')
+  async refreshTokens(@Body() refreshTokenDto: RefreshTokenDto): Promise<JWT> {
+    return await this.authService.refreshTokens(refreshTokenDto);
   }
 }

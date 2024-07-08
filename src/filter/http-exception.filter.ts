@@ -1,25 +1,22 @@
-import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
-import { BaseExceptionFilter } from '@nestjs/core';
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
-import { ExceptionMessage } from 'src/constant/exception';
-import { ServiceError } from 'src/types/exception';
-import { HttpError } from 'src/types/http-exceptions';
+import { ConfigService } from 'src/module/config/config.service';
+import { ApplicationException } from 'src/types/error/application-exceptions.base';
 
-@Catch(HttpError, ServiceError)
-export class HttpExceptionFilter extends BaseExceptionFilter {
-  catch(exception: HttpError | ServiceError, host: ArgumentsHost) {
+@Catch(ApplicationException)
+export class HttpExceptionFilter<T extends ApplicationException>
+  implements ExceptionFilter
+{
+  constructor(private readonly configService: ConfigService) {}
+
+  catch(exception: T, host: ArgumentsHost) {
     const response = host.switchToHttp().getResponse<Response>();
+    const isProduction = this.configService.isProduction();
 
-    response
-      .status(
-        exception.getStatus
-          ? exception.getStatus()
-          : HttpStatus.INTERNAL_SERVER_ERROR,
-      )
-      .json({
-        result: false,
-        code: exception.code || 'INTERNAL_SERVER_ERROR',
-        message: exception.message || ExceptionMessage[exception.code],
-      });
+    response.status(exception.getStatus()).json({
+      result: false,
+      code: isProduction ? 'error' : exception.code,
+      message: isProduction ? 'error' : exception.message,
+    });
   }
 }

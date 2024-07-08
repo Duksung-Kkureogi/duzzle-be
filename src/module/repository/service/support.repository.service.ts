@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { FaqEntity } from '../entity/faq.entity';
 import { QnaEntity } from '../entity/qna.entity';
 import { PostQuestionDto } from '../dto/support.dto';
-import { ExceptionCode } from 'src/constant/exception';
-import { ServiceError } from 'src/types/exception';
+import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 
 @Injectable()
 export class SupportRepositoryService {
@@ -58,7 +58,7 @@ export class SupportRepositoryService {
     });
 
     if (!question) {
-      throw new ServiceError(ExceptionCode.NotFound);
+      throw new ContentNotFoundError('question', questionId);
     }
 
     return question;

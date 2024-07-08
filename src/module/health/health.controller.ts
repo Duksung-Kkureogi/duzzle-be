@@ -1,10 +1,5 @@
-import { Controller, Get, HttpCode } from '@nestjs/common';
-import {
-  ApiExcludeController,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiExcludeController, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiExcludeController(true)
 @Controller('health')
@@ -12,13 +7,9 @@ import {
 export class HealthController {
   constructor() {}
 
-  @ApiOperation({
-    summary: 'Health',
-    description: 'OK',
-  })
   @Get()
   @ApiOkResponse({ type: String, description: 'OK' })
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   check(): string {
     return 'OK';
   }

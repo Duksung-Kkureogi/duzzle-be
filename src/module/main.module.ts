@@ -30,7 +30,7 @@ import { StoryModule } from './story/story.module';
 import { HttpClientModule } from './http-client/http-client.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { ItemModule } from './item/item.module';
-import { WebSocketModule } from 'src/websocket/websocket.module';
+import { WebSocketModule } from 'src/module/websocket/websocket.module';
 import { WebSocketExceptionFilter } from 'src/filter/websocket-exception-filter';
 
 @Module({

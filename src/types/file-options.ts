@@ -1,35 +1,24 @@
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { ExceptionCode } from 'src/constant/exception';
-import { HttpError } from './http-exceptions';
-import { HttpStatus } from '@nestjs/common';
+import {
+  InvalidFileNameCharatersError,
+  InvalidFileNameExtensionError,
+} from './error/application-exceptions/400-bad-request';
 
 export const multerOptions: MulterOptions = {
   limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     const originName = Buffer.from(file.originalname, 'ascii')
       .toString('utf-8')
       .normalize('NFC');
 
     const allowedCharacters = /^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣._-]+$/;
     if (!allowedCharacters.test(originName)) {
-      return cb(
-        new HttpError(
-          HttpStatus.BAD_REQUEST,
-          ExceptionCode.InvalidFilenameCharacters,
-        ),
-        false,
-      );
+      return cb(new InvalidFileNameCharatersError(), false);
     }
 
     const allowedExtensions = /\.(jpg|jpeg|png|gif)$/i;
     if (!allowedExtensions.test(file.originalname)) {
-      return cb(
-        new HttpError(
-          HttpStatus.BAD_REQUEST,
-          ExceptionCode.InvalidFileNameExtension,
-        ),
-        false,
-      );
+      return cb(new InvalidFileNameExtensionError(), false);
     }
 
     cb(null, true);

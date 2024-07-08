@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Response } from 'express';
-import { ExceptionCode, ExceptionMessage } from 'src/constant/exception';
+import { ExceptionCode } from 'src/constant/exception';
 
 @Catch()
 export class InternalServerErrorFilter extends BaseExceptionFilter {
@@ -21,7 +21,7 @@ export class InternalServerErrorFilter extends BaseExceptionFilter {
     response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       result: false,
       code: ExceptionCode.InternalServerError,
-      message: ExceptionMessage.INTERNAL_SERVER_ERROR,
+      message: '내부 서버 오류가 발생했습니다.',
     });
   }
 }
