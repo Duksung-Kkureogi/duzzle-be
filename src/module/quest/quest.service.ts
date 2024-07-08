@@ -38,6 +38,16 @@ export class QuestService {
     return StartRandomQuestResponse.from(quest, log.id);
   }
 
+  async getRandomQuestTmp(userId: number): Promise<StartRandomQuestResponse> {
+    const quests = await this.questRepositoryService.findQuests([]);
+    const randomQuestIndex = Math.floor(Math.random() * quests.length);
+    const quest = quests[randomQuestIndex];
+
+    const log = await this.questRepositoryService.insertLog(userId, quest.id);
+
+    return StartRandomQuestResponse.from(quest, log.id);
+  }
+
   async isAlreadyOngoing(
     userId: number,
   ): Promise<{ isAlreadyOngoing: boolean; log?: LogQuestEntity }> {
@@ -84,6 +94,30 @@ export class QuestService {
       ) && log.quest.answer === answer.map((e) => e.trim()).join(',');
 
     this.handleResult(isSucceeded, log);
+
+    return isSucceeded;
+  }
+
+  async getResultTmp(
+    userId: number,
+    params: GetResultRequest,
+  ): Promise<boolean> {
+    const { logId, answer } = params;
+    const log = await this.questRepositoryService.findLogByIdAndUser(
+      logId,
+      userId,
+    );
+    if (!log || log.isCompleted) {
+      throw new ServiceError(ExceptionCode.NoOngoingQuest);
+    }
+
+    const isSucceeded: boolean =
+      dayjs().isBefore(
+        dayjs(log.createdAt).add(
+          log.quest.timeLimit * 1000 + this.latency,
+          'millisecond',
+        ),
+      ) && log.quest.answer === answer.map((e) => e.trim()).join(',');
 
     return isSucceeded;
   }
