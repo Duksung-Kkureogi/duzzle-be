@@ -63,7 +63,7 @@ export class UserService {
   async getUsers(): Promise<UserEntity[]> {
     const users = await this.userRepositoryService.getUsers();
 
-    return users;
+    return users; 
   }
 
   async updateUserImage(
