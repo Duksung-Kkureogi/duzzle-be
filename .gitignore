@@ -56,3 +56,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 src/module/config/Development.ts
 src/module/config/Local.ts
 src/module/config/Production.ts
+package-lock.json
