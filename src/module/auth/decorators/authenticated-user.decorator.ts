@@ -8,8 +8,6 @@ export const AuthenticatedUser = createParamDecorator(
     const request = ctx.switchToHttp().getRequest();
     const user: UserEntity | undefined = request[REQUEST_USER_KEY];
 
-    return plainToInstance(UserEntity, user, {
-      excludeExtraneousValues: true,
-    });
+    return plainToInstance(UserEntity, user);
   },
 );
