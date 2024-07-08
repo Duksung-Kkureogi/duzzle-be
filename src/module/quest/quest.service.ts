@@ -109,7 +109,7 @@ export class QuestService {
       userId,
     );
     if (!log || log.isCompleted) {
-      throw new ServiceError(ExceptionCode.NoOngoingQuest);
+      throw new NoOngoingQuestError();
     }
 
     const isSucceeded: boolean =

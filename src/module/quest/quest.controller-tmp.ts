@@ -24,8 +24,6 @@ import { ExceptionCode } from 'src/constant/exception';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { QuestService } from './quest.service';
 import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
-import { UserGuard } from '../auth/auth.guard';
-import { ApiResponseBooleanTrue } from 'src/constant/api-ok-response-boolean';
 import { StartQuestInterceptor } from './quest.interceptor';
 
 @Controller({
@@ -58,7 +56,6 @@ export class QuestControllerTmp {
   @ApiTags('Quest')
   @ApiOperation({ summary: '퀘스트 결과' })
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse(ApiResponseBooleanTrue)
   @ResponseException(HttpStatus.CONFLICT, [ExceptionCode.LimitExceeded])
   @Post('result')
   async getResult(
