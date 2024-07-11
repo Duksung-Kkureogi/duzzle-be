@@ -117,6 +117,12 @@ export class EnvironmentVariables {
   @Expose()
   readonly BLOCKCHAIN_POLYGON_RPC_ENDPOINT: string;
 
+  // RPC URL for Collecting Tx Logs Schdeuler
+  @IsNotEmpty()
+  @IsString()
+  @Expose()
+  readonly BLOCKCHAIN_POLYGON_RPC_ENDPOINT_FOR_TX_LOGS: string;
+
   // In-momory DB
   @IsNotEmpty()
   @IsString()

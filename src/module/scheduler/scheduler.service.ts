@@ -1,3 +1,4 @@
+import { ConfigService } from './../config/config.service';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ethers } from 'ethers';
@@ -27,12 +28,19 @@ export class SchedulerService {
 
     @Inject(CacheService)
     private readonly memory: CacheService,
+
+    private readonly configService: ConfigService,
   ) {}
 
   // @Cron(CronExpression.EVERY_MINUTE, {
   //   timeZone: 'UTC',
   // })
   async collectBlockchainTransaction() {
+    const isLocal = this.configService.isLocal();
+    if (isLocal) {
+      return;
+    }
+
     // 블록체인 네트워크의 최신 블록 가져오기
     const latestBlock =
       await this.blockchainCoreService.getLatestBlockNumberHex();
