@@ -1,11 +1,11 @@
-import { ConfigService } from './../config/config.service';
+import { ConfigService } from '../config/config.service';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { ethers } from 'ethers';
 
 import { BlockchainCoreService } from '../blockchain/blockchain.core.service';
 import { BlockchainTransactionService } from '../blockchain/blockchain.transaction.service';
-import { NftRepositoryService } from './../repository/service/nft.repository.service';
+import { NftRepositoryService } from '../repository/service/nft.repository.service';
 import { CacheService } from '../cache/cache.service';
 import { RedisKey } from '../cache/enum/cache.enum';
 import { LogTransactionEntity } from '../repository/entity/log-transaction.entity';
@@ -13,7 +13,7 @@ import { CollectRangeDto, EventTopic } from '../blockchain/dto/blockchain.dto';
 import { ContractKey, ContractType } from '../repository/enum/contract.enum';
 
 @Injectable()
-export class SchedulerService {
+export class TransactionCollectionScheduler {
   private readonly MAX_BLOCK_RANGE = 2_000;
 
   constructor(
@@ -32,14 +32,20 @@ export class SchedulerService {
     private readonly configService: ConfigService,
   ) {}
 
-  // @Cron(CronExpression.EVERY_MINUTE, {
-  //   timeZone: 'UTC',
-  // })
+  @Cron(CronExpression.EVERY_MINUTE, {
+    timeZone: 'UTC',
+  })
   async collectBlockchainTransaction() {
     const isLocal = this.configService.isLocal();
     if (isLocal) {
       return;
     }
+
+    if (await this.isSchedulerRunning()) {
+      return;
+    }
+
+    await this.setStartFlag();
 
     // 블록체인 네트워크의 최신 블록 가져오기
     const latestBlock =
@@ -47,29 +53,14 @@ export class SchedulerService {
 
     try {
       // 마지막으로 수집된 블록넘버 가져오기
-      let lastSyncedBlock: number = parseInt(
-        await this.memory.find(RedisKey.LastSyncedBlock),
-      );
-
-      if (!lastSyncedBlock) {
-        const _lastSyncedBlock =
-          await this.blockchainTransactionService.findLastSyncedBlock();
-        if (!_lastSyncedBlock) {
-          const birthBlockOfContract = (
-            await this.nftRepositoryService.findContractByKey(
-              ContractKey.PLAY_DUZZLE,
-            )
-          ).birthBlock;
-          lastSyncedBlock = birthBlockOfContract;
-        }
-      }
+      const lastSyncedBlock: number = await this.getLastSyncedBlock();
 
       const blockRange = parseInt(latestBlock, 16) - lastSyncedBlock;
       if (blockRange < 1) {
         return;
       }
 
-      let collectedLogs: ethers.Log[];
+      let collectedLogs: ethers.Log[] = [];
       const nftContracts = await this.nftRepositoryService.findContractsByType(
         ContractType.ERC721,
       );
@@ -89,13 +80,14 @@ export class SchedulerService {
             topics: [EventTopic.transfer],
           });
         }
-        collectedLogs = (
-          await Promise.all(
-            collectLogDtos.map((dto) =>
-              this.blockchainCoreService.getLogs(dto),
-            ),
-          )
-        ).flat();
+        for (let i: number = 0; i < collectLogDtos.length; i++) {
+          let logs: ethers.Log[] = await this.blockchainCoreService.getLogs(
+            collectLogDtos[i],
+          );
+
+          collectedLogs = [...collectedLogs, ...logs];
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
       } else {
         collectedLogs = await this.blockchainCoreService.getLogs({
           contractAddress: nftContractAddresses,
@@ -117,10 +109,52 @@ export class SchedulerService {
         ),
         this.blockchainTransactionService.upsertTransactionLogs(txLogsToUpsert),
       ]);
-      await this.memory.set(RedisKey.LastSyncedBlock, latestBlock);
+
+      await this.setLastSyncedBlock(latestBlock);
     } catch (error) {
       Logger.error(error.stack);
       Logger.error(error);
+    } finally {
+      await this.setEndFlag();
     }
+  }
+
+  private async isSchedulerRunning() {
+    return this.memory.find(RedisKey.transactionCollectionInProgress);
+  }
+
+  private async setStartFlag() {
+    await this.memory.set(RedisKey.transactionCollectionInProgress, 'true');
+  }
+
+  private async setEndFlag() {
+    await this.memory.remove(RedisKey.transactionCollectionInProgress);
+  }
+
+  private async getLastSyncedBlock() {
+    // 마지막으로 수집된 블록넘버 가져오기
+    let lastSyncedBlock: number = parseInt(
+      await this.memory.find(RedisKey.LastSyncedBlock),
+    );
+    lastSyncedBlock = 7695665;
+
+    if (!lastSyncedBlock) {
+      const _lastSyncedBlock =
+        await this.blockchainTransactionService.findLastSyncedBlock();
+      if (!_lastSyncedBlock) {
+        const birthBlockOfContract = (
+          await this.nftRepositoryService.findContractByKey(
+            ContractKey.PLAY_DUZZLE,
+          )
+        ).birthBlock;
+        lastSyncedBlock = birthBlockOfContract;
+      }
+    }
+
+    return lastSyncedBlock;
+  }
+
+  private async setLastSyncedBlock(latestBlock: string) {
+    await this.memory.set(RedisKey.LastSyncedBlock, latestBlock);
   }
 }
