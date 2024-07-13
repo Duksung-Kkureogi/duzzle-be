@@ -1,6 +1,6 @@
 export enum RedisKey {
   EditUserName = 'edit_username',
-  LastSyncedBlock = 'last_synced_block',
+  transactionCollectionInProgress = 'tx_collection_in_progress',
   AcidRainScore = 'quest:acidrain:score',
 }
 

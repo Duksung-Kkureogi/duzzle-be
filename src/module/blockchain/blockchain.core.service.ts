@@ -15,13 +15,14 @@ import {
   MostRecentBlock,
 } from './dto/blockchain.dto';
 import { ContractKey } from '../repository/enum/contract.enum';
-import { LogProvider } from 'src/provider/log.provider';
 
 @Injectable()
 export class BlockchainCoreService {
   private readonly provider: ethers.JsonRpcProvider;
+  private readonly providerForCollectingTxLogs: ethers.JsonRpcProvider;
   private readonly signer: ethers.Wallet;
   private readonly rpcUrl: string;
+  private readonly rpcUrlForCollectingTxLogs: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -32,7 +33,13 @@ export class BlockchainCoreService {
     this.rpcUrl = this.configService.get<string>(
       'BLOCKCHAIN_POLYGON_RPC_ENDPOINT',
     );
+    this.rpcUrlForCollectingTxLogs = this.configService.get<string>(
+      'BLOCKCHAIN_POLYGON_RPC_ENDPOINT_FOR_TX_LOGS',
+    );
     this.provider = new ethers.JsonRpcProvider(this.rpcUrl);
+    this.providerForCollectingTxLogs = new ethers.JsonRpcProvider(
+      this.rpcUrlForCollectingTxLogs,
+    );
     this.signer = new ethers.Wallet(process.env.OWNER_PK_AMOY, this.provider);
   }
 
@@ -75,14 +82,7 @@ export class BlockchainCoreService {
       address: dto.contractAddress,
       topics: dto.topics,
     };
-    const logs = await this.provider.getLogs(filter);
-    LogProvider.info(
-      'getLogs',
-      {
-        filter,
-      },
-      BlockchainCoreService.name,
-    );
+    const logs = await this.providerForCollectingTxLogs.getLogs(filter);
 
     return logs;
   }
