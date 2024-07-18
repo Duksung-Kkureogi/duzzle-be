@@ -11,12 +11,10 @@ import { RedisKey } from '../cache/enum/cache.enum';
 import { LogTransactionEntity } from '../repository/entity/log-transaction.entity';
 import { CollectRangeDto, EventTopic } from '../blockchain/dto/blockchain.dto';
 import { ContractKey, ContractType } from '../repository/enum/contract.enum';
+import { ApiRequestLimits, RPCProvider } from './constants/rpc-provider';
 
 @Injectable()
 export class TransactionCollectionScheduler {
-  private readonly MAX_BLOCK_RANGE = 2_000;
-  private readonly MAX_REQUESTS_PER_SECOND = 10;
-
   constructor(
     @Inject(BlockchainCoreService)
     private readonly blockchainCoreService: BlockchainCoreService,
@@ -33,13 +31,38 @@ export class TransactionCollectionScheduler {
     private readonly configService: ConfigService,
   ) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS, {
+  @Cron('*/5 * 0-5 * * *', { timeZone: 'UTC' })
+  async collectBlockchainTransaction_0() {
+    await this._collectBlockchainTransaction(0);
+  }
+
+  @Cron('*/5 * 6-11 * * *', {
     timeZone: 'UTC',
   })
-  async collectBlockchainTransaction() {
+  async collectBlockchainTransaction_1() {
+    await this._collectBlockchainTransaction(1);
+  }
+
+  @Cron('*/5 * 12-17 * * *', {
+    timeZone: 'UTC',
+  })
+  async collectBlockchainTransaction_2() {
+    await this._collectBlockchainTransaction(2);
+  }
+
+  @Cron('*/5 * 18-23 * * *', {
+    timeZone: 'UTC',
+  })
+  async collectBlockchainTransaction_3() {
+    await this._collectBlockchainTransaction(3);
+  }
+
+  private async _collectBlockchainTransaction(rpcProvider: RPCProvider) {
+    const { maxBlockRange, rps } = ApiRequestLimits[rpcProvider];
+
     const isLocal = this.configService.isLocal();
     if (isLocal) {
-      // return;
+      return;
     }
 
     if (await this.isSchedulerRunning()) {
@@ -55,9 +78,10 @@ export class TransactionCollectionScheduler {
     console.log('latestBlock: ', latestBlock);
 
     console.time('collectBlockchainTransaction');
+
     try {
       // 마지막으로 수집된 블록넘버 가져오기
-      const lastSyncedBlock: number = await this.getLastSyncedBlock();
+      const lastSyncedBlock: number = await this.getStartBlock();
       console.log(lastSyncedBlock);
 
       const blockRange = parseInt(latestBlock, 16) - lastSyncedBlock;
@@ -72,46 +96,55 @@ export class TransactionCollectionScheduler {
       );
 
       const nftContractAddresses = nftContracts.map((e) => e.address);
-      if (blockRange > this.MAX_BLOCK_RANGE) {
+      if (blockRange > maxBlockRange) {
         let collectLogDtos: CollectRangeDto[] = [];
-        for (
-          let i = 0;
-          i < Math.floor(blockRange / this.MAX_BLOCK_RANGE) + 1;
-          i++
-        ) {
+        for (let i = 0; i < Math.floor(blockRange / maxBlockRange) + 1; i++) {
           collectLogDtos.push({
             contractAddress: nftContractAddresses,
-            fromBlock: lastSyncedBlock + this.MAX_BLOCK_RANGE * i,
-            toBlock: lastSyncedBlock + this.MAX_BLOCK_RANGE * (i + 1) - 1,
+            fromBlock: lastSyncedBlock + maxBlockRange * i,
+            toBlock: lastSyncedBlock + maxBlockRange * (i + 1) - 1,
             topics: [EventTopic.transfer],
           });
         }
 
         console.log('collectLogDto length: ', collectLogDtos.length);
-        // Alchemy API 요청 제한을 고려하여 요청을 분할하여 처리
-        if (collectLogDtos.length < this.MAX_REQUESTS_PER_SECOND) {
+        // Infura API 요청 제한을 고려하여 요청을 분할하여 처리
+        if (collectLogDtos.length < rps) {
           collectedLogs = (
-            await Promise.all(
-              collectLogDtos.map((e) => this.blockchainCoreService.getLogs(e)),
+            await this.blockchainCoreService.getLogs(
+              collectLogDtos,
+              rpcProvider,
             )
           ).flat();
         } else {
-          for (let i: number = 0; i < collectLogDtos.length; i++) {
-            let logs: ethers.Log[] = await this.blockchainCoreService.getLogs(
-              collectLogDtos[i],
-            );
+          for (let i: number = 0; i < collectLogDtos.length; i += rps) {
+            const batch = collectLogDtos.slice(i, i + rps);
+
+            console.log(batch.length);
+
+            let logs: ethers.Log[] = (
+              await this.blockchainCoreService.getLogs(batch, rpcProvider)
+            ).flat();
 
             collectedLogs = [...collectedLogs, ...logs];
-            await new Promise((resolve) => setTimeout(resolve, 100));
+
+            if (i + rps < collectLogDtos.length) {
+              await new Promise((resolve) => setTimeout(resolve, 1_000)); // 1 seconds
+            }
           }
         }
       } else {
-        collectedLogs = await this.blockchainCoreService.getLogs({
-          contractAddress: nftContractAddresses,
-          fromBlock: lastSyncedBlock,
-          toBlock: parseInt(latestBlock, 16),
-          topics: [EventTopic.transfer],
-        });
+        collectedLogs = await this.blockchainCoreService.getLogs(
+          [
+            {
+              contractAddress: nftContractAddresses,
+              fromBlock: lastSyncedBlock,
+              toBlock: parseInt(latestBlock, 16),
+              topics: [EventTopic.transfer],
+            },
+          ],
+          rpcProvider,
+        );
       }
       if (collectedLogs.length < 1) {
         return;
@@ -147,10 +180,12 @@ export class TransactionCollectionScheduler {
     await this.memory.remove(RedisKey.transactionCollectionInProgress);
   }
 
-  private async getLastSyncedBlock() {
+  private async getStartBlock() {
     // 마지막으로 수집된 블록넘버 가져오기
     let lastSyncedBlock =
       await this.blockchainTransactionService.findLastSyncedBlock();
+
+    // 없을 경우(처음 수집하는 경우) 컨트랙트의 생성 블록넘버로 설정
     if (!lastSyncedBlock) {
       const birthBlockOfContract = (
         await this.nftRepositoryService.findContractByKey(
