@@ -33,9 +33,9 @@ export class TransactionCollectionScheduler {
     private readonly configService: ConfigService,
   ) {}
 
-  @Cron(CronExpression.EVERY_10_SECONDS, {
-    timeZone: 'UTC',
-  })
+  // @Cron(CronExpression.EVERY_10_SECONDS, {
+  //   timeZone: 'UTC',
+  // })
   async collectBlockchainTransaction() {
     const isLocal = this.configService.isLocal();
     if (isLocal) {
