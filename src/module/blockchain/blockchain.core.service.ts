@@ -15,13 +15,16 @@ import {
   MostRecentBlock,
 } from './dto/blockchain.dto';
 import { ContractKey } from '../repository/enum/contract.enum';
-import { LogProvider } from 'src/provider/log.provider';
+import { RPCProvider } from '../scheduler/constants/rpc-provider';
 
 @Injectable()
 export class BlockchainCoreService {
   private readonly provider: ethers.JsonRpcProvider;
+  private readonly providersForCollectingTxLogs: ethers.JsonRpcProvider[] = [];
+
   private readonly signer: ethers.Wallet;
   private readonly rpcUrl: string;
+  private readonly rpcsUrlForCollectingTxLogs: string[] = [];
 
   constructor(
     private readonly configService: ConfigService,
@@ -32,7 +35,26 @@ export class BlockchainCoreService {
     this.rpcUrl = this.configService.get<string>(
       'BLOCKCHAIN_POLYGON_RPC_ENDPOINT',
     );
+    this.rpcsUrlForCollectingTxLogs = [
+      this.configService.get<string>(
+        'BLOCKCHAIN_POLYGON_RPC_ENDPOINT_FOR_TX_LOGS',
+      ),
+      this.configService.get<string>(
+        'BLOCKCHAIN_POLYGON_RPC_ENDPOINT_FOR_TX_LOGS_2',
+      ),
+      this.configService.get<string>(
+        'BLOCKCHAIN_POLYGON_RPC_ENDPOINT_FOR_TX_LOGS_3',
+      ),
+      this.configService.get<string>(
+        'BLOCKCHAIN_POLYGON_RPC_ENDPOINT_FOR_TX_LOGS_4',
+      ),
+    ];
+
     this.provider = new ethers.JsonRpcProvider(this.rpcUrl);
+    this.providersForCollectingTxLogs = this.rpcsUrlForCollectingTxLogs.map(
+      (e) => new ethers.JsonRpcProvider(e),
+    );
+
     this.signer = new ethers.Wallet(process.env.OWNER_PK_AMOY, this.provider);
   }
 
@@ -68,23 +90,26 @@ export class BlockchainCoreService {
     return res.data.result.number;
   }
 
-  async getLogs(dto: CollectRangeDto): Promise<ethers.Log[]> {
-    const filter: Filter = {
-      fromBlock: toBeHex(dto.fromBlock),
-      toBlock: toBeHex(dto.toBlock),
-      address: dto.contractAddress,
-      topics: dto.topics,
-    };
-    const logs = await this.provider.getLogs(filter);
-    LogProvider.info(
-      'getLogs',
-      {
-        filter,
-      },
-      BlockchainCoreService.name,
+  async getLogs(
+    dtos: CollectRangeDto[],
+    rpcProvider: RPCProvider,
+  ): Promise<ethers.Log[]> {
+    const filters: Filter[] = dtos.map((e) => {
+      return {
+        fromBlock: toBeHex(e.fromBlock),
+        toBlock: toBeHex(e.toBlock),
+        address: e.contractAddress,
+        topics: e.topics,
+      };
+    });
+
+    const logs = await Promise.all(
+      filters.map((filter) =>
+        this.providersForCollectingTxLogs[rpcProvider].getLogs(filter),
+      ),
     );
 
-    return logs;
+    return logs.flat();
   }
 
   async getBlockByNumber(blockNumber: number): Promise<ethers.Block> {

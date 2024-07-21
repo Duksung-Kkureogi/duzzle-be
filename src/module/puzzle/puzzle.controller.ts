@@ -24,6 +24,7 @@ import { SeasonEntity } from '../repository/entity/season.entity';
 import { Zone, ZONES } from 'src/constant/zones';
 import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
 import { ApiDescription } from 'src/decorator/api-description.decorator';
+import { UserEntity } from '../repository/entity/user.entity';
 
 @Controller()
 export class PuzzleController {
@@ -91,10 +92,10 @@ export class PuzzleController {
   @HttpCode(HttpStatus.OK)
   @Get('my/nft-puzzles')
   async getUserPuzzles(
-    @AuthenticatedUser('id') userId: number,
+    @AuthenticatedUser() user: UserEntity,
     @Query() params: UserPuzzleRequest,
   ): Promise<ResponsesListDto<UserPuzzleResponse>> {
-    const result = await this.puzzleService.getPuzzlesByUserId(userId, params);
+    const result = await this.puzzleService.getPuzzlesByUserId(user.id, params);
 
     return new ResponsesListDto(result.list, result.total);
   }
@@ -112,10 +113,10 @@ export class PuzzleController {
   @HttpCode(HttpStatus.OK)
   @Get('my/nft-puzzles/:id')
   async getUserPuzzleById(
-    @AuthenticatedUser('id') userId: number,
+    @AuthenticatedUser() user: UserEntity,
     @Param() params: UserPuzzlePathParams,
   ): Promise<ResponsesDataDto<UserPuzzleDetailResponse>> {
-    const puzzle = await this.puzzleService.getPuzzleById(userId, params.id);
+    const puzzle = await this.puzzleService.getPuzzleById(user.id, params.id);
 
     return new ResponsesDataDto(puzzle);
   }
