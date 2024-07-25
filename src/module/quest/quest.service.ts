@@ -24,7 +24,7 @@ export class QuestService {
       await this.questRepositoryService.findRewardReceivedLogsByUserId(userId);
 
     const quests = await this.questRepositoryService.findQuests(
-      logs.map((e) => e.quest.id),
+      logs.map((e) => e.quest?.id),
     );
 
     if (!quests.length) {
