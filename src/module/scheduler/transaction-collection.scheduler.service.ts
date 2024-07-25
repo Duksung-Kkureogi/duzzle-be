@@ -193,8 +193,8 @@ export class TransactionCollectionScheduler {
         )
       ).birthBlock;
       lastSyncedBlock = birthBlockOfContract;
-    } else {
-      return lastSyncedBlock;
     }
+
+    return lastSyncedBlock;
   }
 }
