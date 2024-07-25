@@ -21,12 +21,12 @@ export class QuestRepositoryService {
     return quest;
   }
 
-  async findQuests(excludes: number[]): Promise<QuestEntity[]> {
-    const quests = await this.questRepository.findBy({
-      id: Not(In(excludes)),
-    });
+  async findQuests(excludes?: number[]): Promise<QuestEntity[]> {
+    if (excludes?.every((e) => !!e)) {
+      return this.questRepository.findBy({ id: Not(In(excludes)) });
+    }
 
-    return quests;
+    return this.questRepository.find();
   }
 
   async findRewardReceivedLogsByUserId(

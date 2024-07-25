@@ -23,9 +23,14 @@ export class QuestService {
     const logs =
       await this.questRepositoryService.findRewardReceivedLogsByUserId(userId);
 
-    const quests = await this.questRepositoryService.findQuests(
-      logs.map((e) => e.quest?.id),
-    );
+    let quests;
+    if (logs.length) {
+      quests = await this.questRepositoryService.findQuests(
+        logs.map((e) => e.quest?.id),
+      );
+    } else {
+      quests = await this.questRepositoryService.findQuests();
+    }
 
     if (!quests.length) {
       throw new LimitExceededError();
