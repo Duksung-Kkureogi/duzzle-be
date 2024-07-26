@@ -39,7 +39,7 @@ export class TransactionCollectionScheduler {
   async collectBlockchainTransaction() {
     const isLocal = this.configService.isLocal();
     if (isLocal) {
-      // return;
+      return;
     }
 
     if (await this.isSchedulerRunning()) {
