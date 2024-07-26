@@ -8,6 +8,7 @@ import {
 import { UserEntity } from './user.entity';
 import { QuestEntity } from './quest.entity';
 import { BaseEntity } from './base.entity';
+import { GuestInfo } from 'src/module/quest/types/guest';
 
 @Entity('log_quest')
 export class LogQuestEntity extends BaseEntity {
@@ -17,8 +18,14 @@ export class LogQuestEntity extends BaseEntity {
   @Column('int', { nullable: true })
   questId: number;
 
-  @Column('int')
-  userId: number;
+  @Column('int', { nullable: true })
+  userId?: number;
+
+  @Column('boolean', { default: false })
+  isGuestUser: boolean;
+
+  @Column('json', { nullable: true })
+  guestInfo?: GuestInfo;
 
   @Column('boolean', { nullable: true })
   isSucceeded: boolean;
