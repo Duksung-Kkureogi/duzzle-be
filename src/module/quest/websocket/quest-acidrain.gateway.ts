@@ -2,7 +2,7 @@
  * /quest/start POST 에서 산성비가 랜덤으로 나온 유저만
  * 산성비 퀘스트 시작 가능(url 로 유효하지 않은 접근 차단)
  *
- * 퀘스트 시작시 LogId, accessToken 확인 후 word 하나씩 전송
+ * 퀘스트 시작시 LogId, accessToken 확인 후 word 하나씩 전송(게스트 유저의 경우 LogId 만 확인)
  */
 
 // TODO: WsException 에러 코드로 관리(매직 스트링 Enum 으로 변경)
@@ -21,23 +21,24 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
-import { WebSocketService } from './websocket.service';
-import { WebsocketUserGuard } from './websocket.user.guard';
+import { WebSocketService } from '../../websocket/websocket.service';
 import { WebSocketExceptionFilter } from 'src/filter/websocket-exception-filter';
 import { CacheService } from 'src/module/cache/cache.service';
-import {
-  AcidRain,
-  AcidRainQuestData,
-  AnswerMessageBody,
-  StartAcidRainMessageBody,
-} from './dto/quest-acidrain.dto';
+
 import { QuestService } from 'src/module/quest/quest.service';
 import {
   CORRECT_ANSWER_POINTS,
   AcidRainMessagePattern as MessagePattern,
   MISSING_ANSWER_PENALTY,
   WRONG_ANSWER_PENALTY,
-} from './constant/quest-acidrain';
+} from './constants/quest-acidrain';
+import {
+  AcidRain,
+  AcidRainQuestData,
+  AnswerMessageBody,
+  StartAcidRainMessageBody,
+} from './dto/quest-acidrain.dto';
+import { LogIdAccessTokenGuard } from './log-id-access-token.guard';
 
 @WebSocketGateway({
   cors: { origin: '*' },
@@ -72,7 +73,7 @@ export class QuestAcidRainGateway
   }
 
   @UseFilters(new WebSocketExceptionFilter())
-  @UseGuards(WebsocketUserGuard)
+  @UseGuards(LogIdAccessTokenGuard)
   @SubscribeMessage(MessagePattern.Inbound.Start)
   async handleStart(
     @ConnectedSocket()
@@ -80,24 +81,10 @@ export class QuestAcidRainGateway
     @MessageBody()
     data: StartAcidRainMessageBody,
   ): Promise<void> {
-    if (!data?.logId) {
-      throw new WsException('Missing logId');
-    }
-    if (!data?.gamePanelOffsetHeight) {
-      throw new WsException('Missing gamePanelOffsetHeight');
-    }
-
-    // 해당 log id 랜덤 퀘스트의 주인이 맞는지 확인
-    const log = await this.questService.findLogByIdAndUser(
-      data.logId,
-      client.user.id,
-    );
-    if (!log) {
-      throw new WsException('Bad Request');
-    }
+    const log = client.log;
     const quest: AcidRainQuestData = JSON.parse(log.quest.quest);
     const words: string[] = log.quest.answer.split(',');
-    const questData = new AcidRain(data.logId, client.id, client.user.id);
+    const questData = new AcidRain(data.logId, client.id, client.user?.id);
     const scoreKey = questData.scoreKey;
 
     // 동일한 logId 로 이미 퀘스트를 진행한 이력이 있는지 확인(중복 불가)

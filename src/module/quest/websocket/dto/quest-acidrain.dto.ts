@@ -20,7 +20,7 @@ export type AcidRainQuestData = {
 export class AcidRain {
   scoreKey: string;
 
-  constructor(logId: number, clientId: string, userId: number) {
+  constructor(logId: number, clientId: string, userId: number | null) {
     this.scoreKey = [
       RedisKey.AcidRainScore,
       'logId',

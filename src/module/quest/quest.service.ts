@@ -3,12 +3,15 @@ import dayjs from 'dayjs';
 
 import { QuestRepositoryService } from '../repository/service/quest.repository.service';
 import { BlockchainCoreService } from '../blockchain/blockchain.core.service';
-import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
+import {
+  GetResultRequest,
+  StartRandomQuestResponse,
+} from './rest/dto/quest.dto';
 import { QuestTokenReward } from 'src/constant/quest';
 import { LogQuestEntity } from '../repository/entity/log-quest.entity';
 import { LimitExceededError } from 'src/types/error/application-exceptions/409-conflict';
 import { NoOngoingQuestError } from 'src/types/error/application-exceptions/400-bad-request';
-import { GuestInfo } from './types/guest';
+import { GuestInfo } from './rest/types/guest';
 
 @Injectable()
 export class QuestService {

@@ -8,7 +8,7 @@ import {
 import { UserEntity } from './user.entity';
 import { QuestEntity } from './quest.entity';
 import { BaseEntity } from './base.entity';
-import { GuestInfo } from 'src/module/quest/types/guest';
+import { GuestInfo } from 'src/module/quest/rest/types/guest';
 
 @Entity('log_quest')
 export class LogQuestEntity extends BaseEntity {

@@ -15,7 +15,7 @@ import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { ResponseData } from 'src/decorator/response-data.decorator';
 import { ExceptionCode } from 'src/constant/exception';
 import { ResponseException } from 'src/decorator/response-exception.decorator';
-import { QuestService } from './quest.service';
+import { QuestService } from '../quest.service';
 import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
 
 @Controller({
