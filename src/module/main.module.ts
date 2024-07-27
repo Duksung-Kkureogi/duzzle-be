@@ -32,6 +32,7 @@ import { SchedulerModule } from './scheduler/scheduler.module';
 import { ItemModule } from './item/item.module';
 import { WebSocketModule } from 'src/module/websocket/websocket.module';
 import { WebSocketExceptionFilter } from 'src/filter/websocket-exception-filter';
+import { UserStoryModule } from './user-story/user-story.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { WebSocketExceptionFilter } from 'src/filter/websocket-exception-filter'
     CacheModule,
     PuzzleModule,
     StoryModule,
+    UserStoryModule,
     HttpClientModule,
     SchedulerModule,
     ItemModule,
