@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Param,
   Patch,
   Query,
   UseGuards,
@@ -12,16 +13,18 @@ import {
 import { StoryService } from './story.service';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import {
+  StoryProgressByZoneResponse,
+  StoryProgressResponse,
   StoryRequest,
   StoryResponse,
-  UpdateUserStoryProgressRequest,
-  UserStoryProgressResponse,
+  UpdateStoryProgressRequest,
 } from './dto/story.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
 import { UserEntity } from '../repository/entity/user.entity';
 import { ApiDescription } from 'src/decorator/api-description.decorator';
+import { InvalidParamsError } from 'src/types/error/application-exceptions/400-bad-request';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 import { AuthorizationToken } from 'src/constant/authorization-token';
 
@@ -45,7 +48,7 @@ export class StoryController {
       status: HttpStatus.OK,
       schema: StoryResponse,
     },
-    exceptions: [ContentNotFoundError],
+    exceptions: [InvalidParamsError, ContentNotFoundError],
   })
   @HttpCode(HttpStatus.OK)
   @Get()
@@ -62,19 +65,42 @@ export class StoryController {
   @ApiDescription({
     tags: 'Story',
     auth: AuthorizationToken.BearerUserToken,
-    summary: '유저 스토리 진행도 조회',
+    summary: '유저 구역별 스토리 진행도 조회',
     dataResponse: {
       status: HttpStatus.OK,
-      schema: UserStoryProgressResponse,
+      schema: StoryProgressResponse,
     },
-    exceptions: [ContentNotFoundError],
   })
   @HttpCode(HttpStatus.OK)
-  @Get('progress')
-  async getUserStoryProgress(
+  @Get('/progress')
+  async getStoryProgress(
     @AuthenticatedUser() user: UserEntity,
-  ): Promise<ResponsesListDto<UserStoryProgressResponse>> {
-    const result = await this.storyService.getUserStoryProgress(user.id);
+  ): Promise<ResponsesListDto<StoryProgressResponse>> {
+    const result = await this.storyService.getStoryProgress(user.id);
+
+    return new ResponsesListDto(result);
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiDescription({
+    tags: 'Story',
+    auth: AuthorizationToken.BearerUserToken,
+    summary: '유저 특정 구역 스토리 진행도 조회',
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: StoryProgressByZoneResponse,
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  @Get('/progress/:zoneId')
+  async getStoryProgressByZone(
+    @AuthenticatedUser() user: UserEntity,
+    @Param('zoneId') zoneId: number,
+  ): Promise<ResponsesListDto<StoryProgressByZoneResponse>> {
+    const result = await this.storyService.getStoryProgressByZone(
+      user.id,
+      zoneId,
+    );
 
     return new ResponsesListDto(result);
   }
@@ -88,15 +114,15 @@ export class StoryController {
       status: HttpStatus.OK,
       schema: true,
     },
-    // exceptions: [ContentNotFoundError], // TODO:
+    exceptions: [InvalidParamsError, ContentNotFoundError],
   })
   @HttpCode(HttpStatus.OK)
   @Patch('progress')
   async updateUserStoryProgress(
     @AuthenticatedUser() user: UserEntity,
-    @Body() dto: UpdateUserStoryProgressRequest,
+    @Body() dto: UpdateStoryProgressRequest,
   ): Promise<ResponsesDataDto<boolean>> {
-    await this.storyService.updateUserStoryProgress(user.id, dto);
+    await this.storyService.updateStoryProgress(user.id, dto);
 
     return new ResponsesDataDto(true);
   }

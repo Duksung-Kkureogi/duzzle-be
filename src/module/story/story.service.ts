@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { StoryRepositoryService } from '../repository/service/story.repository.service';
 import {
+  StoryProgressByZoneResponse,
+  StoryProgressResponse,
   StoryResponse,
-  UpdateUserStoryProgressRequest,
-  UserStoryProgressResponse,
+  UpdateStoryProgressRequest,
 } from './dto/story.dto';
+import { ZoneRepositoryService } from '../repository/service/zone.repository.service';
+import { InvalidParamsError } from 'src/types/error/application-exceptions/400-bad-request';
 
 @Injectable()
 export class StoryService {
   constructor(
     private readonly storyRepositoryService: StoryRepositoryService,
+    private readonly zoneRepositoryService: ZoneRepositoryService,
   ) {}
 
   async getStoryByPage(storyId: number, page: number): Promise<StoryResponse> {
@@ -21,44 +25,79 @@ export class StoryService {
     return StoryResponse.from(result);
   }
 
-  async getUserStoryProgress(
-    userId: number,
-  ): Promise<UserStoryProgressResponse[]> {
-    let userStories =
-      await this.storyRepositoryService.findUserStoryProgress(userId);
+  async getStoryProgress(userId: number): Promise<StoryProgressResponse[]> {
+    const userStories =
+      await this.storyRepositoryService.findStoryProgress(userId);
+    const userStoryMap = new Map<number, number>();
+    userStories.forEach((userStory) =>
+      userStoryMap.set(userStory.storyId, userStory.readPage),
+    );
 
-    if (!userStories || userStories.length === 0) {
-      const storyList = await this.storyRepositoryService.getStoryList();
-      const storyIds = storyList.map((e) => e.id);
+    const zones = await this.zoneRepositoryService.getZones();
 
-      for (const id of storyIds) {
-        if (!userStories.some((userStory) => userStory.storyId === id)) {
-          const dto = {
-            userId: userId,
-            storyId: id,
-            readPage: 0,
-          };
-          await this.storyRepositoryService.insertUserStoryProgress(dto);
-        }
-      }
-    }
+    const result = await Promise.all(
+      zones.map(async (zone) => {
+        const stories = await this.storyRepositoryService.findStoryListByZone(
+          zone.id,
+        );
+        if (stories.length === 0) return undefined;
 
-    userStories.sort((a, b) => {
-      if (a.story.zoneId < b.story.zoneId) return -1;
-      if (a.story.zoneId > b.story.zoneId) return 1;
-      return 0;
-    });
+        const totalStory = stories.length;
+        const readStory = stories.filter((story) => {
+          const readPage = userStoryMap.get(story.id);
+          return readPage && readPage === story.contents.length;
+        }).length;
 
-    const result = userStories.map((e) => UserStoryProgressResponse.from(e));
+        return {
+          zoneId: zone.id,
+          zoneNameKr: zone.nameKr,
+          zoneNameUs: zone.nameUs,
+          totalStory,
+          readStory,
+        };
+      }),
+    );
 
-    return result;
+    return result.filter((item) => item !== undefined);
   }
 
-  async updateUserStoryProgress(
+  async getStoryProgressByZone(
     userId: number,
-    params: UpdateUserStoryProgressRequest,
+    zoneId: number,
+  ): Promise<StoryProgressByZoneResponse[]> {
+    const userStories =
+      await this.storyRepositoryService.findStoryProgress(userId);
+    const userStoryMap = new Map<number, number>();
+    userStories.forEach((userStory) =>
+      userStoryMap.set(userStory.storyId, userStory.readPage),
+    );
+
+    const stories =
+      await this.storyRepositoryService.findStoryListByZone(zoneId);
+
+    return stories.map((story) => {
+      const totalPage = story.contents.length;
+      const readPage = userStoryMap.get(story.id) || 0;
+
+      return {
+        storyId: story.id,
+        title: story.title,
+        totalPage,
+        readPage,
+      };
+    });
+  }
+
+  async updateStoryProgress(
+    userId: number,
+    params: UpdateStoryProgressRequest,
   ): Promise<void> {
-    await this.storyRepositoryService.updateUserStoryProgress({
+    const totalPage = (
+      await this.storyRepositoryService.getStoryById(params.storyId)
+    ).length;
+    if (params.readPage > totalPage) throw new InvalidParamsError();
+
+    await this.storyRepositoryService.updateStoryProgress({
       ...params,
       userId: userId,
     });

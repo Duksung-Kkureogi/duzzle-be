@@ -26,10 +26,6 @@ export class StoryResponse {
 
   @ApiProperty()
   @Expose()
-  zoneId: number;
-
-  @ApiProperty()
-  @Expose()
   currentPage: number;
 
   @ApiProperty()
@@ -45,9 +41,9 @@ export class StoryResponse {
       this,
       {
         ...entity,
-        zoneId: entity.story.zoneId,
+        storyId: entity.story.id,
         currentPage: entity.page,
-        totalPage: entity.story.totalPage,
+        totalPage: entity.story.contents.length,
       },
       {
         excludeExtraneousValues: true,
@@ -56,11 +52,7 @@ export class StoryResponse {
   }
 }
 
-export class UserStoryProgressResponse {
-  @ApiProperty()
-  @Expose()
-  storyId: number;
-
+export class StoryProgressResponse {
   @ApiProperty()
   @Expose()
   zoneId: number;
@@ -75,30 +67,32 @@ export class UserStoryProgressResponse {
 
   @ApiProperty()
   @Expose()
+  totalStory: number;
+
+  @ApiProperty()
+  @Expose()
+  readStory: number;
+}
+
+export class StoryProgressByZoneResponse {
+  @ApiProperty()
+  @Expose()
+  storyId: number;
+
+  @ApiProperty()
+  @Expose()
+  title: string;
+
+  @ApiProperty()
+  @Expose()
   totalPage: number;
 
   @ApiProperty()
   @Expose()
   readPage: number;
-
-  static from(entity: UserStoryEntity) {
-    return plainToInstance(
-      this,
-      {
-        ...entity,
-        zoneId: entity.story.zoneId,
-        zoneNameKr: entity.story.zone.nameKr,
-        zoneNameUs: entity.story.zone.nameUs,
-        totalPage: entity.story.totalPage,
-      },
-      {
-        excludeExtraneousValues: true,
-      },
-    );
-  }
 }
 
-export class UpdateUserStoryProgressRequest {
+export class UpdateStoryProgressRequest {
   @ApiProperty()
   @IsNotEmpty()
   storyId: number;
