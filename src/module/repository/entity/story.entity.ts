@@ -3,10 +3,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { ZoneEntity } from './zone.entity';
+import { StoryContentEntity } from './story-content.entity';
 
 @Entity('story')
 export class StoryEntity extends BaseEntity {
@@ -16,8 +18,8 @@ export class StoryEntity extends BaseEntity {
   @Column('int')
   zoneId: number;
 
-  @Column('int')
-  totalPage: number;
+  @Column('varchar', { nullable: true })
+  title?: string;
 
   @ManyToOne(() => ZoneEntity, {
     onDelete: 'CASCADE',
@@ -25,4 +27,10 @@ export class StoryEntity extends BaseEntity {
   })
   @JoinColumn({ name: 'zone_id' })
   zone: ZoneEntity;
+
+  @OneToMany(() => StoryContentEntity, (content) => content.story, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  contents: StoryContentEntity[];
 }

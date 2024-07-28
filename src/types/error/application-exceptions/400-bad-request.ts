@@ -7,6 +7,12 @@ export class NoOngoingQuestError extends ApplicationException {
   }
 }
 
+export class InvalidParamsError extends ApplicationException {
+  constructor() {
+    super(ExceptionCode.InvalidParameter, 'Invalid Parameter');
+  }
+}
+
 export class InvalidFileNameExtensionError extends ApplicationException {
   constructor() {
     super(

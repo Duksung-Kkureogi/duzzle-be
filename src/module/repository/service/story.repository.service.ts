@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { StoryEntity } from '../entity/story.entity';
 import { UserStoryEntity } from '../entity/user-story.entity';
-import { InsertUserStoryDto, UpdateUserStoryDto } from '../dto/story.dto';
+import { UpdateUserStoryDto } from '../dto/story.dto';
 import { StoryContentEntity } from '../entity/story-content.entity';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 
@@ -21,12 +21,16 @@ export class StoryRepositoryService {
     private userStoryRepository: Repository<UserStoryEntity>,
   ) {}
 
-  async getStoryList(): Promise<StoryEntity[]> {
-    const stories = await this.storyRepository.find({
-      relations: ['zone'],
+  async getStoryById(storyId: number): Promise<StoryContentEntity[]> {
+    const story = await this.storyContentRepository.find({
+      where: { id: storyId },
     });
 
-    return stories;
+    if (!story) {
+      throw new ContentNotFoundError('story', `${storyId}`);
+    }
+
+    return story;
   }
 
   async getStoryByPage(
@@ -34,8 +38,11 @@ export class StoryRepositoryService {
     page: number,
   ): Promise<StoryContentEntity> {
     const story = await this.storyContentRepository.findOne({
-      where: { storyId, page },
-      relations: ['story'],
+      where: {
+        story: { id: storyId },
+        page: page,
+      },
+      relations: ['story', 'story.contents'],
     });
 
     if (!story) {
@@ -45,23 +52,31 @@ export class StoryRepositoryService {
     return story;
   }
 
-  async findUserStoryProgress(userId: number): Promise<UserStoryEntity[]> {
+  async findStoryListByZone(zoneId: number): Promise<StoryEntity[]> {
+    const stories = await this.storyRepository.find({
+      where: { zoneId },
+      relations: ['contents'],
+    });
+
+    return stories;
+  }
+
+  async findStoryProgress(userId: number): Promise<UserStoryEntity[]> {
     const userStories = await this.userStoryRepository.find({
       where: { userId },
-      relations: ['story', 'story.zone'],
+      relations: ['story'],
     });
 
     return userStories;
   }
 
-  async insertUserStoryProgress(dto: InsertUserStoryDto): Promise<void> {
-    await this.userStoryRepository.insert(dto);
-  }
+  async updateStoryProgress(dto: UpdateUserStoryDto): Promise<void> {
+    const userStory = this.userStoryRepository.create({
+      userId: dto.userId,
+      storyId: dto.storyId,
+      readPage: dto.readPage,
+    });
 
-  async updateUserStoryProgress(dto: UpdateUserStoryDto): Promise<void> {
-    await this.userStoryRepository.update(
-      { userId: dto.userId, storyId: dto.storyId },
-      dto,
-    );
+    await this.userStoryRepository.save(userStory);
   }
 }

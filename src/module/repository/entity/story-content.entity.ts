@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { StoryEntity } from './story.entity';
 import { StoryDto } from '../dto/story.dto';
@@ -15,18 +9,14 @@ export class StoryContentEntity extends BaseEntity {
   id: number;
 
   @Column('int')
-  storyId: number;
-
-  @Column('int')
   page: number;
 
   @Column('json')
   content: StoryDto[];
 
-  @ManyToOne(() => StoryEntity, {
+  @ManyToOne(() => StoryEntity, (story) => story.contents, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'story_id' })
   story: StoryEntity;
 }
