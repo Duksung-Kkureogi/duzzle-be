@@ -11,12 +11,12 @@ import {
 
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
-import { QuestService } from './quest.service';
+import { QuestService } from '../quest.service';
 import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../../auth/auth.guard';
 import { StartQuestInterceptor } from './quest.interceptor';
-import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
-import { UserEntity } from '../repository/entity/user.entity';
+import { AuthenticatedUser } from '../../auth/decorators/authenticated-user.decorator';
+import { UserEntity } from '../../repository/entity/user.entity';
 import { ApiDescription } from 'src/decorator/api-description.decorator';
 import { LimitExceededError } from 'src/types/error/application-exceptions/409-conflict';
 

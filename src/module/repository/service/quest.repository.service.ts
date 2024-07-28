@@ -21,12 +21,12 @@ export class QuestRepositoryService {
     return quest;
   }
 
-  async findQuests(excludes: number[]): Promise<QuestEntity[]> {
-    const quests = await this.questRepository.findBy({
-      id: Not(In(excludes)),
-    });
+  async findQuests(excludes?: number[]): Promise<QuestEntity[]> {
+    if (excludes?.every((e) => !!e)) {
+      return this.questRepository.findBy({ id: Not(In(excludes)) });
+    }
 
-    return quests;
+    return this.questRepository.find();
   }
 
   async findRewardReceivedLogsByUserId(
@@ -80,14 +80,11 @@ export class QuestRepositoryService {
     return logs;
   }
 
-  async insertLog(userId: number, questId: number): Promise<LogQuestEntity> {
-    const log = this.logRepository.create({
-      userId,
-      questId,
-    });
-    await this.logRepository.save(log);
+  async insertLog(log: Partial<LogQuestEntity>): Promise<LogQuestEntity> {
+    const logEntity = this.logRepository.create(log);
+    await this.logRepository.save(logEntity);
 
-    return log;
+    return logEntity;
   }
 
   async updateLog(log: LogQuestEntity): Promise<void> {
@@ -101,6 +98,15 @@ export class QuestRepositoryService {
     const log = await this.logRepository.findOne({
       where: { id, userId },
       relations: { quest: true, user: true },
+    });
+
+    return log;
+  }
+
+  async findGuestLogById(id: number): Promise<LogQuestEntity> {
+    const log = await this.logRepository.findOne({
+      where: { id, isGuestUser: true },
+      relations: { quest: true },
     });
 
     return log;
