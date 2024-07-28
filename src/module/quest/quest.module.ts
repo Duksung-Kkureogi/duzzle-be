@@ -1,14 +1,16 @@
 import { RepositoryModule } from 'src/module/repository/repository.module';
 import { Module } from '@nestjs/common';
-import { QuestController } from './quest.controller';
+import { QuestController } from './rest/quest.controller';
 import { QuestService } from './quest.service';
 import { BlockchainModule } from '../blockchain/blockchain.module';
-import { QuestControllerTmp } from './quest.controller-tmp';
+import { QuestForGuestController } from './rest/quest-for-guest.controller';
+import { QuestAcidRainGateway } from './websocket/quest-acidrain.gateway';
+import { WebSocketModule } from '../websocket/websocket.module';
 
 @Module({
-  imports: [RepositoryModule, BlockchainModule],
-  controllers: [QuestController, QuestControllerTmp],
-  providers: [QuestService],
+  imports: [RepositoryModule, BlockchainModule, WebSocketModule],
+  controllers: [QuestController, QuestForGuestController],
+  providers: [QuestService, QuestAcidRainGateway],
   exports: [QuestService],
 })
 export class QuestModule {}

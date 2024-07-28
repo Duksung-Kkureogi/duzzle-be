@@ -3,11 +3,15 @@ import dayjs from 'dayjs';
 
 import { QuestRepositoryService } from '../repository/service/quest.repository.service';
 import { BlockchainCoreService } from '../blockchain/blockchain.core.service';
-import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
+import {
+  GetResultRequest,
+  StartRandomQuestResponse,
+} from './rest/dto/quest.dto';
 import { QuestTokenReward } from 'src/constant/quest';
 import { LogQuestEntity } from '../repository/entity/log-quest.entity';
 import { LimitExceededError } from 'src/types/error/application-exceptions/409-conflict';
 import { NoOngoingQuestError } from 'src/types/error/application-exceptions/400-bad-request';
+import { GuestInfo } from './rest/types/guest';
 
 @Injectable()
 export class QuestService {
@@ -39,17 +43,26 @@ export class QuestService {
     const randomQuestIndex = Math.floor(Math.random() * quests.length);
     const quest = quests[randomQuestIndex];
 
-    const log = await this.questRepositoryService.insertLog(userId, quest.id);
+    const log = await this.questRepositoryService.insertLog({
+      userId,
+      questId: quest.id,
+    });
 
     return StartRandomQuestResponse.from(quest, log.id);
   }
 
-  async getRandomQuestTmp(userId: number): Promise<StartRandomQuestResponse> {
+  async getRandomQuestForGuest(
+    guestInfo: GuestInfo,
+  ): Promise<StartRandomQuestResponse> {
     const quests = await this.questRepositoryService.findQuests([]);
     const randomQuestIndex = Math.floor(Math.random() * quests.length);
     const quest = quests[randomQuestIndex];
 
-    const log = await this.questRepositoryService.insertLog(userId, quest.id);
+    const log = await this.questRepositoryService.insertLog({
+      questId: quest.id,
+      isGuestUser: true,
+      guestInfo,
+    });
 
     return StartRandomQuestResponse.from(quest, log.id);
   }
@@ -81,12 +94,23 @@ export class QuestService {
     return await this.questRepositoryService.findLogByIdAndUser(id, userId);
   }
 
-  async getResult(userId: number, params: GetResultRequest): Promise<boolean> {
+  /**
+   * 퀘스트 결과 처리
+   * @param userId null 이면 게스트
+   * @returns 성공 여부
+   */
+  async getResult(
+    userId: number | null,
+    params: GetResultRequest,
+  ): Promise<boolean> {
     const { logId, answer } = params;
-    const log = await this.questRepositoryService.findLogByIdAndUser(
-      logId,
-      userId,
-    );
+    let log: LogQuestEntity;
+    if (userId) {
+      log = await this.questRepositoryService.findLogByIdAndUser(logId, userId);
+    } else {
+      log = await this.questRepositoryService.findGuestLogById(logId);
+    }
+
     if (!log || log.isCompleted) {
       throw new NoOngoingQuestError();
     }
@@ -104,35 +128,12 @@ export class QuestService {
     return isSucceeded;
   }
 
-  async getResultTmp(
-    userId: number,
-    params: GetResultRequest,
-  ): Promise<boolean> {
-    const { logId, answer } = params;
-    const log = await this.questRepositoryService.findLogByIdAndUser(
-      logId,
-      userId,
-    );
-    if (!log || log.isCompleted) {
-      throw new NoOngoingQuestError();
-    }
-
-    const isSucceeded: boolean =
-      dayjs().isBefore(
-        dayjs(log.createdAt).add(
-          log.quest.timeLimit * 1000 + this.latency,
-          'millisecond',
-        ),
-      ) && log.quest.answer === answer.map((e) => e.trim()).join(',');
-
-    return isSucceeded;
-  }
-
   async handleResult(isSucceeded: boolean, log: LogQuestEntity) {
     log.isCompleted = true;
     log.isSucceeded = isSucceeded;
 
-    if (isSucceeded) {
+    // 성공 시, 토큰 지급(게스트는 제외)
+    if (isSucceeded && !log.isGuestUser) {
       try {
         await this.blockchainCoreService.mintDalToken(
           log.user.walletAddress,
