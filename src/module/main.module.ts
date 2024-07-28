@@ -32,6 +32,7 @@ import { SchedulerModule } from './scheduler/scheduler.module';
 import { ItemModule } from './item/item.module';
 import { WebSocketModule } from 'src/module/websocket/websocket.module';
 import { WebSocketExceptionFilter } from 'src/filter/websocket-exception-filter';
+import { RankingsModule } from './rankings/rankings.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { WebSocketExceptionFilter } from 'src/filter/websocket-exception-filter'
     SchedulerModule,
     ItemModule,
     WebSocketModule,
+    RankingsModule,
   ],
   controllers: [HealthController],
   providers: [

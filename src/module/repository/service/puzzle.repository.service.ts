@@ -22,6 +22,23 @@ export class PuzzleRepositoryService {
     private userRepositoryService: UserRepositoryService,
   ) {}
 
+  async getNftHoldersBySeasonId(
+    seasonId: number,
+  ): Promise<Pick<PuzzlePieceEntity, 'holerWalletAddress' | 'holderName'>[]> {
+    return this.puzzlePieceRepository
+      .createQueryBuilder('pp')
+      .select('pp.holderName', 'holderName')
+      .addSelect('pp.holerWalletAddress', 'holerWalletAddress')
+      .leftJoin('pp.seasonZone', 'sz')
+      .where('sz.seasonId = :seasonId', { seasonId })
+      .andWhere('pp.minted = true')
+      .getRawMany();
+  }
+
+  async getThisSeason(): Promise<SeasonEntity> {
+    return this.seasonRepository.findOne({ where: {}, order: { id: 'DESC' } });
+  }
+
   async getAllSeasons(): Promise<SeasonEntity[]> {
     return await this.seasonRepository.find();
   }

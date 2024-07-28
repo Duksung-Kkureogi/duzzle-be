@@ -11,6 +11,7 @@ import {
 } from './user.puzzle.dto';
 import { PaginatedList } from 'src/dto/response.dto';
 import { ContractKey } from '../repository/enum/contract.enum';
+import { PuzzlePieceEntity } from '../repository/entity/puzzle-piece.entity';
 
 @Injectable()
 export class PuzzleService {
@@ -19,7 +20,17 @@ export class PuzzleService {
     private readonly nftRepositoryService: NftRepositoryService,
   ) {}
 
-  async getAllSeasons() {
+  async getNftHoldersBySeasonId(
+    seasonId: number,
+  ): Promise<Pick<PuzzlePieceEntity, 'holerWalletAddress' | 'holderName'>[]> {
+    return this.puzzleRepositoryService.getNftHoldersBySeasonId(seasonId);
+  }
+
+  async getThisSeason(): Promise<SeasonEntity> {
+    return this.puzzleRepositoryService.getThisSeason();
+  }
+
+  async getAllSeasons(): Promise<SeasonEntity[]> {
     return this.puzzleRepositoryService.getAllSeasons();
   }
 
