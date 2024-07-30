@@ -23,10 +23,10 @@ export class StoryRepositoryService {
 
   async getStoryById(storyId: number): Promise<StoryContentEntity[]> {
     const story = await this.storyContentRepository.find({
-      where: { id: storyId },
+      where: { story: { id: storyId } },
     });
 
-    if (!story) {
+    if (!story || story.length === 0) {
       throw new ContentNotFoundError('story', `${storyId}`);
     }
 
