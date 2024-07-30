@@ -1,7 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { StoryEntity } from './story.entity';
-import { StoryDto } from '../dto/story.dto';
 
 @Entity('story_content')
 export class StoryContentEntity extends BaseEntity {
@@ -11,8 +10,8 @@ export class StoryContentEntity extends BaseEntity {
   @Column('int')
   page: number;
 
-  @Column('json')
-  content: StoryDto[];
+  @Column('varchar')
+  content: string;
 
   @ManyToOne(() => StoryEntity, (story) => story.contents, {
     onDelete: 'CASCADE',
