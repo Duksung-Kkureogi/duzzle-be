@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type, plainToInstance } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsOptional, IsPositive } from 'class-validator';
-import { StoryDto } from 'src/module/repository/dto/story.dto';
+import { IsInt, IsOptional, IsPositive } from 'class-validator';
 import { StoryContentEntity } from 'src/module/repository/entity/story-content.entity';
-import { UserStoryEntity } from 'src/module/repository/entity/user-story.entity';
 
 export class StoryRequest {
   @ApiProperty()
@@ -34,7 +32,7 @@ export class StoryResponse {
 
   @ApiProperty()
   @Expose()
-  content: StoryDto[];
+  content: string;
 
   static from(entity: StoryContentEntity) {
     return plainToInstance(

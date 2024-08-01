@@ -85,6 +85,7 @@ export class UserStoryService {
     const totalPage = (
       await this.storyRepositoryService.getStoryById(params.storyId)
     ).length;
+
     if (params.readPage > totalPage) throw new InvalidParamsError();
 
     await this.storyRepositoryService.updateStoryProgress({
