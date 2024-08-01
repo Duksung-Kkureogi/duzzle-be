@@ -10,7 +10,7 @@ export class StoryContentEntity extends BaseEntity {
   @Column('int')
   page: number;
 
-  @Column('varchar')
+  @Column('varchar', { nullable: true })
   content: string;
 
   @Column('varchar', { nullable: true })

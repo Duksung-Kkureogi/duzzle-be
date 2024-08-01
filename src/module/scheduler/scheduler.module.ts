@@ -4,6 +4,7 @@ import { TransactionCollectionScheduler } from './transaction-collection.schedul
 import { ScheduleModule } from '@nestjs/schedule';
 import { BlockchainModule } from '../blockchain/blockchain.module';
 import { CacheModule } from '../cache/cache.module';
+import { SchedulerController } from './scheduler.controller';
 
 @Module({
   imports: [
@@ -13,5 +14,6 @@ import { CacheModule } from '../cache/cache.module';
     CacheModule,
   ],
   providers: [TransactionCollectionScheduler],
+  controllers: [SchedulerController],
 })
 export class SchedulerModule {}
