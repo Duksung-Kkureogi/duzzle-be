@@ -172,11 +172,11 @@ export class TransactionCollectionScheduler {
     return this.memory.find(RedisKey.transactionCollectionInProgress);
   }
 
-  private async setStartFlag() {
+  async setStartFlag() {
     await this.memory.set(RedisKey.transactionCollectionInProgress, 'true');
   }
 
-  private async setEndFlag() {
+  async setEndFlag() {
     await this.memory.remove(RedisKey.transactionCollectionInProgress);
   }
 
