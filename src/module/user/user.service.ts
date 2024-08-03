@@ -11,6 +11,7 @@ import { RedisTTL } from '../cache/enum/cache.enum';
 import { ItemService } from '../item/item.service';
 import { PuzzleService } from '../puzzle/puzzle.service';
 import { USER_PROFILE_DEFAULT_IMG } from 'src/constant/image';
+import { ProfileType } from '../repository/enum/user.enum';
 
 @Injectable()
 export class UserService {
@@ -63,7 +64,7 @@ export class UserService {
   async getUsers(): Promise<UserEntity[]> {
     const users = await this.userRepositoryService.getUsers();
 
-    return users; 
+    return users;
   }
 
   async updateUserImage(
@@ -84,12 +85,28 @@ export class UserService {
 
     const user = await this.userRepositoryService.getUserById(userId);
     if (user.image && user.image !== USER_PROFILE_DEFAULT_IMG) {
-      await this.cloudStorageService.deleteFile(`user/${user.image.split('/').pop()}`);
+      await this.cloudStorageService.deleteFile(
+        `user/${user.image.split('/').pop()}`,
+      );
     }
 
     await this.userRepositoryService.updateUser({
       id: userId,
       image: imageUrl,
+    });
+
+    const result = await this.userRepositoryService.getUserById(userId);
+
+    return UserInfoResponse.from(result);
+  }
+
+  async updateUserProfileType(
+    userId: number,
+    profileType: ProfileType,
+  ): Promise<UserInfoResponse> {
+    await this.userRepositoryService.updateUser({
+      id: userId,
+      profileType,
     });
 
     const result = await this.userRepositoryService.getUserById(userId);

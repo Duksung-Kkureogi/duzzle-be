@@ -20,6 +20,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import {
   ImageUploadDto,
   UpdateUserNameRequest,
+  UpdateUserProfileTypeRequest,
   UserInfoResponse,
   UserProfileResponse,
 } from './dto/user.dto';
@@ -37,6 +38,7 @@ import { ApiDescription } from 'src/decorator/api-description.decorator';
 import {
   InvalidFileNameCharatersError,
   InvalidFileNameExtensionError,
+  InvalidParamsError,
 } from 'src/types/error/application-exceptions/400-bad-request';
 
 @Controller({
@@ -132,6 +134,36 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<ResponsesDataDto<UserInfoResponse>> {
     const result = await this.userService.updateUserImage(user.id, file);
+
+    return new ResponsesDataDto(result);
+  }
+
+  @ApiDescription({
+    tags: 'User',
+    summary: '유저 프로필 공개여부 설정',
+    description: `
+    public: 비로그인, 로그인 유저 모두 열람 가능,
+    private: 로그인 유저만 열람 가능(기본값),
+    none: 아무도 접근 불가
+    `,
+    auth: AuthorizationToken.BearerUserToken,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: UserInfoResponse,
+    },
+    exceptions: [],
+  })
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Patch('profileType')
+  async updateUserProfileType(
+    @AuthenticatedUser() user: UserEntity,
+    @Body() dto: UpdateUserProfileTypeRequest,
+  ): Promise<ResponsesDataDto<UserInfoResponse>> {
+    const result = await this.userService.updateUserProfileType(
+      user.id,
+      dto.profileType,
+    );
 
     return new ResponsesDataDto(result);
   }
