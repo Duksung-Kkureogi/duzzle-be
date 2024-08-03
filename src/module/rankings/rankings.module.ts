@@ -7,5 +7,6 @@ import { RankingsService } from './rankings.service';
   imports: [PuzzleModule],
   providers: [RankingsService],
   controllers: [RankingsController],
+  exports: [RankingsService],
 })
 export class RankingsModule {}

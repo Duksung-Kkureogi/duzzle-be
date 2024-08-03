@@ -1,7 +1,12 @@
 import { UserRepositoryService } from './user.repository.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindManyOptions, FindOptionsWhere } from 'typeorm';
+import {
+  Repository,
+  FindManyOptions,
+  FindOptionsWhere,
+  LessThan,
+} from 'typeorm';
 
 import { PuzzlePieceEntity } from '../entity/puzzle-piece.entity';
 import { SeasonEntity } from '../entity/season.entity';
@@ -39,6 +44,27 @@ export class PuzzleRepositoryService {
     return this.seasonRepository.findOne({ where: {}, order: { id: 'DESC' } });
   }
 
+  async findLastSeasons(): Promise<SeasonEntity[]> {
+    const thisSeasonId: number = await this.seasonRepository.maximum('id');
+    return await this.seasonRepository.find({
+      where: {
+        id: LessThan(thisSeasonId),
+      },
+      order: {
+        id: 'ASC',
+      },
+    });
+  }
+
+  async getSeasonIfPast(seasonId: number) {
+    const thisSeasonId: number = await this.seasonRepository.maximum('id');
+    if (seasonId >= thisSeasonId) {
+      throw new ContentNotFoundError('past seasonId', seasonId);
+    }
+
+    return await this.seasonRepository.findOneBy({ id: seasonId });
+  }
+
   async getAllSeasons(): Promise<SeasonEntity[]> {
     return await this.seasonRepository.find();
   }
@@ -50,6 +76,22 @@ export class PuzzleRepositoryService {
     }
 
     return season;
+  }
+
+  async getMintedPiecesBySeasonId(seasonId: number) {
+    return this.puzzlePieceRepository.count({
+      where: {
+        seasonZone: {
+          seasonId,
+        },
+        minted: true,
+      },
+      relations: {
+        seasonZone: {
+          season: true,
+        },
+      },
+    });
   }
 
   async getPuzzlePiecesBySeasonId(
@@ -79,6 +121,23 @@ export class PuzzleRepositoryService {
     });
 
     return allPiecesInSeason;
+  }
+
+  async getPuzzlePiecesBySeasonIdWithoutItems(
+    seasonId: number,
+  ): Promise<PuzzlePieceEntity[]> {
+    return this.puzzlePieceRepository.find({
+      where: {
+        seasonZone: {
+          seasonId,
+        },
+      },
+      relations: {
+        seasonZone: { season: true, zone: true },
+        metadata: true,
+      },
+      order: { id: 'ASC' },
+    });
   }
 
   async updateOwner(tokenId: number, walletAddress: string): Promise<void> {

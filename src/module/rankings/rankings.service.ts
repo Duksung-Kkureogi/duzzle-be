@@ -1,6 +1,8 @@
 import { Inject } from '@nestjs/common';
+
 import { PuzzleService } from '../puzzle/puzzle.service';
 import { Rankings } from './dto/rankings.dto';
+import { SeasonEntity } from '../repository/entity/season.entity';
 
 export class RankingsService {
   constructor(
@@ -9,16 +11,26 @@ export class RankingsService {
 
   async getCurrentSeasonRankings(): Promise<Rankings[]> {
     const thisSeason = await this.puzzleService.getThisSeason();
-    console.log('thisSeason', thisSeason);
+
+    return this.getSeasonRankings(thisSeason);
+  }
+
+  async getSeasonRankingsById(seasonId: number): Promise<Rankings[]> {
+    const season = await this.puzzleService.getSeasonById(seasonId);
+
+    return this.getSeasonRankings(season);
+  }
+
+  private async getSeasonRankings(
+    season: Pick<SeasonEntity, 'id' | 'totalPieces'>,
+  ): Promise<Rankings[]> {
     const getNftHoldingsPercentage = (nftholdings: number) => {
-      return (nftholdings / thisSeason.totalPieces) * 100;
+      return (nftholdings / season.totalPieces) * 100;
     };
 
     const nftHolders = await this.puzzleService.getNftHoldersBySeasonId(
-      thisSeason.id,
+      season.id,
     );
-
-    console.log('nftHolders', nftHolders);
 
     // address, name 으로 groupBy 해서 퍼즐 NFT 개수 카운트
     // -> 내림차순으로 정렬(동일 개수일 경우 순위 동일)
