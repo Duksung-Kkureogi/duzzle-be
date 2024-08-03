@@ -15,6 +15,10 @@ export enum ExceptionCode {
   InvalidRefreshToken = 'INVALID_REFRESH_TOKEN',
   InvalidAddress = 'INVALID_ADDRESS',
   InvalidLoginInfo = 'INVALID_LOGIN_INFO',
+  LoginRequired = 'LOGIN_REQUIRED',
+
+  // 403 (Forbidden)
+  ProfileAccessDenied = 'PROFILE_ACCESS_DENIED',
 
   // 404 (Not Found)
   ContentNotFound = 'CONTENT_NOT_FOUND',
@@ -49,4 +53,6 @@ export const CodeToStatus: {
   [ExceptionCode.InvalidFilenameCharacters]: HttpStatus.BAD_REQUEST,
   [ExceptionCode.InvalidRefreshToken]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.PageNotFound]: HttpStatus.NOT_FOUND,
+  [ExceptionCode.LoginRequired]: HttpStatus.UNAUTHORIZED,
+  [ExceptionCode.ProfileAccessDenied]: HttpStatus.FORBIDDEN,
 };

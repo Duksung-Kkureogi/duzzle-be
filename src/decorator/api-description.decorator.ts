@@ -21,7 +21,7 @@ interface ApiDescriptionDto<TModel, TException> {
   tags?: string | string[];
   summary: string;
   description?: string;
-  auth?: string;
+  auth?: { type: string; required: boolean };
   dataResponse?: {
     status: HttpStatus;
     schema: TModel | boolean;
@@ -56,12 +56,13 @@ export function ApiDescription<
     });
   }
 
-  // AuthGuard 에서 throw 하는 예외들
-  if (dto?.auth === AuthorizationToken.BearerUserToken) {
-    const authenticationExceptions = [
-      MissingAuthTokenError,
-      InvalidAccessTokenError,
-    ];
+  // AuthGuard 에서 throw 하는 예외 > MissingAuthTokenError, InvalidAccessTokenError
+  // PublicOrAuthGuard 에서 throw 하는 예회 > MissingAuthTokenError
+  if (dto?.auth?.type === AuthorizationToken.BearerUserToken) {
+    const authenticationExceptions = [InvalidAccessTokenError];
+    if (dto.auth.required) {
+      authenticationExceptions.push(MissingAuthTokenError);
+    }
 
     authenticationExceptions.forEach((exception) => {
       const e = new exception();
@@ -116,7 +117,7 @@ export function ApiDescription<
   }
 
   if (dto.auth) {
-    decorators.push(ApiBearerAuth(dto.auth));
+    decorators.push(ApiBearerAuth(dto.auth.type));
   }
 
   return applyDecorators(...decorators);

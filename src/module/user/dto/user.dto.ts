@@ -1,7 +1,8 @@
 import { ApiProperty, IntersectionType } from '@nestjs/swagger';
 import { Expose, plainToInstance } from 'class-transformer';
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { UserEntity } from 'src/module/repository/entity/user.entity';
+import { ProfileType } from 'src/module/repository/enum/user.enum';
 
 export class UserInfoResponse {
   @ApiProperty()
@@ -19,6 +20,10 @@ export class UserInfoResponse {
   @ApiProperty()
   @Expose()
   image: string;
+
+  @ApiProperty()
+  @Expose()
+  profileType: ProfileType;
 
   @ApiProperty()
   @Expose()
@@ -58,6 +63,12 @@ export class UpdateUserNameRequest {
   @ApiProperty()
   @IsNotEmpty()
   name: string;
+}
+
+export class UpdateUserProfileTypeRequest {
+  @ApiProperty({ type: 'enum', enum: ProfileType })
+  @IsEnum(ProfileType)
+  profileType: ProfileType;
 }
 
 export class ImageUploadDto {

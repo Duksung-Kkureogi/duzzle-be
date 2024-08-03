@@ -56,7 +56,10 @@ export class SupportController {
   @ApiDescription({
     tags: 'Support',
     summary: '1:1 문의 등록',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: true,
@@ -77,7 +80,10 @@ export class SupportController {
   @ApiDescription({
     tags: 'Support',
     summary: '1:1 문의 수정',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: true,
@@ -100,7 +106,10 @@ export class SupportController {
   @ApiDescription({
     tags: 'Support',
     summary: '1:1 문의 삭제',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: true,
@@ -123,7 +132,10 @@ export class SupportController {
     tags: 'Support',
     summary: '1:1 문의 목록',
     description: '유저가 등록한 1:1 문의 목록, 마지막 수정 시간 내림차순 정렬',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     listResponse: {
       status: HttpStatus.OK,
       schema: QnaResponse,
@@ -144,7 +156,10 @@ export class SupportController {
     tags: 'Support',
     summary: '특정 1:1 문의 조회',
     description: '유저가 등록한 1:1 문의 목록, 마지막 수정 시간 내림차순 정렬',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: QnaResponse,

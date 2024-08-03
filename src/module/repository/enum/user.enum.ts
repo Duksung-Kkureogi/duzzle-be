@@ -8,3 +8,9 @@ export enum LoginType {
   Facebook = 'FACEBOOK',
   Twitter = 'TWITTER',
 }
+
+export enum ProfileType {
+  Public = 'PUBLIC',
+  Private = 'PRIVATE',
+  None = 'NONE',
+}

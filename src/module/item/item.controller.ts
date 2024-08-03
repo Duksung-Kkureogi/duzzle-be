@@ -22,7 +22,10 @@ export class ItemController {
   @UseGuards(AuthGuard)
   @ApiDescription({
     tags: 'Item',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     summary: '유저 보유 아이템 NFT 현황(현재 시즌만 해당)',
     listResponse: {
       status: HttpStatus.OK,

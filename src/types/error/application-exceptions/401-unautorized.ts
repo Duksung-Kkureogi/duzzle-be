@@ -54,3 +54,10 @@ export class InvalidWalletAddress extends ApplicationException {
     super(ExceptionCode.InvalidAddress, 'Wallet Address Different');
   }
 }
+
+export class LoginRequired extends ApplicationException {
+  constructor(resource: string = '$resource') {
+    const message = `Access to ${resource} requires login`;
+    super(ExceptionCode.LoginRequired, message);
+  }
+}

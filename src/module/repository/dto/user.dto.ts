@@ -1,4 +1,4 @@
-import { LoginType } from '../enum/user.enum';
+import { LoginType, ProfileType } from '../enum/user.enum';
 
 export class InsertUserDto {
   loginType: LoginType;
@@ -10,4 +10,5 @@ export class UpdateUserDto {
   id: number;
   name?: string;
   image?: string;
+  profileType?: ProfileType;
 }
