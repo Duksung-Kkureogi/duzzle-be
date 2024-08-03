@@ -17,7 +17,7 @@ import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { AuthorizationToken } from 'src/constant/authorization-token';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard, PublicOrAuthGuard } from '../auth/auth.guard';
 import {
   ImageUploadDto,
   UpdateUserNameRequest,
@@ -79,8 +79,8 @@ export class UserController {
     tags: 'User',
     summary: '다른 유저 정보 조회',
     description: `
-    private 프로필에 비로그인 유저 접근: ,
-    none 프로필에 로그인/비로그인 유저 접근: 
+    private 프로필에 비로그인 유저 접근: LOGIN_REQUIRED
+    none 프로필에 로그인/비로그인 유저 접근: PROFILE_ACCESS_DENIED
     `,
     auth: AuthorizationToken.BearerUserToken,
     dataResponse: {
@@ -89,6 +89,7 @@ export class UserController {
     },
     exceptions: [ContentNotFoundError, ProfileAccessDenied, LoginRequired],
   })
+  @UseGuards(PublicOrAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get(':walletAddress')
   async getOtherUserInfo(

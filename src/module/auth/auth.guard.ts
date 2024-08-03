@@ -16,7 +16,7 @@ import { validateSync } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export abstract class BaseGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
 
@@ -24,16 +24,7 @@ export class AuthGuard implements CanActivate {
     private readonly userRepositoryService: UserRepositoryService,
   ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
-
-    // Check jwt exists
-    const token: string =
-      req.headers.authorization?.split(' ')[1] || req.headers.authorization!;
-    if (!token) {
-      throw new MissingAuthTokenError();
-    }
-
+  protected async validateToken(token: string): Promise<LoginJwtPayload> {
     // Verify auth token
     try {
       this.jwtService.verify(token);
@@ -49,8 +40,8 @@ export class AuthGuard implements CanActivate {
         excludeExtraneousValues: true,
       },
     );
-    const errors = validateSync(payload, { skipMissingProperties: false });
 
+    const errors = validateSync(payload, { skipMissingProperties: false });
     if (errors.length) {
       throw new InvalidAccessTokenError();
     }
@@ -62,7 +53,39 @@ export class AuthGuard implements CanActivate {
       throw new InvalidAccessTokenError();
     }
 
-    req.user = user;
+    return user;
+  }
+
+  abstract canActivate(context: ExecutionContext): Promise<boolean>;
+}
+
+export class AuthGuard extends BaseGuard {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const req = context.switchToHttp().getRequest();
+
+    // Check jwt exists
+    const token: string =
+      req.headers.authorization?.split(' ')[1] || req.headers.authorization!;
+    if (!token) {
+      throw new MissingAuthTokenError();
+    }
+
+    req.user = await this.validateToken(token);
+    return true;
+  }
+}
+
+@Injectable()
+export class PublicOrAuthGuard extends BaseGuard {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const req = context.switchToHttp().getRequest();
+
+    // Check jwt exists
+    const token: string =
+      req.headers.authorization?.split(' ')[1] || req.headers.authorization!;
+    if (token) {
+      req.user = await this.validateToken(token);
+    }
 
     return true;
   }
