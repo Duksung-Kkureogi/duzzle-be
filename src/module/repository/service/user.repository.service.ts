@@ -24,6 +24,15 @@ export class UserRepositoryService {
     return user;
   }
 
+  async getUserByWalletAddress(walletAddress: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOneBy({ walletAddress });
+    if (!user) {
+      throw new ContentNotFoundError('user', walletAddress);
+    }
+
+    return user;
+  }
+
   async findUserById(id: number): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id });
 

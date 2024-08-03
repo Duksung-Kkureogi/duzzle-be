@@ -10,6 +10,7 @@ import {
   Patch,
   UseInterceptors,
   UploadedFile,
+  Param,
 } from '@nestjs/common';
 
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -40,6 +41,9 @@ import {
   InvalidFileNameExtensionError,
   InvalidParamsError,
 } from 'src/types/error/application-exceptions/400-bad-request';
+import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
+import { ProfileAccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
+import { LoginRequired } from 'src/types/error/application-exceptions/401-unautorized';
 
 @Controller({
   path: 'user',
@@ -67,6 +71,34 @@ export class UserController {
     @AuthenticatedUser() user: UserEntity,
   ): Promise<ResponsesDataDto<UserProfileResponse>> {
     const result = await this.userService.getUserInfo(user.id);
+
+    return new ResponsesDataDto(result);
+  }
+
+  @ApiDescription({
+    tags: 'User',
+    summary: '다른 유저 정보 조회',
+    description: `
+    private 프로필에 비로그인 유저 접근: ,
+    none 프로필에 로그인/비로그인 유저 접근: 
+    `,
+    auth: AuthorizationToken.BearerUserToken,
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: UserProfileResponse,
+    },
+    exceptions: [ContentNotFoundError, ProfileAccessDenied, LoginRequired],
+  })
+  @HttpCode(HttpStatus.OK)
+  @Get(':walletAddress')
+  async getOtherUserInfo(
+    @Param('walletAddress') walletAddress: string,
+    @AuthenticatedUser() user?: UserEntity,
+  ): Promise<ResponsesDataDto<UserProfileResponse>> {
+    const result = await this.userService.getOtherUserInfo(
+      user?.id,
+      walletAddress,
+    );
 
     return new ResponsesDataDto(result);
   }
