@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 
-import { PuzzlePieceDto, PuzzleResponse } from './dto/puzzle.dto';
 import { PuzzleRepositoryService } from '../repository/service/puzzle.repository.service';
 import { NftRepositoryService } from './../repository/service/nft.repository.service';
 import { SeasonEntity } from '../repository/entity/season.entity';
@@ -12,6 +11,8 @@ import {
 import { PaginatedList } from 'src/dto/response.dto';
 import { ContractKey } from '../repository/enum/contract.enum';
 import { PuzzlePieceEntity } from '../repository/entity/puzzle-piece.entity';
+import { PuzzlePieceDto } from '../season-history/dto/season-history.dto';
+import { PuzzleResponse } from './dto/puzzle.dto';
 
 @Injectable()
 export class PuzzleService {
@@ -32,6 +33,10 @@ export class PuzzleService {
 
   async getAllSeasons(): Promise<SeasonEntity[]> {
     return this.puzzleRepositoryService.getAllSeasons();
+  }
+
+  async getSeasonIfPast(seasonId: number): Promise<SeasonEntity> {
+    return this.puzzleRepositoryService.getSeasonIfPast(seasonId);
   }
 
   async getSeasonById(id: number): Promise<SeasonEntity> {

@@ -129,8 +129,8 @@ export class PuzzlePieceDto {
   minted: boolean;
 
   @ApiProperty({
-    description: '',
-    type: '잠금해제된 퍼즐조각의 경우 "발행된 NFT와 소유 유저 정보"\n\
+    description:
+      '잠금해제된 퍼즐조각의 경우 "발행된 NFT와 소유 유저 정보"\n\
     그 외: "잠금해제에 필요한 아이템 정보"',
     oneOf: [
       {
