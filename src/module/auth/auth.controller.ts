@@ -42,8 +42,8 @@ export class AuthController {
   @ApiDescription({
     tags: 'Auth',
     summary: '로그인',
-    auth: { 
-      type: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerLoginIdToken,
       required: true,
     },
     dataResponse: {
