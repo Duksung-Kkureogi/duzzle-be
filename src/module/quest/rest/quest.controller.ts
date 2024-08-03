@@ -35,8 +35,10 @@ export class QuestController {
   @ApiDescription({
     tags: 'Quest',
     summary: '랜덤 퀘스트 시작하기',
-    description: '유저가 등록한 1:1 문의 목록, 마지막 수정 시간 내림차순 정렬',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: StartRandomQuestResponse,
@@ -56,7 +58,10 @@ export class QuestController {
   @ApiDescription({
     tags: 'Quest',
     summary: '퀘스트 결과',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: true,

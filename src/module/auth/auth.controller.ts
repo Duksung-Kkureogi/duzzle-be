@@ -42,7 +42,10 @@ export class AuthController {
   @ApiDescription({
     tags: 'Auth',
     summary: '로그인',
-    auth: AuthorizationToken.BearerLoginIdToken,
+    auth: { 
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: LoginResponse,

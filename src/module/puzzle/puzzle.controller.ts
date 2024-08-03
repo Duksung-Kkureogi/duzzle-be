@@ -81,7 +81,10 @@ export class PuzzleController {
 
   @ApiDescription({
     tags: 'Puzzle',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     summary: '유저 보유 퍼즐 조각 NFT 목록',
     listResponse: {
       status: HttpStatus.OK,
@@ -103,7 +106,10 @@ export class PuzzleController {
   @UseGuards(AuthGuard)
   @ApiDescription({
     tags: 'Puzzle',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     summary: '유저 보유 퍼즐 조각 NFT 상세',
     dataResponse: {
       status: HttpStatus.OK,

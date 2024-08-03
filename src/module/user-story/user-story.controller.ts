@@ -37,9 +37,12 @@ export class UserStoryController {
   @UseGuards(AuthGuard)
   @ApiDescription({
     tags: 'Story',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     summary: '유저 구역별 스토리 진행도 조회',
-    dataResponse: {
+    listResponse: {
       status: HttpStatus.OK,
       schema: StoryProgressResponse,
     },
@@ -57,9 +60,12 @@ export class UserStoryController {
   @UseGuards(AuthGuard)
   @ApiDescription({
     tags: 'Story',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     summary: '유저 특정 구역 스토리 진행도 조회',
-    dataResponse: {
+    listResponse: {
       status: HttpStatus.OK,
       schema: StoryProgressByZoneResponse,
     },
@@ -81,7 +87,10 @@ export class UserStoryController {
   @UseGuards(AuthGuard)
   @ApiDescription({
     tags: 'Story',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     summary: '유저 스토리별 진행도 수정',
     dataResponse: {
       status: HttpStatus.OK,

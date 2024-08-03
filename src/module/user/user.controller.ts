@@ -59,7 +59,10 @@ export class UserController {
     tags: 'User',
     summary: '유저 정보 조회',
     description: '로그인한 유저 정보 조회',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: UserProfileResponse,
@@ -82,7 +85,10 @@ export class UserController {
     private 프로필에 비로그인 유저 접근: LOGIN_REQUIRED
     none 프로필에 로그인/비로그인 유저 접근: PROFILE_ACCESS_DENIED
     `,
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: false,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: UserProfileResponse,
@@ -108,7 +114,10 @@ export class UserController {
   @ApiDescription({
     tags: 'User',
     summary: '유저 이름 변경',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     description: `
     이미 존재하는 이름일 경우 409 ALREADY_EXISTS\n
     ${RedisTTL.EditUserName / 1000} 초가 지나기 전에 이름을 바꾸는 경우\n
@@ -149,7 +158,10 @@ export class UserController {
   @ApiDescription({
     tags: 'User',
     summary: '유저 프로필 이미지 변경',
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: UserInfoResponse,
@@ -179,7 +191,10 @@ export class UserController {
     private: 로그인 유저만 열람 가능(기본값),
     none: 아무도 접근 불가
     `,
-    auth: AuthorizationToken.BearerUserToken,
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
       schema: UserInfoResponse,
