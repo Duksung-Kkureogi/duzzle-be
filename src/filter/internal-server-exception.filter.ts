@@ -1,3 +1,4 @@
+import { ConfigService } from 'src/module/config/config.service';
 import {
   ArgumentsHost,
   Catch,
@@ -12,6 +13,10 @@ import { ReportProvider } from 'src/provider/report.provider';
 
 @Catch()
 export class InternalServerErrorFilter extends BaseExceptionFilter {
+  constructor(private readonly configService: ConfigService) {
+    super();
+  }
+
   catch(exception: InternalServerErrorException, host: ArgumentsHost) {
     const http = host.switchToHttp();
     const response = http.getResponse<Response>();
@@ -19,15 +24,18 @@ export class InternalServerErrorFilter extends BaseExceptionFilter {
     const { method, body, query, params, url, headers, _startTime } =
       http.getRequest();
 
-    ReportProvider.error(exception, {
-      method,
-      body,
-      query,
-      params,
-      url,
-      headers,
-      _startTime,
-    });
+    // Report
+    if (!this.configService.isLocal()) {
+      ReportProvider.error(exception, {
+        method,
+        body,
+        query,
+        params,
+        url,
+        headers,
+        _startTime,
+      });
+    }
 
     // Error Log
     Logger.error(exception.message);
