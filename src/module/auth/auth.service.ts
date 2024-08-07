@@ -27,6 +27,7 @@ import {
   InvalidWalletAddress,
 } from 'src/types/error/application-exceptions/401-unautorized';
 import { RefreshTokenIdsStorage } from './refresh-token-ids.storage';
+import { ReportProvider } from 'src/provider/report.provider';
 
 @Injectable()
 export class AuthService {
@@ -123,7 +124,7 @@ export class AuthService {
             mailData,
           );
         } catch (err) {
-          // TODO: 에러 알림 발송
+          ReportProvider.warn(err, { email: user.email }, AuthService.name);
           Logger.error(err.message, err.stack);
         }
       }
