@@ -8,11 +8,26 @@ import {
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Response } from 'express';
 import { ExceptionCode } from 'src/constant/exception';
+import { ReportProvider } from 'src/provider/report.provider';
 
 @Catch()
 export class InternalServerErrorFilter extends BaseExceptionFilter {
   catch(exception: InternalServerErrorException, host: ArgumentsHost) {
-    const response = host.switchToHttp().getResponse<Response>();
+    const http = host.switchToHttp();
+    const response = http.getResponse<Response>();
+
+    const { method, body, query, params, url, headers, _startTime } =
+      http.getRequest();
+
+    ReportProvider.error(exception, {
+      method,
+      body,
+      query,
+      params,
+      url,
+      headers,
+      _startTime,
+    });
 
     // Error Log
     Logger.error(exception.message);
