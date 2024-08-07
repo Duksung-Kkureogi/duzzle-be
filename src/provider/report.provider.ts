@@ -21,12 +21,14 @@ export class ReportProvider {
     message: string,
     extra?: Record<string, unknown>,
     moduleName?: string,
+    hookUrl?: string,
   ): void {
     this.report({
       severity: SeverityLevel.Info,
       title: message,
       extra,
       moduleName,
+      hookUrl,
     });
   }
 
@@ -50,8 +52,9 @@ export class ReportProvider {
     error?: Error;
     extra?: Record<string, unknown>;
     moduleName?: string;
+    hookUrl?: string;
   }): void {
-    const { severity, title, error, extra, moduleName } = params;
+    const { severity, title, error, extra, moduleName, hookUrl } = params;
     let color: number;
     switch (severity) {
       case SeverityLevel.Error:
@@ -83,7 +86,7 @@ export class ReportProvider {
     };
 
     axios
-      .post(process.env.DISCORD_WEBHOOK_URL!, data)
+      .post(hookUrl ?? process.env.DISCORD_WEBHOOK_URL!, data)
       .catch((err) => Logger.error(err));
   }
 }

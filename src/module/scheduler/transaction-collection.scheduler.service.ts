@@ -12,6 +12,7 @@ import { LogTransactionEntity } from '../repository/entity/log-transaction.entit
 import { CollectRangeDto, EventTopic } from '../blockchain/dto/blockchain.dto';
 import { ContractKey, ContractType } from '../repository/enum/contract.enum';
 import { ApiRequestLimits, RPCProvider } from './constants/rpc-provider';
+import { ReportProvider } from 'src/provider/report.provider';
 
 @Injectable()
 export class TransactionCollectionScheduler {
@@ -159,9 +160,17 @@ export class TransactionCollectionScheduler {
         ),
         this.blockchainTransactionService.upsertTransactionLogs(txLogsToUpsert),
       ]);
+
+      ReportProvider.info(
+        'collectBlockchainTransaction',
+        { collectedLogs },
+        TransactionCollectionScheduler.name,
+        this.configService.get<string>('DISCORD_WEBHOOK_URL_TX_COLLECT'),
+      );
     } catch (error) {
       Logger.error(error.stack);
       Logger.error(error);
+      ReportProvider.error(error, {}, TransactionCollectionScheduler.name);
     } finally {
       await this.setEndFlag();
       console.timeEnd('collectBlockchainTransaction');
@@ -173,7 +182,11 @@ export class TransactionCollectionScheduler {
   }
 
   async setStartFlag() {
-    await this.memory.set(RedisKey.transactionCollectionInProgress, 'true');
+    await this.memory.set(
+      RedisKey.transactionCollectionInProgress,
+      'true',
+      600_000, // 10분
+    );
   }
 
   async setEndFlag() {
