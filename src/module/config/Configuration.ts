@@ -169,6 +169,16 @@ export class EnvironmentVariables {
   @IsString()
   @Expose()
   readonly OWNER_PK_AMOY: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Expose()
+  readonly DISCORD_WEBHOOK_URL: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Expose()
+  readonly DISCORD_WEBHOOK_URL_TX_COLLECT: string;
 }
 
 export const getEnvFilePath = (): string =>
