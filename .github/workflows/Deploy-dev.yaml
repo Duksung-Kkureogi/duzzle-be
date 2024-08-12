@@ -29,7 +29,7 @@ jobs:
 
       - name: Sync files via rsync
         run: |
-          rsync -avz --delete --exclude='.env' ./ ${{ secrets.DO_SSH_USER }}@${{ secrets.DROPLET_IP }}:/home/${{ secrets.SSH_USER }}/baam-server
+          rsync -avz --delete --exclude='env/.env.dev' ./ ${{ secrets.DO_SSH_USER }}@${{ secrets.DROPLET_IP }}:/home/${{ secrets.DO_SSH_USER }}/duzzle-be
 
       - name: Install dependencies, build and start application
         run: |
