@@ -36,9 +36,21 @@ export class ItemRepositoryService {
     return materialTotals;
   }
 
-  async getUserBlueprintItemTotals(userId: number): Promise<number> {
-    const blueprintTotals = await this.blueprintItemRepository.countBy({
-      userId,
+  async getUserBlueprintItemTotalsBySeasonId(
+    userId: number,
+    seasonId: number,
+  ): Promise<number> {
+    const blueprintTotals = await this.blueprintItemRepository.count({
+      relations: ['seasonZone', 'seasonZone.season'],
+      where: {
+        userId,
+        burned: false,
+        seasonZone: {
+          season: {
+            id: seasonId,
+          },
+        },
+      },
     });
 
     return blueprintTotals;

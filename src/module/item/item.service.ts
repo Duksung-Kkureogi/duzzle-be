@@ -1,15 +1,23 @@
+import { PuzzleService } from './../puzzle/puzzle.service';
 import { ItemRepositoryService } from './../repository/service/item.repository.service';
 import { Injectable } from '@nestjs/common';
 import { Item, MyItemsResponse } from './dto/item.dto';
 
 @Injectable()
 export class ItemService {
-  constructor(readonly itemRepositoryService: ItemRepositoryService) {}
+  constructor(
+    readonly itemRepositoryService: ItemRepositoryService,
+    private readonly puzzleService: PuzzleService,
+  ) {}
 
   async getUserItemTotals(userId: number): Promise<number> {
+    const thisSeasonId: number = (await this.puzzleService.getThisSeason()).id;
     const [materialTotals, blueprintTotals] = await Promise.all([
       this.itemRepositoryService.getUserMaterialItemTotals(userId),
-      this.itemRepositoryService.getUserBlueprintItemTotals(userId),
+      this.itemRepositoryService.getUserBlueprintItemTotalsBySeasonId(
+        userId,
+        thisSeasonId,
+      ),
     ]);
 
     return materialTotals + blueprintTotals;
