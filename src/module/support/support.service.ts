@@ -1,3 +1,4 @@
+import { ConfigService } from './../config/config.service';
 import { Injectable } from '@nestjs/common';
 
 import { SupportRepositoryService } from '../repository/service/support.repository.service';
@@ -6,11 +7,13 @@ import {
   PostQuestionRequest,
   QnaResponse,
 } from './dto/support.dto';
+import { ReportProvider } from 'src/provider/report.provider';
 
 @Injectable()
 export class SupportService {
   constructor(
     private readonly supportRepositoryService: SupportRepositoryService,
+    private readonly configService: ConfigService
   ) {}
 
   async getFaqs(): Promise<FaqResponse[]> {
@@ -31,6 +34,14 @@ export class SupportService {
       email,
       question,
     });
+
+    ReportProvider.info('1:1 문의 등록', {
+      userId,
+      category,
+      email,
+      question,
+    }, SupportService.name, 
+    this.configService.get('DISCORD_WEBHOOK_URL_SUPPORT'));
   }
 
   async updateQuestion(

@@ -179,6 +179,11 @@ export class EnvironmentVariables {
   @IsString()
   @Expose()
   readonly DISCORD_WEBHOOK_URL_TX_COLLECT: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Expose()
+  readonly DISCORD_WEBHOOK_URL_SUPPORT: string;
 }
 
 export const getEnvFilePath = (): string =>
