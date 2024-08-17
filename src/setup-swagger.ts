@@ -47,16 +47,16 @@ export function setupSwagger(app: INestApplication): void {
     )
     .build();
 
+  const SWAGGER_UI_CONSTANTS = {
+    TOPBAR: {
+      BACKGROUND_COLOR: '#ff69b4',
+    },
+  };
   const customCss = `
-    /* 상단 바에 로고 추가 */
-.swagger-ui .topbar {
-  background-color: #ff69b4 !important; /* 상단 바 배경색 핑크 */
-  background-image: url('https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/user/profile_default.png'); /* S3 URL */
-  background-repeat: no-repeat;
-  background-position: left center;
-  background-size: 40px; /* 로고 크기 설정 */
-  padding-left: 60px; /* 로고 공간 확보 */
-}
+ .topbar-wrapper { content:url('https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/a%E1%84%83%E1%85%A5%E1%84%8C%E1%85%B3%E1%86%AF%E1%84%85%E1%85%A9%E1%84%80%E1%85%A9.png'); width:242px; height:auto; }
+  .topbar-wrapper svg { visibility: hidden; }
+  .swagger-ui .topbar { background-color: ${SWAGGER_UI_CONSTANTS.TOPBAR.BACKGROUND_COLOR}; }
+
 
  /* GET 메소드 색상 */
   .swagger-ui .opblock-get .opblock-summary-method {
@@ -167,7 +167,11 @@ export function setupSwagger(app: INestApplication): void {
   `;
 
   const document = SwaggerModule.createDocument(app, options);
+
   SwaggerModule.setup('documentation', app, document, {
+    customfavIcon:
+      'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/duzzlefavi.png',
+    customSiteTitle: 'Duzzle API Documentation',
     swaggerOptions: {
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',
