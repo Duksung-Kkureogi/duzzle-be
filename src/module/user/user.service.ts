@@ -1,7 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { UserRepositoryService } from '../repository/service/user.repository.service';
-import { UserInfoResponse, UserProfileResponse } from './dto/user.dto';
+import {
+  OtherUserProfileResponse,
+  UserInfoResponse,
+  UserProfileResponse,
+} from './dto/user.dto';
 import { UserEntity } from '../repository/entity/user.entity';
 import { uuid } from 'uuidv4';
 import { CloudStorageService } from '../cloudStorage/cloudStorage.service';
@@ -14,6 +18,8 @@ import { USER_PROFILE_DEFAULT_IMG } from 'src/constant/image';
 import { ProfileType } from '../repository/enum/user.enum';
 import { LoginRequired } from 'src/types/error/application-exceptions/401-unautorized';
 import { ProfileAccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
+import { SeasonHistoryService } from '../season-history/season-history.service';
+import { QuestService } from '../quest/quest.service';
 
 @Injectable()
 export class UserService {
@@ -27,6 +33,12 @@ export class UserService {
 
     @Inject(PuzzleService)
     private readonly puzzleService: PuzzleService,
+
+    @Inject(SeasonHistoryService)
+    private readonly seasonHistoryService: SeasonHistoryService,
+
+    @Inject(QuestService)
+    private readonly questService: QuestService,
   ) {}
 
   async getUserInfo(userId: number): Promise<UserProfileResponse> {
@@ -48,7 +60,7 @@ export class UserService {
   async getOtherUserInfo(
     userId: number | undefined,
     walletAddress: string,
-  ): Promise<UserProfileResponse> {
+  ): Promise<OtherUserProfileResponse> {
     const profile =
       await this.userRepositoryService.getUserByWalletAddress(walletAddress);
 
@@ -57,18 +69,69 @@ export class UserService {
     if (profile.profileType === ProfileType.Private && userId === undefined)
       throw new LoginRequired(`Profile:${profile.profileType}`);
 
-    const [totalItems, totalPieces] = await Promise.all([
-      this.itemService.getUserItemTotals(profile.id),
-      this.puzzleService.getTotalPiecesByUser(profile.id),
-    ]);
+    const [items, puzzles, { rankedFirst, rankedThird }, questStreak] =
+      await Promise.all([
+        this.itemService.getUserItems(profile.id).then((res) => res.items),
+        this.puzzleService
+          .getUserPiecesBySeason(profile.id)
+          .then((res) => res.puzzles),
+        this.getTopRankCounts(walletAddress),
+        this.getQuestStreak(profile.id),
+      ]);
 
-    const result: UserProfileResponse = {
+    const result: OtherUserProfileResponse = {
       ...UserInfoResponse.from(profile),
-      totalItems,
-      totalPieces,
+      items,
+      puzzles,
+      rankedFirst,
+      rankedThird,
+      questStreak,
     };
 
     return result;
+  }
+
+  async getTopRankCounts(
+    walletAddress: string,
+  ): Promise<{ rankedFirst: number; rankedThird: number }> {
+    const rankings =
+      await this.seasonHistoryService.getUserRankingHistory(walletAddress);
+
+    let rankedFirst = 0;
+    let rankedThird = 0;
+
+    for (const ranking of rankings) {
+      if (ranking.rank === 1) {
+        rankedFirst++;
+      } else if (ranking.rank === 3) {
+        rankedThird++;
+      }
+    }
+
+    return {
+      rankedFirst,
+      rankedThird,
+    };
+  }
+
+  async getQuestStreak(userId: number): Promise<number> {
+    const logs = await this.questService.findLogsByUser(userId);
+
+    let maxStreak = 0;
+    let currentStreak = 0;
+
+    for (const log of logs) {
+      if (log.isSucceeded) {
+        currentStreak++;
+        if (currentStreak > maxStreak) {
+          maxStreak = currentStreak;
+        }
+      } else {
+        currentStreak = 0;
+      }
+    }
+
+    return maxStreak;
   }
 
   async updateUserName(

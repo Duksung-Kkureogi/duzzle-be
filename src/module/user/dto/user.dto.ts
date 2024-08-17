@@ -1,6 +1,8 @@
 import { ApiProperty, IntersectionType } from '@nestjs/swagger';
-import { Expose, plainToInstance } from 'class-transformer';
+import { Expose, plainToInstance, Type } from 'class-transformer';
 import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
+import { Item } from 'src/module/item/dto/item.dto';
+import { PuzzlePieces } from 'src/module/puzzle/user.puzzle.dto';
 import { UserEntity } from 'src/module/repository/entity/user.entity';
 import { ProfileType } from 'src/module/repository/enum/user.enum';
 
@@ -54,9 +56,39 @@ export class UserNftTotals {
   totalPieces: number;
 }
 
+export class UserNfts {
+  @ApiProperty()
+  @Expose()
+  items: Item[];
+
+  @ApiProperty()
+  @Expose()
+  puzzles: PuzzlePieces[];
+}
+
+export class UserHistory {
+  @ApiProperty({ description: '시즌 랭킹 1위' })
+  @Expose()
+  rankedFirst: number;
+
+  @ApiProperty({ description: '시즌 랭킹 3위' })
+  @Expose()
+  rankedThird: number;
+
+  @ApiProperty({ description: '퀘스트 연승' })
+  @Expose()
+  questStreak: number;
+}
+
 export class UserProfileResponse extends IntersectionType(
   UserInfoResponse,
   UserNftTotals,
+) {}
+
+export class OtherUserProfileResponse extends IntersectionType(
+  UserInfoResponse,
+  UserNfts,
+  UserHistory,
 ) {}
 
 export class UpdateUserNameRequest {

@@ -87,6 +87,10 @@ export class QuestService {
     return { isAlreadyOngoing: false };
   }
 
+  async findLogsByUser(userId: number): Promise<LogQuestEntity[]> {
+    return await this.questRepositoryService.findLogsByUser(userId);
+  }
+
   async findLogByIdAndUser(
     id: number,
     userId: number,

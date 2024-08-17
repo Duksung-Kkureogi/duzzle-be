@@ -45,6 +45,27 @@ export class SeasonHistoryService {
     return this.rankingsService.getSeasonRankingsById(seasonId);
   }
 
+  async getUserRankingHistory(walletAddress: string): Promise<Rankings[]> {
+    const seasons = await this.puzzleRepositoryService.getAllSeasons();
+
+    const rankings: Rankings[] = [];
+
+    for (const season of seasons) {
+      const rankingHistory = await this.rankingsService.getSeasonRankingsById(
+        season.id,
+      );
+      const userRanking = rankingHistory.find(
+        (ranking) => ranking.walletAddress === walletAddress,
+      );
+
+      if (userRanking) {
+        rankings.push(userRanking);
+      }
+    }
+
+    return rankings;
+  }
+
   async getPuzzleHistory(seasonId: number): Promise<PuzzleHistoryResponse> {
     await this.puzzleRepositoryService.getSeasonIfPast(seasonId);
 
