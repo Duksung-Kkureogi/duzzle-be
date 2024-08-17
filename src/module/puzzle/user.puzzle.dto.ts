@@ -5,6 +5,25 @@ import { IsNumber, IsOptional } from 'class-validator';
 import { PuzzlePieceEntity } from '../repository/entity/puzzle-piece.entity';
 import { PaginationDto } from 'src/dto/request.dto';
 
+export class PuzzlePieces {
+  @ApiProperty()
+  @Expose()
+  season: string;
+
+  @ApiProperty()
+  @Expose()
+  zone: string;
+
+  @ApiProperty()
+  @Expose()
+  @Type(() => Number)
+  count: number;
+
+  @ApiProperty()
+  @Expose()
+  image: string;
+}
+
 export class UserPuzzleRequest extends PaginationDto {
   @ApiProperty({ required: false })
   @IsOptional()
@@ -57,6 +76,12 @@ export class UserPuzzleResponse {
       { excludeExtraneousValues: true },
     );
   }
+}
+
+export class UserPuzzlePiecesResponse {
+  @ApiProperty({ type: PuzzlePieces, isArray: true })
+  @Type(() => PuzzlePieces)
+  puzzles: PuzzlePieces[];
 }
 
 export class UserPuzzlePathParams {

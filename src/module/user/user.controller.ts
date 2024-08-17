@@ -20,6 +20,7 @@ import { AuthorizationToken } from 'src/constant/authorization-token';
 import { AuthGuard, PublicOrAuthGuard } from '../auth/auth.guard';
 import {
   ImageUploadDto,
+  OtherUserProfileResponse,
   UpdateUserNameRequest,
   UpdateUserProfileTypeRequest,
   UserInfoResponse,
@@ -91,7 +92,7 @@ export class UserController {
     },
     dataResponse: {
       status: HttpStatus.OK,
-      schema: UserProfileResponse,
+      schema: OtherUserProfileResponse,
     },
     exceptions: [ContentNotFoundError, ProfileAccessDenied, LoginRequired],
   })
@@ -101,7 +102,7 @@ export class UserController {
   async getOtherUserInfo(
     @Param('walletAddress') walletAddress: string,
     @AuthenticatedUser() user?: UserEntity,
-  ): Promise<ResponsesDataDto<UserProfileResponse>> {
+  ): Promise<ResponsesDataDto<OtherUserProfileResponse>> {
     const result = await this.userService.getOtherUserInfo(
       user?.id,
       walletAddress,

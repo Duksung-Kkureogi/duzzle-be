@@ -9,5 +9,6 @@ import { RankingsModule } from '../rankings/rankings.module';
   imports: [RepositoryModule, RankingsModule],
   controllers: [SeasonHistoryController],
   providers: [SeasonHistoryService],
+  exports: [SeasonHistoryService],
 })
 export class SeasonHistoryModule {}

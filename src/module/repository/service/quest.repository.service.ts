@@ -91,6 +91,16 @@ export class QuestRepositoryService {
     await this.logRepository.update(log.id, log);
   }
 
+  async findLogsByUser(userId: number): Promise<LogQuestEntity[]> {
+    const log = await this.logRepository.find({
+      where: { userId },
+      relations: { quest: true, user: true },
+      order: { createdAt: 'DESC' },
+    });
+
+    return log;
+  }
+
   async findLogByIdAndUser(
     id: number,
     userId: number,

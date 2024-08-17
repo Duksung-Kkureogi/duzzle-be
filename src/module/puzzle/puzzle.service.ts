@@ -4,14 +4,17 @@ import { PuzzleRepositoryService } from '../repository/service/puzzle.repository
 import { NftRepositoryService } from './../repository/service/nft.repository.service';
 import { SeasonEntity } from '../repository/entity/season.entity';
 import {
+  PuzzlePieces,
   UserPuzzleDetailResponse,
+  UserPuzzlePiecesResponse,
   UserPuzzleRequest,
   UserPuzzleResponse,
 } from './user.puzzle.dto';
 import { PaginatedList } from 'src/dto/response.dto';
 import { ContractKey } from '../repository/enum/contract.enum';
 import { PuzzlePieceEntity } from '../repository/entity/puzzle-piece.entity';
-import { PuzzlePieceDto, PuzzleResponse } from './dto/puzzle.dto';
+import { PuzzlePieceDto } from '../season-history/dto/season-history.dto';
+import { PuzzleResponse } from './dto/puzzle.dto';
 
 @Injectable()
 export class PuzzleService {
@@ -64,6 +67,49 @@ export class PuzzleService {
       await this.puzzleRepositoryService.getTotalPiecesByUser(userId);
 
     return totalPieces;
+  }
+
+  async getUserPiecesBySeason(
+    userId: number,
+  ): Promise<UserPuzzlePiecesResponse> {
+    let page = 0;
+    let hasMore = true;
+
+    const puzzleMap = new Map<number, PuzzlePieces>();
+
+    while (hasMore) {
+      const puzzles = (
+        await this.puzzleRepositoryService.findPuzzlesByUserId(userId, {
+          page,
+          count: 100,
+        })
+      ).list;
+
+      if (puzzles.length > 0) {
+        puzzles.forEach((puzzle) => {
+          const key = puzzle.seasonZoneId;
+          if (puzzleMap.has(key)) {
+            puzzleMap.get(key)!.count++;
+          } else {
+            puzzleMap.set(key, {
+              season: puzzle.seasonZone.season.title,
+              zone: puzzle.seasonZone.zone.nameUs,
+              image: puzzle.metadata.metadata.image,
+              count: 1,
+            });
+          }
+        });
+        page++;
+      } else {
+        hasMore = false;
+      }
+    }
+
+    const result: UserPuzzlePiecesResponse = {
+      puzzles: Array.from(puzzleMap.values()),
+    };
+
+    return result;
   }
 
   async getPuzzlesByUserId(
