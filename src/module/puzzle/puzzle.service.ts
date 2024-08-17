@@ -80,6 +80,7 @@ export class PuzzleService {
     while (hasMore) {
       const puzzles = (
         await this.puzzleRepositoryService.findPuzzlesByUserId(userId, {
+          page,
           count: 100,
         })
       ).list;

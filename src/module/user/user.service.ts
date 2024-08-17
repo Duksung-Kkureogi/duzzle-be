@@ -101,10 +101,11 @@ export class UserService {
     let rankedThird = 0;
 
     for (const ranking of rankings) {
-      if (ranking.rank === 1) {
-        rankedFirst++;
-      } else if (ranking.rank === 3) {
+      if (ranking.rank <= 3) {
         rankedThird++;
+        if (ranking.rank === 1) {
+          rankedFirst++;
+        }
       }
     }
 
