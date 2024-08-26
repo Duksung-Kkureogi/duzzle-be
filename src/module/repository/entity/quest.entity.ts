@@ -13,7 +13,7 @@ export class QuestEntity extends BaseEntity {
   @Column('varchar')
   quest: string;
 
-  @Column('varchar')
+  @Column('varchar', { nullable: true })
   answer: string;
 
   @Column('int')
