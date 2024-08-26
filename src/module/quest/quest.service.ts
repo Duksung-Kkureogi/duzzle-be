@@ -33,18 +33,6 @@ export class QuestService {
       quests = await this.questRepositoryService.findQuests(
         logs.map((e) => e.quest?.id),
       );
-
-      const duksaeJump = await this.questRepositoryService.findQuestByType(
-        QuestType.DuksaeJump,
-      );
-      const duksaeJumpLogs = logs.filter(
-        (log) => log.questId === duksaeJump.id,
-      );
-
-      // TODO: 임시 상수 10
-      if (duksaeJumpLogs.length < 10) {
-        quests.push(duksaeJump);
-      }
     } else {
       quests = await this.questRepositoryService.findQuests();
     }

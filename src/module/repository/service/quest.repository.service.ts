@@ -22,12 +22,6 @@ export class QuestRepositoryService {
     return quest;
   }
 
-  async findQuestByType(type: QuestType): Promise<QuestEntity> {
-    const quest = await this.questRepository.findOneBy({ type });
-
-    return quest;
-  }
-
   async findQuests(excludes?: number[]): Promise<QuestEntity[]> {
     if (excludes?.every((e) => !!e)) {
       return this.questRepository.findBy({ id: Not(In(excludes)) });
