@@ -4,6 +4,7 @@ import { Repository, Not, In, IsNull } from 'typeorm';
 
 import { QuestEntity } from '../entity/quest.entity';
 import { LogQuestEntity } from '../entity/log-quest.entity';
+import { QuestType } from '../enum/quest.enum';
 
 @Injectable()
 export class QuestRepositoryService {
@@ -17,6 +18,12 @@ export class QuestRepositoryService {
 
   async findQuestById(id: number): Promise<QuestEntity> {
     const quest = await this.questRepository.findOneBy({ id });
+
+    return quest;
+  }
+
+  async findQuestByType(type: QuestType): Promise<QuestEntity> {
+    const quest = await this.questRepository.findOneBy({ type });
 
     return quest;
   }

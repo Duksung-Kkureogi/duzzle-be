@@ -12,6 +12,7 @@ import { LogQuestEntity } from '../repository/entity/log-quest.entity';
 import { LimitExceededError } from 'src/types/error/application-exceptions/409-conflict';
 import { NoOngoingQuestError } from 'src/types/error/application-exceptions/400-bad-request';
 import { GuestInfo } from './rest/types/guest';
+import { QuestType } from '../repository/enum/quest.enum';
 
 @Injectable()
 export class QuestService {
@@ -32,6 +33,18 @@ export class QuestService {
       quests = await this.questRepositoryService.findQuests(
         logs.map((e) => e.quest?.id),
       );
+
+      const duksaeJump = await this.questRepositoryService.findQuestByType(
+        QuestType.DuksaeJump,
+      );
+      const duksaeJumpLogs = logs.filter(
+        (log) => log.questId === duksaeJump.id,
+      );
+
+      // TODO: 임시 상수 10
+      if (duksaeJumpLogs.length < 10) {
+        quests.push(duksaeJump);
+      }
     } else {
       quests = await this.questRepositoryService.findQuests();
     }
