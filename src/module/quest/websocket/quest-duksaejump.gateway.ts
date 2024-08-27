@@ -129,6 +129,10 @@ export class QuestDuksaeJumpGateWay
 
     // 장애물의 속도 업데이트 (기존 장애물 포함)
     const updateObjectSpeeds = async () => {
+      await new Promise((resolve) =>
+        setTimeout(resolve, quest.speedIncreaseInterval),
+      );
+
       while (true) {
         const hp = parseFloat(
           await this.memory.find(DuksaeJump.getHealthPointKey(client.id)),
@@ -146,6 +150,8 @@ export class QuestDuksaeJumpGateWay
           DuksaeJump.getObjectSpeedKey(client.id),
           objectSpeed,
         );
+
+        client.emit(MessagePattern.Outbound.Speed, objectSpeed);
 
         // 장애물 속도 업데이트
         await new Promise((resolve) =>
@@ -168,7 +174,6 @@ export class QuestDuksaeJumpGateWay
           objects[Math.floor(Math.random() * objects.length)];
 
         client.emit(MessagePattern.Outbound.Object, randomObject);
-        client.emit(MessagePattern.Outbound.Speed, objectSpeed);
 
         // 새로운 장애물의 속도에 맞춘 ttl 설정
         const ttl = calTtl();
