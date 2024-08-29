@@ -4,6 +4,7 @@ import { Repository, Not, In, IsNull } from 'typeorm';
 
 import { QuestEntity } from '../entity/quest.entity';
 import { LogQuestEntity } from '../entity/log-quest.entity';
+import { QuestType } from '../enum/quest.enum';
 
 @Injectable()
 export class QuestRepositoryService {
