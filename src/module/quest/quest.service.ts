@@ -13,6 +13,7 @@ import { LimitExceededError } from 'src/types/error/application-exceptions/409-c
 import { NoOngoingQuestError } from 'src/types/error/application-exceptions/400-bad-request';
 import { GuestInfo } from './rest/types/guest';
 import { QuestType } from '../repository/enum/quest.enum';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class QuestService {
@@ -22,6 +23,9 @@ export class QuestService {
 
     @Inject(BlockchainCoreService)
     private readonly blockchainCoreService: BlockchainCoreService,
+
+    @Inject(CacheService)
+    private readonly memory: CacheService,
   ) {}
 
   async getRandomQuest(userId: number): Promise<StartRandomQuestResponse> {
@@ -58,6 +62,46 @@ export class QuestService {
     const quests = await this.questRepositoryService.findQuests([]);
     const randomQuestIndex = Math.floor(Math.random() * quests.length);
     const quest = quests[randomQuestIndex];
+
+    const log = await this.questRepositoryService.insertLog({
+      questId: quest.id,
+      isGuestUser: true,
+      guestInfo,
+    });
+
+    return StartRandomQuestResponse.from(quest, log.id);
+  }
+
+  async getDuksaeJumpQuest(
+    guestInfo: GuestInfo,
+  ): Promise<StartRandomQuestResponse> {
+    const quest = await this.questRepositoryService.findQuestById(42);
+
+    const log = await this.questRepositoryService.insertLog({
+      questId: quest.id,
+      isGuestUser: true,
+      guestInfo,
+    });
+
+    return StartRandomQuestResponse.from(quest, log.id);
+  }
+
+  async getAcidRainSpeedQuest(
+    guestInfo: GuestInfo,
+  ): Promise<StartRandomQuestResponse> {
+    const QUEST_IDS = [28, 2]; // speed, acid rain
+    const lastQuestId = await this.memory.find('lastQuestId');
+    let nextQuestId: number;
+
+    if (lastQuestId === null || lastQuestId === QUEST_IDS[1].toString()) {
+      nextQuestId = QUEST_IDS[0];
+    } else {
+      nextQuestId = QUEST_IDS[1];
+    }
+
+    await this.memory.set('lastQuestId', nextQuestId.toString());
+
+    const quest = await this.questRepositoryService.findQuestById(nextQuestId);
 
     const log = await this.questRepositoryService.insertLog({
       questId: quest.id,

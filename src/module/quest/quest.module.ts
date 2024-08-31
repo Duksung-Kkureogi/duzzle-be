@@ -6,10 +6,11 @@ import { BlockchainModule } from '../blockchain/blockchain.module';
 import { QuestForGuestController } from './rest/quest-for-guest.controller';
 import { QuestAcidRainGateway } from './websocket/quest-acidrain.gateway';
 import { WebSocketModule } from '../websocket/websocket.module';
+import { QuestDemoController } from './rest/quest-demo.controller';
 
 @Module({
   imports: [RepositoryModule, BlockchainModule, WebSocketModule],
-  controllers: [QuestController, QuestForGuestController],
+  controllers: [QuestController, QuestForGuestController, QuestDemoController],
   providers: [QuestService, QuestAcidRainGateway],
   exports: [QuestService],
 })
