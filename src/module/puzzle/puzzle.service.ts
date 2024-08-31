@@ -13,8 +13,7 @@ import {
 import { PaginatedList } from 'src/dto/response.dto';
 import { ContractKey } from '../repository/enum/contract.enum';
 import { PuzzlePieceEntity } from '../repository/entity/puzzle-piece.entity';
-import { PuzzlePieceDto } from '../season-history/dto/season-history.dto';
-import { PuzzleResponse } from './dto/puzzle.dto';
+import { PuzzlePieceDto, PuzzleResponse } from './dto/puzzle.dto';
 
 @Injectable()
 export class PuzzleService {
