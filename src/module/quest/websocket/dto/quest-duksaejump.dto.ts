@@ -5,6 +5,10 @@ export class StartDuksaeJumpMessageBody {
   gamePanelOffsetWidth: number;
 }
 
+export class ScoreMessageBody {
+  score: number;
+}
+
 export type DuksaeJumpQuestData = {
   objectSpeed: number;
   objectMaxSpeed: number;
@@ -27,10 +31,6 @@ export class DuksaeJump {
       'userId',
       userId,
     ].join(':');
-  }
-
-  static getObjectSpeedKey(clientId: string): string {
-    return [clientId, 'speed'].join(':');
   }
 
   static getHealthPointKey(clientId: string): string {
