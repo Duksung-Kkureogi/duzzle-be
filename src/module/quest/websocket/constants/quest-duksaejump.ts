@@ -15,7 +15,6 @@ export const DuksaeJumpMessagePattern = {
     Object: 'object',
     Speed: 'speed',
     Health: 'health',
-    Score: 'score',
     GameOver: 'gameover',
     Result: 'result',
   },
