@@ -1,6 +1,5 @@
 const DuksaeJumpPrefix: string = 'quest:duksae-jump';
 
-export const CORRECT_JUMP_POINTS: number = 1;
 export const MISSING_JUMP_PENALTY: number = 1;
 
 export const DuksaeJumpMessagePattern = {
@@ -16,7 +15,6 @@ export const DuksaeJumpMessagePattern = {
     Object: 'object',
     Speed: 'speed',
     Health: 'health',
-    Score: 'score',
     GameOver: 'gameover',
     Result: 'result',
   },
