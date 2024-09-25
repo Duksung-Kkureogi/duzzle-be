@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NftExchangeRepositoryService } from '../repository/service/nft-exchange.repository.service';
-import { AvailableNftToOfferResponse } from './dto/available-nfts-to-offer.dto';
+import { AvailableNftResponse } from './dto/available-nfts.dto';
+import { PaginatedList } from 'src/dto/response.dto';
 
 @Injectable()
 export class NftExchangeService {
@@ -11,10 +12,16 @@ export class NftExchangeService {
   async getAvailableNFTsToOffer(
     userId: number,
     userWallet: string,
-  ): Promise<AvailableNftToOfferResponse> {
+  ): Promise<AvailableNftResponse> {
     return this.nftExchangeRepositoryService.getAvailableNFTsToOffer(
       userId,
       userWallet,
     );
+  }
+
+  async getAvailableNFTsToRequest(): Promise<
+    PaginatedList<AvailableNftResponse>
+  > {
+    return this.nftExchangeRepositoryService.getAvailableNFTsToRequestPaginated();
   }
 }

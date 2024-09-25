@@ -38,7 +38,7 @@ export class AvailableBlueprintOrPuzzleNFT {
   availableQuantity: number;
 }
 
-export class AvailableNftToOfferResponse {
+export class AvailableNftResponse {
   @ApiProperty({ type: [AvailableMaterialNFT] })
   materials: AvailableMaterialNFT[];
 

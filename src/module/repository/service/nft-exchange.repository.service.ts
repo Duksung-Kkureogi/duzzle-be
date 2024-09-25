@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   AvailableMaterialNFT,
-  AvailableNftToOfferResponse,
-} from 'src/module/nft-exchange/dto/available-nfts-to-offer.dto';
+  AvailableNftResponse,
+} from 'src/module/nft-exchange/dto/available-nfts.dto';
 import { UserMaterialItemEntity } from '../entity/user-material-item.entity';
 import { BlueprintItemEntity } from '../entity/blueprint-item.entity';
 import { SeasonZoneEntity } from '../entity/season-zone.entity';
@@ -14,6 +14,7 @@ import { ZoneEntity } from '../entity/zone.entity';
 import { SeasonEntity } from '../entity/season.entity';
 import { NFTType } from 'src/module/nft-exchange/dto/nft-asset';
 import { BLUEPRINT_ITEM_IMAGE_URL } from 'src/constant/item';
+import { PaginatedList } from 'src/dto/response.dto';
 
 @Injectable()
 export class NftExchangeRepositoryService {
@@ -31,7 +32,7 @@ export class NftExchangeRepositoryService {
   async getAvailableNFTsToOffer(
     userId: number,
     userWalletAddress: string,
-  ): Promise<AvailableNftToOfferResponse> {
+  ): Promise<AvailableNftResponse> {
     const [materialNFTs, blueprintNFTs, puzzleNFTs] = await Promise.all([
       // 1. 사용자의 material NFT 조회
       this.userMaterialItemRepository
@@ -123,4 +124,8 @@ export class NftExchangeRepositoryService {
         ),
     };
   }
+
+  async getAvailableNFTsToRequestPaginated(): Promise<
+    PaginatedList<AvailableNftResponse>
+  > {}
 }
