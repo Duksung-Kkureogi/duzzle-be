@@ -87,6 +87,7 @@ export class ItemRepositoryService {
         .where('bi.userId = :userId', { userId })
         .andWhere('sz.seasonId = (select max(id) from season)')
         .andWhere('bi.minted')
+        .andWhere('bi.burned = false')
         .groupBy('z.nameKr')
         .execute();
 
