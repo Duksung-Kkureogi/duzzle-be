@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { NFTType } from './nft-asset';
 
 export class AvailableMaterialNFT {
@@ -16,9 +16,6 @@ export class AvailableMaterialNFT {
 }
 
 export class AvailableBlueprintOrPuzzleNFT {
-  @ApiProperty({ type: 'enum', enum: [NFTType.Blueprint, NFTType.PuzzlePiece] })
-  type: NFTType.Blueprint | NFTType.PuzzlePiece;
-
   @ApiProperty()
   seasonZoneId: number;
 
@@ -38,10 +35,16 @@ export class AvailableBlueprintOrPuzzleNFT {
   availableQuantity: number;
 }
 
-export class AvailableNftResponse {
-  @ApiProperty({ type: [AvailableMaterialNFT] })
-  materials: AvailableMaterialNFT[];
+@ApiExtraModels(AvailableMaterialNFT, AvailableBlueprintOrPuzzleNFT)
+export class AvailableNftDto {
+  @ApiProperty({ enum: NFTType })
+  type: NFTType;
 
-  @ApiProperty({ type: [AvailableBlueprintOrPuzzleNFT] })
-  blueprintsAndPuzzlePieces: AvailableBlueprintOrPuzzleNFT[];
+  @ApiProperty({
+    oneOf: [
+      { type: 'object', $ref: getSchemaPath(AvailableMaterialNFT) },
+      { type: 'object', $ref: getSchemaPath(AvailableBlueprintOrPuzzleNFT) },
+    ],
+  })
+  nftInfo: AvailableMaterialNFT | AvailableBlueprintOrPuzzleNFT;
 }
