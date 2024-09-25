@@ -35,6 +35,7 @@ import { WebSocketExceptionFilter } from 'src/filter/websocket-exception-filter'
 import { UserStoryModule } from './user-story/user-story.module';
 import { RankingsModule } from './rankings/rankings.module';
 import { SeasonHistoryModule } from './season-history/season-history.module';
+import { NftExchangeModule } from './nft-exchange/nft-exchange.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { SeasonHistoryModule } from './season-history/season-history.module';
     WebSocketModule,
     RankingsModule,
     SeasonHistoryModule,
+    NftExchangeModule,
   ],
   controllers: [HealthController],
   providers: [
