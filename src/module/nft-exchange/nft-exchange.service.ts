@@ -3,13 +3,12 @@ import { NftExchangeRepositoryService } from '../repository/service/nft-exchange
 import { PaginatedList } from 'src/dto/response.dto';
 import { AvailableNftsToRequestRequest } from './dto/available-nfts-to-request.dto';
 import { AvailableNftDto } from './dto/available-nfts.dto';
-import { ReportProvider } from 'src/provider/report.provider';
 import { PostNftExchangeRequest } from './dto/nft-exchange.dto';
 import { NftRepositoryService } from '../repository/service/nft.repository.service';
 import { ContractKey } from '../repository/enum/contract.enum';
 import { NFTType } from './dto/nft-asset';
 import { ZoneRepositoryService } from '../repository/service/zone.repository.service';
-import { InvalidParamsError } from 'src/types/error/application-exceptions/400-bad-request';
+import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 
 @Injectable()
 export class NftExchangeService {
@@ -54,14 +53,14 @@ export class NftExchangeService {
           nft.contractId,
         );
         if (!contract || contract.key !== ContractKey.ITEM_MATERIAL) {
-          throw new InvalidParamsError();
+          throw new ContentNotFoundError('contract', nft.contractId);
         }
       } else if (
         nft.type === NFTType.Blueprint ||
         nft.type === NFTType.PuzzlePiece
       ) {
         if (!seasonZoneIds.includes(nft.seasonZoneId)) {
-          throw new InvalidParamsError();
+          throw new ContentNotFoundError('seasonZone', nft.seasonZoneId);
         }
       }
     }
