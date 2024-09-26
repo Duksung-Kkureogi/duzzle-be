@@ -104,24 +104,37 @@ export class NftExchangeRepositoryService {
     return [
       ...materialNFTs.map((e) => {
         return {
-          ...e,
           type: NFTType.Material,
-          availableQuantity: parseInt(e.availableQuantity),
-        } as AvailableMaterialNFT;
+          nftInfo: <AvailableMaterialNFT>{
+            contractId: parseInt(e.contractId),
+            name: e.name,
+            imageUrl: e.imageUrl,
+            availableQuantity: parseInt(e.availableQuantity),
+          },
+        };
       }),
       ...blueprintNFTs.map((e) => {
         return {
-          ...e,
           type: NFTType.Blueprint,
-          availableQuantity: parseInt(e.availableQuantity),
-          imageUrl: BLUEPRINT_ITEM_IMAGE_URL,
+          nftInfo: {
+            seasonZoneId: parseInt(e.seasonZoneId),
+            seasonName: e.seasonName,
+            zoneName: e.zoneName,
+            imageUrl: BLUEPRINT_ITEM_IMAGE_URL,
+            availableQuantity: parseInt(e.availableQuantity),
+          },
         };
       }),
       ...puzzleNFTs.map((e) => {
         return {
-          ...e,
           type: NFTType.PuzzlePiece,
-          availableQuantity: parseInt(e.availableQuantity),
+          nftInfo: {
+            seasonZoneId: parseInt(e.seasonZoneId),
+            seasonName: e.seasonName,
+            zoneName: e.zoneName,
+            imageUrl: e.imageUrl,
+            availableQuantity: parseInt(e.availableQuantity),
+          },
         };
       }),
     ];
