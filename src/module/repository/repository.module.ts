@@ -28,6 +28,8 @@ import { RequiredMaterialItemsEntity } from './entity/required-material-items.en
 import { BlueprintItemEntity } from './entity/blueprint-item.entity';
 import { UserMaterialItemEntity } from './entity/user-material-item.entity';
 import { ItemRepositoryService } from './service/item.repository.service';
+import { NftExchangeRepositoryService } from './service/nft-exchange.repository.service';
+import { NftExchangeOfferEntity } from './entity/nft-exchange-offers.entity';
 
 @Module({
   imports: [
@@ -56,6 +58,7 @@ import { ItemRepositoryService } from './service/item.repository.service';
       MaterialItemEntity,
       BlueprintItemEntity,
       UserMaterialItemEntity,
+      NftExchangeOfferEntity,
     ]),
   ],
   providers: [
@@ -68,6 +71,7 @@ import { ItemRepositoryService } from './service/item.repository.service';
     StoryRepositoryService,
     TransactionRepositoryService,
     ItemRepositoryService,
+    NftExchangeRepositoryService,
   ],
   exports: [
     UserRepositoryService,
@@ -79,6 +83,7 @@ import { ItemRepositoryService } from './service/item.repository.service';
     StoryRepositoryService,
     TransactionRepositoryService,
     ItemRepositoryService,
+    NftExchangeRepositoryService,
   ],
 })
 export class RepositoryModule {}

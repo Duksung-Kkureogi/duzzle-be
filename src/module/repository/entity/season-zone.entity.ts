@@ -25,6 +25,9 @@ export class SeasonZoneEntity extends BaseEntity {
   @Column('int')
   pieceCount: number;
 
+  @Column('varchar', { nullable: true })
+  puzzleThumbnailUrl: string | null;
+
   @ManyToOne(() => SeasonEntity, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
@@ -45,4 +48,3 @@ export class SeasonZoneEntity extends BaseEntity {
   )
   requiredMaterialItems: RequiredMaterialItemsEntity[];
 }
-
