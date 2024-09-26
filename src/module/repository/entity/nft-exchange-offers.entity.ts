@@ -26,10 +26,10 @@ export class NftExchangeOfferEntity extends BaseEntity {
   status: NftExchangeOfferStatus;
 
   @Column('jsonb')
-  offeredNFTs: NFTAsset[];
+  offeredNfts: NFTAsset[];
 
   @Column('jsonb')
-  requestedNFTs: NFTAsset[];
+  requestedNfts: NFTAsset[];
 
   @Column('int', { nullable: true })
   acceptorUserId: number;
