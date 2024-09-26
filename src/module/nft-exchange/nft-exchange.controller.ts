@@ -1,4 +1,12 @@
-import { Controller, Get, HttpStatus, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthorizationToken } from 'src/constant/authorization-token';
 import { ApiDescription } from 'src/decorator/api-description.decorator';
 import { NftExchangeService } from './nft-exchange.service';
@@ -10,6 +18,8 @@ import { AvailableNftsToRequestRequest } from './dto/available-nfts-to-request.d
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { AvailableNftDto } from './dto/available-nfts.dto';
 import { ResponseList } from 'src/decorator/response-list.decorators';
+import { PostNftExchangeRequest } from './dto/nft-exchange.dto';
+import { InvalidParamsError } from 'src/types/error/application-exceptions/400-bad-request';
 
 @Controller('nft-exchange')
 export class NftExchangeController {
@@ -63,5 +73,29 @@ export class NftExchangeController {
       await this.nftExchangeService.getAvailableNFTsToRequest(params);
 
     return new ResponsesListDto(result.list, result.total);
+  }
+
+  @ApiDescription({
+    tags: 'NFT Exchange',
+    summary: '교환 제안 생성   (거래 등록 3단계에서 사용)',
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: true,
+    },
+    exceptions: [InvalidParamsError],
+  })
+  @UseGuards(AuthGuard)
+  @Post()
+  async postNftExchange(
+    @AuthenticatedUser() user: UserEntity,
+    @Body() dto: PostNftExchangeRequest,
+  ): Promise<ResponsesDataDto<boolean>> {
+    await this.nftExchangeService.postNftExchange(user.id, dto);
+
+    return new ResponsesDataDto(true);
   }
 }
