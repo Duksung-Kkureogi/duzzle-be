@@ -61,7 +61,7 @@ export class NftExchangeRepositoryService {
         .select([
           'sz.id AS "seasonZoneId"',
           's.title AS "seasonName"',
-          'z.nameKr AS zoneName',
+          'z.nameKr AS "zoneName"',
           'count(*) as "availableQuantity"',
         ])
         .innerJoin(SeasonZoneEntity, 'sz', 'bi.seasonZoneId = sz.id')
@@ -82,7 +82,7 @@ export class NftExchangeRepositoryService {
         .select([
           'sz.id AS "seasonZoneId"',
           's.title AS "seasonName"',
-          'z.nameKr AS zoneName',
+          'z.nameKr AS "zoneName"',
           'count(*) as "availableQuantity"',
           'sz.puzzleThumbnailUrl AS "imageUrl"',
         ])
