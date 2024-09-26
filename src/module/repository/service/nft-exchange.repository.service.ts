@@ -17,10 +17,15 @@ import { NFTType } from 'src/module/nft-exchange/dto/nft-asset';
 import { BLUEPRINT_ITEM_IMAGE_URL } from 'src/constant/item';
 import { PaginatedList } from 'src/dto/response.dto';
 import { AvailableNftsToRequestRequest } from 'src/module/nft-exchange/dto/available-nfts-to-request.dto';
+import { NftExchangeOfferEntity } from '../entity/nft-exchange-offers.entity';
+import { NftExchangeOfferDto } from '../dto/nft-exchange.dto';
 
 @Injectable()
 export class NftExchangeRepositoryService {
   constructor(
+    @InjectRepository(NftExchangeOfferEntity)
+    private nftExchangeOfferRepository: Repository<NftExchangeOfferEntity>,
+
     @InjectRepository(UserMaterialItemEntity)
     private userMaterialItemRepository: Repository<UserMaterialItemEntity>,
 
@@ -32,6 +37,15 @@ export class NftExchangeRepositoryService {
 
     private readonly entityManager: EntityManager,
   ) {}
+
+  async postNftExchange(
+    dto: NftExchangeOfferDto,
+  ): Promise<NftExchangeOfferEntity> {
+    const entity = this.nftExchangeOfferRepository.create(dto);
+    await this.nftExchangeOfferRepository.save(entity);
+
+    return entity;
+  }
 
   async getAvailableNFTsToOffer(
     userId: number,
