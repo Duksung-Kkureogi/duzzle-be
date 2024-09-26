@@ -19,6 +19,7 @@ import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { AvailableNftDto } from './dto/available-nfts.dto';
 import { ResponseList } from 'src/decorator/response-list.decorators';
 import { PostNftExchangeRequest } from './dto/nft-exchange.dto';
+import { InvalidParamsError } from 'src/types/error/application-exceptions/400-bad-request';
 
 @Controller('nft-exchange')
 export class NftExchangeController {
@@ -85,6 +86,7 @@ export class NftExchangeController {
       status: HttpStatus.OK,
       schema: true,
     },
+    exceptions: [InvalidParamsError],
   })
   @UseGuards(AuthGuard)
   @Post()
