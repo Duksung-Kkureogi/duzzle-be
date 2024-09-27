@@ -17,7 +17,7 @@ import { PuzzleService } from '../puzzle/puzzle.service';
 import { USER_PROFILE_DEFAULT_IMG } from 'src/constant/image';
 import { ProfileType } from '../repository/enum/user.enum';
 import { LoginRequired } from 'src/types/error/application-exceptions/401-unautorized';
-import { ProfileAccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
+import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
 import { SeasonHistoryService } from '../season-history/season-history.service';
 import { QuestService } from '../quest/quest.service';
 
@@ -65,7 +65,7 @@ export class UserService {
       await this.userRepositoryService.getUserByWalletAddress(walletAddress);
 
     if (profile.profileType === ProfileType.None)
-      throw new ProfileAccessDenied();
+      throw new AccessDenied('profile', profile.id);
     if (profile.profileType === ProfileType.Private && userId === undefined)
       throw new LoginRequired(`Profile:${profile.profileType}`);
 

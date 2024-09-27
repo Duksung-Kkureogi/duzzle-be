@@ -43,7 +43,7 @@ import {
   InvalidParamsError,
 } from 'src/types/error/application-exceptions/400-bad-request';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
-import { ProfileAccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
+import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
 import { LoginRequired } from 'src/types/error/application-exceptions/401-unautorized';
 
 @Controller({
@@ -94,7 +94,7 @@ export class UserController {
       status: HttpStatus.OK,
       schema: OtherUserProfileResponse,
     },
-    exceptions: [ContentNotFoundError, ProfileAccessDenied, LoginRequired],
+    exceptions: [ContentNotFoundError, AccessDenied, LoginRequired],
   })
   @UseGuards(PublicOrAuthGuard)
   @HttpCode(HttpStatus.OK)
