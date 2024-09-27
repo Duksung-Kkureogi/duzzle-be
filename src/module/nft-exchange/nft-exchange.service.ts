@@ -14,6 +14,9 @@ import {
 } from './domain/nft-asset';
 import { ZoneRepositoryService } from '../repository/service/zone.repository.service';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
+import { NftExchangeOfferStatus } from '../repository/enum/nft-exchange-status.enum';
+import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
+import { ActionNotPermittedError } from 'src/types/error/application-exceptions/409-conflict';
 
 @Injectable()
 export class NftExchangeService {
@@ -79,5 +82,36 @@ export class NftExchangeService {
       offerorUserId: userId,
       ...params,
     });
+  }
+
+  async deleteNftExchange(
+    userId: number,
+    nftExchangeId: number,
+  ): Promise<void> {
+    const nftExchange =
+      await this.nftExchangeRepositoryService.findNftExchangeById(
+        nftExchangeId,
+      );
+
+    if (!nftExchange) {
+      throw new ContentNotFoundError('nft-exchange-offer', nftExchangeId);
+    }
+    if (nftExchange.offerorUserId !== userId) {
+      throw new AccessDenied('nft-exchange-offer', nftExchangeId);
+    }
+
+    const allowedStatus = [
+      NftExchangeOfferStatus.LISTED,
+      NftExchangeOfferStatus.FAILED,
+    ];
+    if (!allowedStatus.includes(nftExchange.status)) {
+      throw new ActionNotPermittedError(
+        'cancel',
+        'nft-exchange-offer',
+        nftExchange.status,
+      );
+    }
+
+    await this.nftExchangeRepositoryService.deleteNftExchange(nftExchangeId);
   }
 }

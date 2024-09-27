@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
+  Param,
   Post,
   Query,
   UseGuards,
@@ -19,6 +21,8 @@ import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { AvailableNftDto } from './dto/available-nfts.dto';
 import { PostNftExchangeRequest } from './dto/nft-exchange.dto';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
+import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
+import { ActionNotPermittedError } from 'src/types/error/application-exceptions/409-conflict';
 
 @Controller('nft-exchange')
 export class NftExchangeController {
@@ -94,6 +98,30 @@ export class NftExchangeController {
     @Body() dto: PostNftExchangeRequest,
   ): Promise<ResponsesDataDto<boolean>> {
     await this.nftExchangeService.postNftExchange(user.id, dto);
+
+    return new ResponsesDataDto(true);
+  }
+
+  @ApiDescription({
+    tags: 'NFT Exchange',
+    summary: '교환 제안 취소',
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: true,
+    },
+    exceptions: [ContentNotFoundError, AccessDenied, ActionNotPermittedError],
+  })
+  @UseGuards(AuthGuard)
+  @Delete(':id')
+  async deleteNftExchange(
+    @AuthenticatedUser() user: UserEntity,
+    @Param('id') nftExchangeId: number,
+  ): Promise<ResponsesDataDto<boolean>> {
+    await this.nftExchangeService.deleteNftExchange(user.id, nftExchangeId);
 
     return new ResponsesDataDto(true);
   }

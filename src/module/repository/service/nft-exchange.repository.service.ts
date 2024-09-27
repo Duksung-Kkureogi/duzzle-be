@@ -38,6 +38,16 @@ export class NftExchangeRepositoryService {
     private readonly entityManager: EntityManager,
   ) {}
 
+  async findNftExchangeById(
+    nftExchangeId: number,
+  ): Promise<NftExchangeOfferEntity> {
+    const nftExchange = await this.nftExchangeOfferRepository.findOneBy({
+      id: nftExchangeId,
+    });
+
+    return nftExchange;
+  }
+
   async postNftExchange(
     dto: NftExchangeOfferDto,
   ): Promise<NftExchangeOfferEntity> {
@@ -45,6 +55,10 @@ export class NftExchangeRepositoryService {
     await this.nftExchangeOfferRepository.save(entity);
 
     return entity;
+  }
+
+  async deleteNftExchange(nftExchangeId: number): Promise<void> {
+    await this.nftExchangeOfferRepository.delete(nftExchangeId);
   }
 
   async getAvailableNFTsToOffer(
