@@ -31,3 +31,14 @@ export class AlreadyExistsError extends ApplicationException {
     super(ExceptionCode.AlreadyExists, message);
   }
 }
+
+export class ActionNotPermittedError extends ApplicationException {
+  constructor(
+    operation: string = '$operation',
+    resource: string = '$resource',
+    status: string = '$status',
+  ) {
+    const message = `${operation} is not permitted for ${resource} in status: ${status}.`;
+    super(ExceptionCode.ActionNotPermitted, message);
+  }
+}

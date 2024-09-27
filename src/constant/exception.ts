@@ -18,7 +18,7 @@ export enum ExceptionCode {
   LoginRequired = 'LOGIN_REQUIRED',
 
   // 403 (Forbidden)
-  ProfileAccessDenied = 'PROFILE_ACCESS_DENIED',
+  AccessDenied = 'ACCESS_DENIED',
 
   // 404 (Not Found)
   ContentNotFound = 'CONTENT_NOT_FOUND',
@@ -28,6 +28,7 @@ export enum ExceptionCode {
   AlreadyExists = 'ALREADY_EXISTS',
   DuplicateValues = 'DUPLICATE_VALUE',
   LimitExceeded = 'LIMIT_EXCEEDED',
+  ActionNotPermitted = 'ACTION_NOT_PERMITTED',
 
   // 500
   InternalServerError = 'INTERNAL_SERVER_ERROR',
@@ -54,5 +55,6 @@ export const CodeToStatus: {
   [ExceptionCode.InvalidRefreshToken]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.PageNotFound]: HttpStatus.NOT_FOUND,
   [ExceptionCode.LoginRequired]: HttpStatus.UNAUTHORIZED,
-  [ExceptionCode.ProfileAccessDenied]: HttpStatus.FORBIDDEN,
+  [ExceptionCode.AccessDenied]: HttpStatus.FORBIDDEN,
+  [ExceptionCode.ActionNotPermitted]: HttpStatus.CONFLICT,
 };
