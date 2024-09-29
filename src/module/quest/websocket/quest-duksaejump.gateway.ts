@@ -69,6 +69,8 @@ export class QuestDuksaeJumpGateWay
     @MessageBody()
     data: StartDuksaeJumpMessageBody,
   ): Promise<void> {
+    Logger.log(`quest:duksae-jump:start`);
+
     const log = client.log;
     const quest: DuksaeJumpQuestData = JSON.parse(log.quest.quest);
     const questData = new DuksaeJump(data.logId, client.id, client.user?.id);
