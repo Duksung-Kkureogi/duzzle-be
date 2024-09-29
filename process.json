@@ -9,7 +9,7 @@
       "max_memory_restart": "1200M",
       "merge_logs": true,
       "log_date_format": "",
-      "out_file": "/dev/null",
+      "out_file": "/home/root/logs",
       "error_file": "/dev/null"
     }
   ]
