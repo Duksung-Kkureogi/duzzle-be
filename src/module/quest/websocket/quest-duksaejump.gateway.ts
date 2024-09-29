@@ -156,6 +156,8 @@ export class QuestDuksaeJumpGateWay
     @MessageBody()
     data: ScoreMessageBody,
   ): Promise<void> {
+    Logger.log(`quest:duksae-jump:success / score: ${data.score}`);
+
     const log = client.log;
 
     const passingScore = parseFloat(
@@ -168,9 +170,9 @@ export class QuestDuksaeJumpGateWay
         result: isSucceeded,
         score: data.score,
       });
-
-      await this.questService.handleResult(isSucceeded, log);
     }
+
+    await this.questService.handleResult(isSucceeded, log);
   }
 
   @SubscribeMessage(MessagePattern.Inbound.Fail)
