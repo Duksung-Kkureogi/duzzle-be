@@ -1,5 +1,7 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { BlueprintOrPuzzleNFT, MaterialNFT, NFTAsset } from './nft-asset';
+import { IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 @ApiExtraModels(MaterialNFT, BlueprintOrPuzzleNFT)
 export class PostNftExchangeRequest {
@@ -10,6 +12,9 @@ export class PostNftExchangeRequest {
       { type: 'object', $ref: getSchemaPath(BlueprintOrPuzzleNFT) },
     ],
   })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => NFTAsset)
   offeredNfts: NFTAsset[];
 
   @ApiProperty({
@@ -19,5 +24,8 @@ export class PostNftExchangeRequest {
       { type: 'object', $ref: getSchemaPath(BlueprintOrPuzzleNFT) },
     ],
   })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => NFTAsset)
   requestedNfts: NFTAsset[];
 }
