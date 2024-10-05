@@ -7,7 +7,12 @@ export enum NFTType {
   PuzzlePiece = 'puzzlePiece',
 }
 
-export class MaterialNFT {
+export class NFTAsset {
+  @ApiProperty()
+  type: NFTType;
+}
+
+export class MaterialNFT extends NFTAsset {
   @ApiProperty({ enum: [NFTType.Material] })
   @IsEnum(NFTType)
   readonly type = NFTType.Material;
@@ -21,7 +26,7 @@ export class MaterialNFT {
   quantity: number;
 }
 
-export class BlueprintOrPuzzleNFT {
+export class BlueprintOrPuzzleNFT extends NFTAsset {
   @ApiProperty({ enum: [NFTType.Blueprint, NFTType.PuzzlePiece] })
   @IsEnum(NFTType)
   readonly type: NFTType.Blueprint | NFTType.PuzzlePiece;
@@ -34,5 +39,3 @@ export class BlueprintOrPuzzleNFT {
   @IsInt()
   quantity: number;
 }
-
-export type NFTAsset = MaterialNFT | BlueprintOrPuzzleNFT;

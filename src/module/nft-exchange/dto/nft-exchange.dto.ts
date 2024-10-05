@@ -19,12 +19,16 @@ export class PostNftExchangeRequest {
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type((obj: any) => {
-    if (obj?.type === NFTType.Material) {
-      return MaterialNFT;
-    } else {
-      return BlueprintOrPuzzleNFT;
-    }
+  @Type(() => NFTAsset, {
+    discriminator: {
+      property: 'type',
+      subTypes: [
+        { value: MaterialNFT, name: NFTType.Material },
+        { value: BlueprintOrPuzzleNFT, name: NFTType.Blueprint },
+        { value: BlueprintOrPuzzleNFT, name: NFTType.PuzzlePiece },
+      ],
+    },
+    keepDiscriminatorProperty: true,
   })
   offeredNfts: NFTAsset[];
 
@@ -37,12 +41,16 @@ export class PostNftExchangeRequest {
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type((obj: any) => {
-    if (obj?.type === NFTType.Material) {
-      return MaterialNFT;
-    } else {
-      return BlueprintOrPuzzleNFT;
-    }
+  @Type(() => NFTAsset, {
+    discriminator: {
+      property: 'type',
+      subTypes: [
+        { value: MaterialNFT, name: NFTType.Material },
+        { value: BlueprintOrPuzzleNFT, name: NFTType.Blueprint },
+        { value: BlueprintOrPuzzleNFT, name: NFTType.PuzzlePiece },
+      ],
+    },
+    keepDiscriminatorProperty: true,
   })
   requestedNfts: NFTAsset[];
 }
