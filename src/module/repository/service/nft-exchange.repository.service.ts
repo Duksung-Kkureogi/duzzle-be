@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Like, Repository } from 'typeorm';
 import {
   AvailableBlueprintOrPuzzleNFT,
   AvailableMaterialNFT,
@@ -19,12 +19,22 @@ import { PaginatedList } from 'src/dto/response.dto';
 import { AvailableNftsToRequestRequest } from 'src/module/nft-exchange/dto/available-nfts-to-request.dto';
 import { NftExchangeOfferEntity } from '../entity/nft-exchange-offers.entity';
 import { NftExchangeOfferDto } from '../dto/nft-exchange.dto';
+import { UserEntity } from '../entity/user.entity';
 
 @Injectable()
 export class NftExchangeRepositoryService {
   constructor(
+    @InjectRepository(SeasonZoneEntity)
+    private seasonZoneRepository: Repository<SeasonZoneEntity>,
+
     @InjectRepository(NftExchangeOfferEntity)
     private nftExchangeOfferRepository: Repository<NftExchangeOfferEntity>,
+
+    @InjectRepository(MaterialItemEntity)
+    private materialItemRepository: Repository<MaterialItemEntity>,
+
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
 
     @InjectRepository(UserMaterialItemEntity)
     private userMaterialItemRepository: Repository<UserMaterialItemEntity>,
@@ -55,6 +65,84 @@ export class NftExchangeRepositoryService {
     await this.nftExchangeOfferRepository.save(entity);
 
     return entity;
+  }
+
+  async getNftExchangeList(
+    status?: string,
+    requestedNfts?: string,
+    offeredNfts?: string,
+    offerorUser?: string,
+  ): Promise<NftExchangeOfferEntity[]> {
+    const getExchangeOfferIds = async (
+      name: string,
+      type: 'requestedNfts' | 'offeredNfts',
+    ) => {
+      const materialItems = await this.materialItemRepository.findBy({
+        nameKr: Like(`%${name}%`),
+      });
+      const contractIds = materialItems.map((item) => item.contractId);
+
+      const seasonZones = await this.seasonZoneRepository
+        .createQueryBuilder('sz')
+        .innerJoinAndSelect('sz.season', 'season')
+        .innerJoinAndSelect('sz.zone', 'zone')
+        .where('season.titleKr LIKE :titleKr', { titleKr: `%${name}%` })
+        .orWhere('zone.nameKr LIKE :nameKr', { nameKr: `%${name}%` })
+        .select('sz.id')
+        .getMany();
+      const seasonZoneIds = seasonZones.map((zone) => zone.id);
+
+      const exchangeOfferIds = await this.nftExchangeOfferRepository
+        .createQueryBuilder('neo')
+        .where(`neo.${type}.contractId IN (:...contractIds)`, { contractIds })
+        .orWhere(`neo.${type}.seasonZoneId IN (:...seasonZoneIds)`, {
+          seasonZoneIds,
+        })
+        .select('neo.id')
+        .getMany();
+
+      return exchangeOfferIds.map((offer) => offer.id);
+    };
+
+    const exchangeOfferIdsByRequestedNft = requestedNfts
+      ? await getExchangeOfferIds(requestedNfts, 'requestedNfts')
+      : [];
+
+    const exchangeOfferIdsByOfferNft = offeredNfts
+      ? await getExchangeOfferIds(offeredNfts, 'offeredNfts')
+      : [];
+
+    let userId: number | null = null;
+    if (offerorUser) {
+      const user = await this.userRepository.findOneBy({ name: offerorUser });
+      userId = user ? user.id : null;
+    }
+
+    const queryBuilder =
+      await this.nftExchangeOfferRepository.createQueryBuilder('neo');
+
+    if (status) {
+      queryBuilder.andWhere('neo.status = :status', { status });
+    }
+    if (exchangeOfferIdsByRequestedNft.length > 0) {
+      queryBuilder.andWhere('neo.id IN (:...requestedNftIds)', {
+        requestedNftIds: exchangeOfferIdsByRequestedNft,
+      });
+    }
+    if (exchangeOfferIdsByOfferNft.length > 0) {
+      queryBuilder.andWhere('neo.id IN (:...offeredNftIds)', {
+        offeredNftIds: exchangeOfferIdsByOfferNft,
+      });
+    }
+    if (userId) {
+      queryBuilder.andWhere('neo.offerorUserId = :userId', { userId });
+    }
+
+    queryBuilder
+      .orderBy("CASE WHEN neo.status = 'listed' THEN 0 ELSE 1 END", 'ASC')
+      .addOrderBy('neo.createdAt', 'DESC');
+
+    return await queryBuilder.getMany();
   }
 
   async deleteNftExchange(nftExchangeId: number): Promise<void> {

@@ -19,7 +19,11 @@ import { ResponsesDataDto } from 'src/dto/responses-data.dto';
 import { AvailableNftsToRequestRequest } from './dto/available-nfts-to-request.dto';
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { AvailableNftDto } from './dto/available-nfts.dto';
-import { PostNftExchangeRequest } from './dto/nft-exchange.dto';
+import {
+  NftExchangeListRequest,
+  NftExchangeListResponse,
+  PostNftExchangeRequest,
+} from './dto/nft-exchange.dto';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
 import { ActionNotPermittedError } from 'src/types/error/application-exceptions/409-conflict';
@@ -129,5 +133,30 @@ export class NftExchangeController {
     await this.nftExchangeService.deleteNftExchange(user.id, nftExchangeId);
 
     return new ResponsesDataDto(true);
+  }
+
+  @ApiDescription({
+    tags: 'NFT Exchange',
+    summary: '교환 제안 목록',
+    description: '검색 조건: 거래 상태, 제안 nft, 요청 nft, 제안자(사용자명)',
+    listResponse: {
+      status: HttpStatus.OK,
+      schema: NftExchangeListResponse,
+    },
+    exceptions: [],
+  })
+  @Get()
+  async getNftExchangeList(
+    @Query() query: NftExchangeListRequest,
+  ): Promise<ResponsesListDto<NftExchangeListResponse>> {
+    const { status, requestedNfts, offeredNfts, offerorUser } = query;
+    const result = await this.nftExchangeService.getNftExchangeList(
+      status,
+      requestedNfts,
+      offeredNfts,
+      offerorUser,
+    );
+
+    return new ResponsesListDto(result);
   }
 }

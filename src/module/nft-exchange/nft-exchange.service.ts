@@ -3,7 +3,10 @@ import { NftExchangeRepositoryService } from '../repository/service/nft-exchange
 import { PaginatedList } from 'src/dto/response.dto';
 import { AvailableNftsToRequestRequest } from './dto/available-nfts-to-request.dto';
 import { AvailableNftDto } from './dto/available-nfts.dto';
-import { PostNftExchangeRequest } from './dto/nft-exchange.dto';
+import {
+  NftExchangeListResponse,
+  PostNftExchangeRequest,
+} from './dto/nft-exchange.dto';
 import { NftRepositoryService } from '../repository/service/nft.repository.service';
 import { ContractKey } from '../repository/enum/contract.enum';
 import {
@@ -113,5 +116,24 @@ export class NftExchangeService {
     }
 
     await this.nftExchangeRepositoryService.deleteNftExchange(nftExchangeId);
+  }
+
+  async getNftExchangeList(
+    status?: string,
+    requestedNfts?: string,
+    offeredNfts?: string,
+    offerorUser?: string,
+  ): Promise<NftExchangeListResponse[]> {
+    const nftExchanges =
+      await this.nftExchangeRepositoryService.getNftExchangeList(
+        status,
+        requestedNfts,
+        offeredNfts,
+        offerorUser,
+      );
+
+    const result = nftExchanges.map((e) => NftExchangeListResponse.from(e));
+
+    return result;
   }
 }
