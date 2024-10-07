@@ -1,9 +1,4 @@
-import {
-  ApiExtraModels,
-  ApiProperty,
-  getSchemaPath,
-  IntersectionType,
-} from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import {
   BlueprintOrPuzzleNFT,
   MaterialNFT,
@@ -18,10 +13,9 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Expose, plainToInstance, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { NftExchangeOfferStatus } from 'src/module/repository/enum/nft-exchange-status.enum';
-import { NftExchangeOfferEntity } from 'src/module/repository/entity/nft-exchange-offers.entity';
-import { UserEntity } from 'src/module/repository/entity/user.entity';
+import { PaginationDto } from 'src/dto/request.dto';
 
 export class MaterialNFTDTO implements MaterialNFT {
   @ApiProperty({ enum: [NFTType.Material] })
@@ -98,7 +92,7 @@ export class PostNftExchangeRequest {
   requestedNfts: NFTAsset[];
 }
 
-export class NftExchangeListRequest {
+export class NftExchangeListRequest extends PaginationDto {
   @ApiProperty()
   @IsOptional()
   @IsEnum(NftExchangeOfferStatus)

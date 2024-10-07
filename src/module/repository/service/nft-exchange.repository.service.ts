@@ -25,6 +25,7 @@ import {
   ExchangeMaterialNFT,
   NftExchangeListDto,
 } from 'src/module/nft-exchange/dto/nft-exchange-offer.dto';
+import { NftExchangeListRequest } from 'src/module/nft-exchange/dto/nft-exchange.dto';
 
 @Injectable()
 export class NftExchangeRepositoryService {
@@ -72,12 +73,14 @@ export class NftExchangeRepositoryService {
     return entity;
   }
 
-  async getNftExchangeList(
-    status?: string,
-    requestedNfts?: string,
-    offeredNfts?: string,
-    offerorUser?: string,
-  ): Promise<NftExchangeListDto[]> {
+  async getNFtExchangeOffersPaginated(
+    params: NftExchangeListRequest,
+  ): Promise<PaginatedList<NftExchangeListDto>> {
+    const { page, count } = params;
+    const offset = page * count;
+
+    const { status, requestedNfts, offeredNfts, offerorUser } = params;
+
     const getExchangeOfferIds = async (
       name: string,
       type: 'requestedNfts' | 'offeredNfts',
@@ -178,19 +181,22 @@ export class NftExchangeRepositoryService {
     }
 
     queryBuilder
+      .skip(offset)
+      .take(count)
       .orderBy("CASE WHEN neo.status = 'listed' THEN 0 ELSE 1 END", 'ASC')
       .addOrderBy('neo.createdAt', 'DESC');
 
-    const result = await queryBuilder.getMany();
+    const [query, total] = await Promise.all([
+      queryBuilder.getMany(),
+      queryBuilder.getCount(),
+    ]);
 
-    return await Promise.all(
-      result.map(async (e) => {
-        const offeredNftsImage = await Promise.all(
-          e.offeredNfts.map(addNftInfo),
-        );
-        const requestedNftsImage = await Promise.all(
-          e.requestedNfts.map(addNftInfo),
-        );
+    const list = await Promise.all(
+      query.map(async (e) => {
+        const [offeredNftsImage, requestedNftsImage] = await Promise.all([
+          Promise.all(e.offeredNfts.map(addNftInfo)),
+          Promise.all(e.requestedNfts.map(addNftInfo)),
+        ]);
 
         return {
           id: e.id,
@@ -206,6 +212,13 @@ export class NftExchangeRepositoryService {
         };
       }),
     );
+
+    const result: PaginatedList<NftExchangeListDto> = {
+      list,
+      total,
+    };
+
+    return result;
   }
 
   async deleteNftExchange(nftExchangeId: number): Promise<void> {

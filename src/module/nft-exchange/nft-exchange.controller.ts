@@ -138,7 +138,8 @@ export class NftExchangeController {
   @ApiDescription({
     tags: 'NFT Exchange',
     summary: '교환 제안 목록',
-    description: '검색 조건: 거래 상태, 제안 nft, 요청 nft, 제안자(사용자명)',
+    description:
+      '페이지네이션 있음, 검색 조건: 거래 상태, 제안 nft, 요청 nft, 제안자(사용자명)',
     listResponse: {
       status: HttpStatus.OK,
       schema: NftExchangeListDto,
@@ -146,17 +147,9 @@ export class NftExchangeController {
     exceptions: [],
   })
   @Get()
-  async getNftExchangeList(
-    @Query() query: NftExchangeListRequest,
-  ): Promise<ResponsesListDto<NftExchangeListDto>> {
-    const { status, requestedNfts, offeredNfts, offerorUser } = query;
-    const result = await this.nftExchangeService.getNftExchangeList(
-      status,
-      requestedNfts,
-      offeredNfts,
-      offerorUser,
-    );
+  async getNftExchangeList(@Query() params: NftExchangeListRequest) {
+    const result = await this.nftExchangeService.getNftExchangeList(params);
 
-    return new ResponsesListDto(result);
+    return new ResponsesListDto(result.list, result.total);
   }
 }
