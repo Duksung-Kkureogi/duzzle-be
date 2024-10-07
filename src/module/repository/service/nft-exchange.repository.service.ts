@@ -13,7 +13,7 @@ import { PuzzlePieceEntity } from '../entity/puzzle-piece.entity';
 import { MaterialItemEntity } from '../entity/material-item.entity';
 import { ZoneEntity } from '../entity/zone.entity';
 import { SeasonEntity } from '../entity/season.entity';
-import { NFTType } from 'src/module/nft-exchange/domain/nft-asset';
+import { NFTAsset, NFTType } from 'src/module/nft-exchange/domain/nft-asset';
 import { BLUEPRINT_ITEM_IMAGE_URL } from 'src/constant/item';
 import { PaginatedList } from 'src/dto/response.dto';
 import { AvailableNftsToRequestRequest } from 'src/module/nft-exchange/dto/available-nfts-to-request.dto';
@@ -120,7 +120,10 @@ export class NftExchangeRepositoryService {
         if (item) {
           result = { ...nft, name: item.nameKr, imageUrl: item.imageUrl };
         }
-      } else {
+      } else if (
+        nft.type === NFTType.Blueprint ||
+        nft.type === NFTType.PuzzlePiece
+      ) {
         const seasonZone = await this.seasonZoneRepository.findOne({
           where: { id: nft.seasonZoneId },
           relations: ['season', 'zone'],
