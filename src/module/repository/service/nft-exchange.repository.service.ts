@@ -20,6 +20,11 @@ import { AvailableNftsToRequestRequest } from 'src/module/nft-exchange/dto/avail
 import { NftExchangeOfferEntity } from '../entity/nft-exchange-offers.entity';
 import { NftExchangeOfferDto } from '../dto/nft-exchange.dto';
 import { UserEntity } from '../entity/user.entity';
+import {
+  ExchangeBlueprintOrPuzzleNFT,
+  ExchangeMaterialNFT,
+  NftExchangeListDto,
+} from 'src/module/nft-exchange/dto/nft-exchange-offer.dto';
 
 @Injectable()
 export class NftExchangeRepositoryService {
@@ -72,7 +77,7 @@ export class NftExchangeRepositoryService {
     requestedNfts?: string,
     offeredNfts?: string,
     offerorUser?: string,
-  ): Promise<NftExchangeOfferEntity[]> {
+  ): Promise<NftExchangeListDto[]> {
     const getExchangeOfferIds = async (
       name: string,
       type: 'requestedNfts' | 'offeredNfts',
@@ -102,6 +107,37 @@ export class NftExchangeRepositoryService {
         .getMany();
 
       return exchangeOfferIds.map((offer) => offer.id);
+    };
+
+    const addNftInfo = async (
+      nft: NFTAsset,
+    ): Promise<ExchangeBlueprintOrPuzzleNFT | ExchangeMaterialNFT> => {
+      let result: ExchangeBlueprintOrPuzzleNFT | ExchangeMaterialNFT;
+      if (nft.type === NFTType.Material) {
+        const item = await this.materialItemRepository.findOneBy({
+          id: nft.contractId,
+        });
+        if (item) {
+          result = { ...nft, name: item.nameKr, imageUrl: item.imageUrl };
+        }
+      } else {
+        const seasonZone = await this.seasonZoneRepository.findOne({
+          where: { id: nft.seasonZoneId },
+          relations: ['season', 'zone'],
+        });
+        if (seasonZone) {
+          result = {
+            ...nft,
+            seasonName: seasonZone.season.titleKr,
+            zoneName: seasonZone.zone.nameKr,
+            imageUrl:
+              nft.type === NFTType.PuzzlePiece
+                ? seasonZone.puzzleThumbnailUrl
+                : BLUEPRINT_ITEM_IMAGE_URL,
+          };
+        }
+      }
+      return result;
     };
 
     const exchangeOfferIdsByRequestedNft = requestedNfts
@@ -142,7 +178,31 @@ export class NftExchangeRepositoryService {
       .orderBy("CASE WHEN neo.status = 'listed' THEN 0 ELSE 1 END", 'ASC')
       .addOrderBy('neo.createdAt', 'DESC');
 
-    return await queryBuilder.getMany();
+    const result = await queryBuilder.getMany();
+
+    return await Promise.all(
+      result.map(async (e) => {
+        const offeredNftsImage = await Promise.all(
+          e.offeredNfts.map(addNftInfo),
+        );
+        const requestedNftsImage = await Promise.all(
+          e.requestedNfts.map(addNftInfo),
+        );
+
+        return {
+          id: e.id,
+          offerorUser: {
+            walletAddress: e.offeror.walletAddress,
+            name: e.offeror?.name,
+            image: e.offeror?.image,
+          },
+          offeredNfts: offeredNftsImage,
+          requestedNfts: requestedNftsImage,
+          status: e.status,
+          createdAt: e.createdAt,
+        };
+      }),
+    );
   }
 
   async deleteNftExchange(nftExchangeId: number): Promise<void> {

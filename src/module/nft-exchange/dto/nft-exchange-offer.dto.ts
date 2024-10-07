@@ -1,7 +1,5 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { Expose, plainToInstance, Type } from 'class-transformer';
-import { NftExchangeOfferEntity } from 'src/module/repository/entity/nft-exchange-offers.entity';
-import { UserEntity } from 'src/module/repository/entity/user.entity';
+import { Expose } from 'class-transformer';
 import { NftExchangeOfferStatus } from 'src/module/repository/enum/nft-exchange-status.enum';
 
 export class OfferorUserProfile {
@@ -54,7 +52,7 @@ export class ExchangeBlueprintOrPuzzleNFT {
   ExchangeMaterialNFT,
   ExchangeBlueprintOrPuzzleNFT,
 )
-export class NftExchangeOfferDto {
+export class NftExchangeListDto {
   @ApiProperty()
   @Expose()
   id: number;

@@ -21,12 +21,12 @@ import { ResponsesListDto } from 'src/dto/responses-list.dto';
 import { AvailableNftDto } from './dto/available-nfts.dto';
 import {
   NftExchangeListRequest,
-  NftExchangeListResponse,
   PostNftExchangeRequest,
 } from './dto/nft-exchange.dto';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
 import { ActionNotPermittedError } from 'src/types/error/application-exceptions/409-conflict';
+import { NftExchangeListDto } from './dto/nft-exchange-offer.dto';
 
 @Controller('nft-exchange')
 export class NftExchangeController {
@@ -141,14 +141,14 @@ export class NftExchangeController {
     description: '검색 조건: 거래 상태, 제안 nft, 요청 nft, 제안자(사용자명)',
     listResponse: {
       status: HttpStatus.OK,
-      schema: NftExchangeListResponse,
+      schema: NftExchangeListDto,
     },
     exceptions: [],
   })
   @Get()
   async getNftExchangeList(
     @Query() query: NftExchangeListRequest,
-  ): Promise<ResponsesListDto<NftExchangeListResponse>> {
+  ): Promise<ResponsesListDto<NftExchangeListDto>> {
     const { status, requestedNfts, offeredNfts, offerorUser } = query;
     const result = await this.nftExchangeService.getNftExchangeList(
       status,

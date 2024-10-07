@@ -3,10 +3,7 @@ import { NftExchangeRepositoryService } from '../repository/service/nft-exchange
 import { PaginatedList } from 'src/dto/response.dto';
 import { AvailableNftsToRequestRequest } from './dto/available-nfts-to-request.dto';
 import { AvailableNftDto } from './dto/available-nfts.dto';
-import {
-  NftExchangeListResponse,
-  PostNftExchangeRequest,
-} from './dto/nft-exchange.dto';
+import { PostNftExchangeRequest } from './dto/nft-exchange.dto';
 import { NftRepositoryService } from '../repository/service/nft.repository.service';
 import { ContractKey } from '../repository/enum/contract.enum';
 import {
@@ -20,6 +17,7 @@ import { ContentNotFoundError } from 'src/types/error/application-exceptions/404
 import { NftExchangeOfferStatus } from '../repository/enum/nft-exchange-status.enum';
 import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
 import { ActionNotPermittedError } from 'src/types/error/application-exceptions/409-conflict';
+import { NftExchangeListDto } from './dto/nft-exchange-offer.dto';
 
 @Injectable()
 export class NftExchangeService {
@@ -123,17 +121,12 @@ export class NftExchangeService {
     requestedNfts?: string,
     offeredNfts?: string,
     offerorUser?: string,
-  ): Promise<NftExchangeListResponse[]> {
-    const nftExchanges =
-      await this.nftExchangeRepositoryService.getNftExchangeList(
-        status,
-        requestedNfts,
-        offeredNfts,
-        offerorUser,
-      );
-
-    const result = nftExchanges.map((e) => NftExchangeListResponse.from(e));
-
-    return result;
+  ): Promise<NftExchangeListDto[]> {
+    return await this.nftExchangeRepositoryService.getNftExchangeList(
+      status,
+      requestedNfts,
+      offeredNfts,
+      offerorUser,
+    );
   }
 }
