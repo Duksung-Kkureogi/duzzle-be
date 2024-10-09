@@ -8,7 +8,7 @@ import {
 
 import { BaseEntity } from './base.entity';
 import { NftExchangeOfferStatus } from '../enum/nft-exchange-status.enum';
-import { NFTAsset } from 'src/module/nft-exchange/dto/nft-asset';
+import { NFTAsset } from 'src/module/nft-exchange/domain/nft-asset';
 import { UserEntity } from './user.entity';
 
 @Entity('nft_exchange_offers')

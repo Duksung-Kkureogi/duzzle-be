@@ -1,5 +1,5 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { NFTType } from './nft-asset';
+import { NFTType } from '../domain/nft-asset';
 
 export class AvailableMaterialNFT {
   @ApiProperty()

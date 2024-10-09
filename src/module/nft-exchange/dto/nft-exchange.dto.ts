@@ -4,28 +4,56 @@ import {
   MaterialNFT,
   NFTAsset,
   NFTType,
-} from './nft-asset';
-import { IsArray, ValidateNested } from 'class-validator';
+} from '../domain/nft-asset';
+import { IsArray, IsEnum, IsInt, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
-@ApiExtraModels(MaterialNFT, BlueprintOrPuzzleNFT)
+export class MaterialNFTDTO implements MaterialNFT {
+  @ApiProperty({ enum: [NFTType.Material] })
+  @IsEnum(NFTType)
+  type: NFTType.Material = NFTType.Material;
+
+  @ApiProperty()
+  @IsInt()
+  contractId: number;
+
+  @ApiProperty()
+  @IsInt()
+  quantity: number;
+}
+
+export class BlueprintOrPuzzleNFTDTO implements BlueprintOrPuzzleNFT {
+  @ApiProperty({ enum: [NFTType.Blueprint, NFTType.PuzzlePiece] })
+  @IsEnum(NFTType)
+  type: NFTType.Blueprint | NFTType.PuzzlePiece;
+
+  @ApiProperty()
+  @IsInt()
+  seasonZoneId: number;
+
+  @ApiProperty()
+  @IsInt()
+  quantity: number;
+}
+
+@ApiExtraModels(MaterialNFTDTO, BlueprintOrPuzzleNFTDTO)
 export class PostNftExchangeRequest {
   @ApiProperty({
     description: '제공할 NFT 목록',
     oneOf: [
-      { type: 'object', $ref: getSchemaPath(MaterialNFT) },
-      { type: 'object', $ref: getSchemaPath(BlueprintOrPuzzleNFT) },
+      { type: 'object', $ref: getSchemaPath(MaterialNFTDTO) },
+      { type: 'object', $ref: getSchemaPath(BlueprintOrPuzzleNFTDTO) },
     ],
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => NFTAsset, {
+  @Type(() => Object, {
     discriminator: {
       property: 'type',
       subTypes: [
-        { value: MaterialNFT, name: NFTType.Material },
-        { value: BlueprintOrPuzzleNFT, name: NFTType.Blueprint },
-        { value: BlueprintOrPuzzleNFT, name: NFTType.PuzzlePiece },
+        { value: MaterialNFTDTO, name: NFTType.Material },
+        { value: BlueprintOrPuzzleNFTDTO, name: NFTType.Blueprint },
+        { value: BlueprintOrPuzzleNFTDTO, name: NFTType.PuzzlePiece },
       ],
     },
     keepDiscriminatorProperty: true,
@@ -35,19 +63,19 @@ export class PostNftExchangeRequest {
   @ApiProperty({
     description: '필요한 NFT 목록',
     oneOf: [
-      { type: 'object', $ref: getSchemaPath(MaterialNFT) },
-      { type: 'object', $ref: getSchemaPath(BlueprintOrPuzzleNFT) },
+      { type: 'object', $ref: getSchemaPath(MaterialNFTDTO) },
+      { type: 'object', $ref: getSchemaPath(BlueprintOrPuzzleNFTDTO) },
     ],
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => NFTAsset, {
+  @Type(() => Object, {
     discriminator: {
       property: 'type',
       subTypes: [
-        { value: MaterialNFT, name: NFTType.Material },
-        { value: BlueprintOrPuzzleNFT, name: NFTType.Blueprint },
-        { value: BlueprintOrPuzzleNFT, name: NFTType.PuzzlePiece },
+        { value: MaterialNFTDTO, name: NFTType.Material },
+        { value: BlueprintOrPuzzleNFTDTO, name: NFTType.Blueprint },
+        { value: BlueprintOrPuzzleNFTDTO, name: NFTType.PuzzlePiece },
       ],
     },
     keepDiscriminatorProperty: true,

@@ -1,4 +1,4 @@
-import { NFTAsset } from 'src/module/nft-exchange/dto/nft-asset';
+import { NFTAsset } from 'src/module/nft-exchange/domain/nft-asset';
 
 export class NftExchangeOfferDto {
   offerorUserId: number;

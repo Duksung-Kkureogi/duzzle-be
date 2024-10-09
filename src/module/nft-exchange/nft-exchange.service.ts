@@ -11,7 +11,7 @@ import {
   MaterialNFT,
   NFTAsset,
   NFTType,
-} from './dto/nft-asset';
+} from './domain/nft-asset';
 import { ZoneRepositoryService } from '../repository/service/zone.repository.service';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 
