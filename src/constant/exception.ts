@@ -19,6 +19,7 @@ export enum ExceptionCode {
 
   // 403 (Forbidden)
   AccessDenied = 'ACCESS_DENIED',
+  SelfAcceptForbidden = 'SELF_ACCEPT_FORBIDDEN',
 
   // 404 (Not Found)
   ContentNotFound = 'CONTENT_NOT_FOUND',
@@ -57,4 +58,5 @@ export const CodeToStatus: {
   [ExceptionCode.LoginRequired]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.AccessDenied]: HttpStatus.FORBIDDEN,
   [ExceptionCode.ActionNotPermitted]: HttpStatus.CONFLICT,
+  [ExceptionCode.SelfAcceptForbidden]: HttpStatus.FORBIDDEN,
 };
