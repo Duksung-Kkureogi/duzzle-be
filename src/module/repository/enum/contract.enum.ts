@@ -14,6 +14,7 @@ export enum ContractType {
 export enum ContractKey {
   // Service Contract
   PLAY_DUZZLE = 'play_duzzle',
+  NFT_SWAP = 'nft_swap',
 
   // ERC-20
   DAL = 'dal',
