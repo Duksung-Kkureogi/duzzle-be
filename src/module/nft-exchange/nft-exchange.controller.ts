@@ -110,9 +110,8 @@ export class NftExchangeController {
     tags: 'NFT Exchange',
     summary: '교환 제안 취소',
     description: `
-    교환 제안 취소 가능 상태: listed, failed
+    교환 제안 취소 가능 상태: listed
     * listed: 사용자가 제안을 등록하고 다른 사용자들이 볼 수 있는 상태
-    * failed: 블록체인 트랜잭션 실패로 인해 교환이 실패한 상태
     `,
     auth: {
       type: AuthorizationToken.BearerUserToken,

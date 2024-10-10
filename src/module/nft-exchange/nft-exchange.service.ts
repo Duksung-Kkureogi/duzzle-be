@@ -94,11 +94,7 @@ export class NftExchangeService {
       throw new AccessDenied('nft-exchange-offer', nftExchangeId);
     }
 
-    const allowedStatus = [
-      NftExchangeOfferStatus.LISTED,
-      NftExchangeOfferStatus.FAILED,
-    ];
-    if (!allowedStatus.includes(nftExchange.status)) {
+    if (nftExchange.status !== NftExchangeOfferStatus.LISTED) {
       throw new ActionNotPermittedError(
         'cancel',
         'nft-exchange-offer',
