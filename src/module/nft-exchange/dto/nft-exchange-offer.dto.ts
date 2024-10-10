@@ -1,6 +1,6 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsOptional } from 'class-validator';
+import { IsEnum, IsOptional } from 'class-validator';
 import { NftExchangeOfferStatus } from 'src/module/repository/enum/nft-exchange-status.enum';
 
 const UNKNOWN_VALUE = 'unknown';
@@ -96,8 +96,9 @@ export class NftExchangeListDto {
   @Expose()
   requestedNfts: (ExchangeMaterialNFT | ExchangeBlueprintOrPuzzleNFT)[];
 
-  @ApiProperty()
+  @ApiProperty({ type: 'enum', enum: NftExchangeOfferStatus })
   @Expose()
+  @IsEnum(NftExchangeOfferStatus)
   status: NftExchangeOfferStatus;
 
   @ApiProperty()
