@@ -144,11 +144,38 @@ export class NftExchangeController {
       status: HttpStatus.OK,
       schema: NftExchangeListDto,
     },
-    exceptions: [],
   })
   @Get()
   async getNftExchangeList(@Query() params: NftExchangeListRequest) {
     const result = await this.nftExchangeService.getNftExchangeList(params);
+
+    return new ResponsesListDto(result.list, result.total);
+  }
+
+  @ApiDescription({
+    tags: 'NFT Exchange',
+    summary: '내가 등록한 교환 제안 목록',
+    description:
+      '페이지네이션 있음, 검색 조건: 거래 상태, 제안 nft, 요청 nft, 제안자(사용자명)',
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
+    listResponse: {
+      status: HttpStatus.OK,
+      schema: NftExchangeListDto,
+    },
+  })
+  @UseGuards(AuthGuard)
+  @Get('my')
+  async getMyNftExchangeList(
+    @AuthenticatedUser() user: UserEntity,
+    @Query() params: NftExchangeListRequest,
+  ) {
+    const result = await this.nftExchangeService.getNftExchangeList(
+      params,
+      user.id,
+    );
 
     return new ResponsesListDto(result.list, result.total);
   }

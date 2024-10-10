@@ -1,6 +1,9 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { IsOptional } from 'class-validator';
 import { NftExchangeOfferStatus } from 'src/module/repository/enum/nft-exchange-status.enum';
+
+const UNKNOWN_VALUE = 'unknown';
 
 export class OfferorUserProfile {
   @ApiProperty()
@@ -18,32 +21,46 @@ export class OfferorUserProfile {
 
 export class ExchangeMaterialNFT {
   @ApiProperty()
+  @Expose()
   contractId: number;
 
   @ApiProperty()
-  name: string;
+  @Expose()
+  @IsOptional()
+  name?: string = UNKNOWN_VALUE;
 
   @ApiProperty()
-  imageUrl: string;
+  @Expose()
+  @IsOptional()
+  imageUrl?: string = UNKNOWN_VALUE;
 
   @ApiProperty()
+  @Expose()
   quantity: number;
 }
 
 export class ExchangeBlueprintOrPuzzleNFT {
   @ApiProperty()
+  @Expose()
   seasonZoneId: number;
 
   @ApiProperty()
-  seasonName: string;
+  @Expose()
+  @IsOptional()
+  seasonName?: string = UNKNOWN_VALUE;
 
   @ApiProperty()
-  zoneName: string;
+  @Expose()
+  @IsOptional()
+  zoneName?: string = UNKNOWN_VALUE;
 
   @ApiProperty()
-  imageUrl: string;
+  @Expose()
+  @IsOptional()
+  imageUrl?: string = UNKNOWN_VALUE;
 
   @ApiProperty()
+  @Expose()
   quantity: number;
 }
 

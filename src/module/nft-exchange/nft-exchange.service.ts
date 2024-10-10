@@ -111,9 +111,11 @@ export class NftExchangeService {
 
   async getNftExchangeList(
     params: NftExchangeListRequest,
+    userId?: number,
   ): Promise<PaginatedList<NftExchangeListDto>> {
-    return await this.nftExchangeRepositoryService.getNFtExchangeOffersPaginated(
+    return await this.nftExchangeRepositoryService.getNftExchangeOffersPaginated(
       params,
+      userId,
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Like, Repository } from 'typeorm';
 import {
@@ -26,6 +26,7 @@ import {
   NftExchangeListDto,
 } from 'src/module/nft-exchange/dto/nft-exchange-offer.dto';
 import { NftExchangeListRequest } from 'src/module/nft-exchange/dto/nft-exchange.dto';
+import { NftExchangeOfferStatus } from '../enum/nft-exchange-status.enum';
 
 @Injectable()
 export class NftExchangeRepositoryService {
@@ -73,8 +74,9 @@ export class NftExchangeRepositoryService {
     return entity;
   }
 
-  async getNFtExchangeOffersPaginated(
+  async getNftExchangeOffersPaginated(
     params: NftExchangeListRequest,
+    userId?: number,
   ): Promise<PaginatedList<NftExchangeListDto>> {
     const { page, count } = params;
     const offset = page * count;
@@ -100,15 +102,31 @@ export class NftExchangeRepositoryService {
         .getMany();
       const seasonZoneIds = seasonZones.map((zone) => zone.id);
 
-      const exchangeOfferIds = await this.nftExchangeOfferRepository
-        .createQueryBuilder('neo')
-        .where(`neo.${type}.contractId IN (:...contractIds)`, { contractIds })
-        .orWhere(`neo.${type}.seasonZoneId IN (:...seasonZoneIds)`, {
-          seasonZoneIds,
-        })
-        .select('neo.id')
-        .getMany();
+      const queryBuilder =
+        await this.nftExchangeOfferRepository.createQueryBuilder('neo');
 
+      if (contractIds.length > 0) {
+        queryBuilder.orWhere(
+          `EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(neo.${type}) AS elem
+            WHERE elem->>'type' = :nftType AND elem->>'contractId' IN (:...contractIds)
+          )`,
+          { contractIds, nftType: NFTType.Material },
+        );
+      }
+      if (seasonZoneIds.length > 0) {
+        queryBuilder.orWhere(
+          `EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(neo.${type}) AS elem
+            WHERE elem->>'type' IN (:...nftTypes) AND elem->>'seasonZoneId' IN (:...seasonZoneIds)
+          )`,
+          { seasonZoneIds, nftTypes: [NFTType.Blueprint, NFTType.PuzzlePiece] },
+        )
+      }
+
+      const exchangeOfferIds = await queryBuilder.select('neo.id').getMany();
       return exchangeOfferIds.map((offer) => offer.id);
     };
 
@@ -118,10 +136,13 @@ export class NftExchangeRepositoryService {
       let result: ExchangeBlueprintOrPuzzleNFT | ExchangeMaterialNFT;
       if (nft.type === NFTType.Material) {
         const item = await this.materialItemRepository.findOneBy({
-          id: nft.contractId,
+          contractId: nft.contractId,
         });
         if (item) {
           result = { ...nft, name: item.nameKr, imageUrl: item.imageUrl };
+        } else {
+          result = { ...nft };
+          Logger.warn(`Material NFT not found - contractId: ${nft.contractId}`);
         }
       } else if (
         nft.type === NFTType.Blueprint ||
@@ -141,6 +162,9 @@ export class NftExchangeRepositoryService {
                 ? seasonZone.puzzleThumbnailUrl
                 : BLUEPRINT_ITEM_IMAGE_URL,
           };
+        } else {
+          result = { ...nft };
+          Logger.warn(`Blueprint or Puzzle NFT not found - seasonZoneId: ${nft.seasonZoneId}`);
         }
       }
       return result;
@@ -154,14 +178,17 @@ export class NftExchangeRepositoryService {
       ? await getExchangeOfferIds(offeredNfts, 'offeredNfts')
       : [];
 
-    let userId: number | null = null;
+    let offerorUserId: number | null = null;
     if (offerorUser) {
       const user = await this.userRepository.findOneBy({ name: offerorUser });
-      userId = user ? user.id : null;
+      offerorUserId = user ? user.id : null;
+    } else {
+      offerorUserId = userId;
     }
 
-    const queryBuilder =
-      await this.nftExchangeOfferRepository.createQueryBuilder('neo');
+    const queryBuilder = await this.nftExchangeOfferRepository
+      .createQueryBuilder('neo')
+      .innerJoinAndSelect('neo.offeror', 'user')
 
     if (status) {
       queryBuilder.andWhere('neo.status = :status', { status });
@@ -176,15 +203,18 @@ export class NftExchangeRepositoryService {
         offeredNftIds: exchangeOfferIdsByOfferNft,
       });
     }
-    if (userId) {
-      queryBuilder.andWhere('neo.offerorUserId = :userId', { userId });
+    if (offerorUserId) {
+      queryBuilder.andWhere('neo.offerorUserId = :offerorUserId', {
+        offerorUserId,
+      });
     }
 
     queryBuilder
-      .skip(offset)
-      .take(count)
-      .orderBy("CASE WHEN neo.status = 'listed' THEN 0 ELSE 1 END", 'ASC')
-      .addOrderBy('neo.createdAt', 'DESC');
+      .offset(offset)
+      .limit(count)
+      .orderBy('CASE WHEN neo.status = :listedStatus THEN 0 ELSE 1 END', 'ASC')
+      .addOrderBy('neo.createdAt', 'DESC')
+      .setParameter('listedStatus', NftExchangeOfferStatus.LISTED);
 
     const [query, total] = await Promise.all([
       queryBuilder.getMany(),

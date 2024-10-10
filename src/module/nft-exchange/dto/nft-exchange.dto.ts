@@ -93,22 +93,22 @@ export class PostNftExchangeRequest {
 }
 
 export class NftExchangeListRequest extends PaginationDto {
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsEnum(NftExchangeOfferStatus)
   status?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   requestedNfts?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   offeredNfts?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   offerorUser?: string;
