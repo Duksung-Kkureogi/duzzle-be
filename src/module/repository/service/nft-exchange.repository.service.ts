@@ -123,7 +123,7 @@ export class NftExchangeRepositoryService {
             WHERE elem->>'type' IN (:...nftTypes) AND elem->>'seasonZoneId' IN (:...seasonZoneIds)
           )`,
           { seasonZoneIds, nftTypes: [NFTType.Blueprint, NFTType.PuzzlePiece] },
-        )
+        );
       }
 
       const exchangeOfferIds = await queryBuilder.select('neo.id').getMany();
@@ -164,7 +164,9 @@ export class NftExchangeRepositoryService {
           };
         } else {
           result = { ...nft };
-          Logger.warn(`Blueprint or Puzzle NFT not found - seasonZoneId: ${nft.seasonZoneId}`);
+          Logger.warn(
+            `Blueprint or Puzzle NFT not found - seasonZoneId: ${nft.seasonZoneId}`,
+          );
         }
       }
       return result;
@@ -188,7 +190,7 @@ export class NftExchangeRepositoryService {
 
     const queryBuilder = await this.nftExchangeOfferRepository
       .createQueryBuilder('neo')
-      .innerJoinAndSelect('neo.offeror', 'user')
+      .innerJoinAndSelect('neo.offeror', 'user');
 
     if (status) {
       queryBuilder.andWhere('neo.status = :status', { status });
