@@ -3,17 +3,19 @@ import { NftExchangeRepositoryService } from '../repository/service/nft-exchange
 import { PaginatedList } from 'src/dto/response.dto';
 import { AvailableNftsToRequestRequest } from './dto/available-nfts-to-request.dto';
 import { AvailableNftDto } from './dto/available-nfts.dto';
-import { PostNftExchangeRequest } from './dto/nft-exchange.dto';
+import {
+  NftExchangeListRequest,
+  PostNftExchangeRequest,
+} from './dto/nft-exchange.dto';
 import { NftRepositoryService } from '../repository/service/nft.repository.service';
 import { ContractKey } from '../repository/enum/contract.enum';
-import {
-  BlueprintOrPuzzleNFT,
-  MaterialNFT,
-  NFTAsset,
-  NFTType,
-} from './domain/nft-asset';
+import { NFTType } from './domain/nft-asset';
 import { ZoneRepositoryService } from '../repository/service/zone.repository.service';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
+import { NftExchangeOfferStatus } from '../repository/enum/nft-exchange-status.enum';
+import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
+import { ActionNotPermittedError } from 'src/types/error/application-exceptions/409-conflict';
+import { NftExchangeListDto } from './dto/nft-exchange-offer.dto';
 
 @Injectable()
 export class NftExchangeService {
@@ -43,14 +45,6 @@ export class NftExchangeService {
     );
   }
 
-  private isMaterialNFT(nft: NFTAsset): nft is MaterialNFT {
-    return nft.type === NFTType.Material;
-  }
-
-  private isBlueprintOrPuzzleNFT(nft: NFTAsset): nft is BlueprintOrPuzzleNFT {
-    return nft.type === NFTType.Blueprint || nft.type === NFTType.PuzzlePiece;
-  }
-
   async postNftExchange(
     userId: number,
     params: PostNftExchangeRequest,
@@ -61,14 +55,17 @@ export class NftExchangeService {
     ).map((zone) => zone.id);
 
     for (const nft of Nfts) {
-      if (this.isMaterialNFT(nft)) {
+      if (nft.type === NFTType.Material) {
         const contract = await this.nftRepositoryService.findContractById(
           nft.contractId,
         );
         if (!contract || contract.key !== ContractKey.ITEM_MATERIAL) {
           throw new ContentNotFoundError('contract', nft.contractId);
         }
-      } else if (this.isBlueprintOrPuzzleNFT(nft)) {
+      } else if (
+        nft.type === NFTType.Blueprint ||
+        nft.type === NFTType.PuzzlePiece
+      ) {
         if (!seasonZoneIds.includes(nft.seasonZoneId)) {
           throw new ContentNotFoundError('seasonZone', nft.seasonZoneId);
         }
@@ -79,5 +76,42 @@ export class NftExchangeService {
       offerorUserId: userId,
       ...params,
     });
+  }
+
+  async deleteNftExchange(
+    userId: number,
+    nftExchangeId: number,
+  ): Promise<void> {
+    const nftExchange =
+      await this.nftExchangeRepositoryService.findNftExchangeById(
+        nftExchangeId,
+      );
+
+    if (!nftExchange) {
+      throw new ContentNotFoundError('nft-exchange-offer', nftExchangeId);
+    }
+    if (nftExchange.offerorUserId !== userId) {
+      throw new AccessDenied('nft-exchange-offer', nftExchangeId);
+    }
+
+    if (nftExchange.status !== NftExchangeOfferStatus.LISTED) {
+      throw new ActionNotPermittedError(
+        'cancel',
+        'nft-exchange-offer',
+        nftExchange.status,
+      );
+    }
+
+    await this.nftExchangeRepositoryService.deleteNftExchange(nftExchangeId);
+  }
+
+  async getNftExchangeList(
+    params: NftExchangeListRequest,
+    userId?: number,
+  ): Promise<PaginatedList<NftExchangeListDto>> {
+    return await this.nftExchangeRepositoryService.getNftExchangeOffersPaginated(
+      params,
+      userId,
+    );
   }
 }

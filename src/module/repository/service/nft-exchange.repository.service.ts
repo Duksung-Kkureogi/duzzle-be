@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Like, Repository } from 'typeorm';
 import {
   AvailableBlueprintOrPuzzleNFT,
   AvailableMaterialNFT,
@@ -13,18 +13,35 @@ import { PuzzlePieceEntity } from '../entity/puzzle-piece.entity';
 import { MaterialItemEntity } from '../entity/material-item.entity';
 import { ZoneEntity } from '../entity/zone.entity';
 import { SeasonEntity } from '../entity/season.entity';
-import { NFTType } from 'src/module/nft-exchange/domain/nft-asset';
+import { NFTAsset, NFTType } from 'src/module/nft-exchange/domain/nft-asset';
 import { BLUEPRINT_ITEM_IMAGE_URL } from 'src/constant/item';
 import { PaginatedList } from 'src/dto/response.dto';
 import { AvailableNftsToRequestRequest } from 'src/module/nft-exchange/dto/available-nfts-to-request.dto';
 import { NftExchangeOfferEntity } from '../entity/nft-exchange-offers.entity';
 import { NftExchangeOfferDto } from '../dto/nft-exchange.dto';
+import { UserEntity } from '../entity/user.entity';
+import {
+  ExchangeBlueprintOrPuzzleNFT,
+  ExchangeMaterialNFT,
+  NftExchangeListDto,
+} from 'src/module/nft-exchange/dto/nft-exchange-offer.dto';
+import { NftExchangeListRequest } from 'src/module/nft-exchange/dto/nft-exchange.dto';
+import { NftExchangeOfferStatus } from '../enum/nft-exchange-status.enum';
 
 @Injectable()
 export class NftExchangeRepositoryService {
   constructor(
+    @InjectRepository(SeasonZoneEntity)
+    private seasonZoneRepository: Repository<SeasonZoneEntity>,
+
     @InjectRepository(NftExchangeOfferEntity)
     private nftExchangeOfferRepository: Repository<NftExchangeOfferEntity>,
+
+    @InjectRepository(MaterialItemEntity)
+    private materialItemRepository: Repository<MaterialItemEntity>,
+
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
 
     @InjectRepository(UserMaterialItemEntity)
     private userMaterialItemRepository: Repository<UserMaterialItemEntity>,
@@ -38,6 +55,16 @@ export class NftExchangeRepositoryService {
     private readonly entityManager: EntityManager,
   ) {}
 
+  async findNftExchangeById(
+    nftExchangeId: number,
+  ): Promise<NftExchangeOfferEntity> {
+    const nftExchange = await this.nftExchangeOfferRepository.findOneBy({
+      id: nftExchangeId,
+    });
+
+    return nftExchange;
+  }
+
   async postNftExchange(
     dto: NftExchangeOfferDto,
   ): Promise<NftExchangeOfferEntity> {
@@ -45,6 +72,189 @@ export class NftExchangeRepositoryService {
     await this.nftExchangeOfferRepository.save(entity);
 
     return entity;
+  }
+
+  async getNftExchangeOffersPaginated(
+    params: NftExchangeListRequest,
+    userId?: number,
+  ): Promise<PaginatedList<NftExchangeListDto>> {
+    const { page, count } = params;
+    const offset = page * count;
+
+    const { status, requestedNfts, offeredNfts, offerorUser } = params;
+
+    const getExchangeOfferIds = async (
+      name: string,
+      type: 'requestedNfts' | 'offeredNfts',
+    ) => {
+      const materialItems = await this.materialItemRepository.findBy({
+        nameKr: Like(`%${name}%`),
+      });
+      const contractIds = materialItems.map((item) => item.contractId);
+
+      const seasonZones = await this.seasonZoneRepository
+        .createQueryBuilder('sz')
+        .innerJoinAndSelect('sz.season', 'season')
+        .innerJoinAndSelect('sz.zone', 'zone')
+        .where('season.titleKr LIKE :titleKr', { titleKr: `%${name}%` })
+        .orWhere('zone.nameKr LIKE :nameKr', { nameKr: `%${name}%` })
+        .select('sz.id')
+        .getMany();
+      const seasonZoneIds = seasonZones.map((zone) => zone.id);
+
+      const queryBuilder =
+        await this.nftExchangeOfferRepository.createQueryBuilder('neo');
+
+      if (contractIds.length > 0) {
+        queryBuilder.orWhere(
+          `EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(neo.${type}) AS elem
+            WHERE elem->>'type' = :nftType AND elem->>'contractId' IN (:...contractIds)
+          )`,
+          { contractIds, nftType: NFTType.Material },
+        );
+      }
+      if (seasonZoneIds.length > 0) {
+        queryBuilder.orWhere(
+          `EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(neo.${type}) AS elem
+            WHERE elem->>'type' IN (:...nftTypes) AND elem->>'seasonZoneId' IN (:...seasonZoneIds)
+          )`,
+          { seasonZoneIds, nftTypes: [NFTType.Blueprint, NFTType.PuzzlePiece] },
+        );
+      }
+
+      const exchangeOfferIds = await queryBuilder.select('neo.id').getMany();
+      return exchangeOfferIds.map((offer) => offer.id);
+    };
+
+    const addNftInfo = async (
+      nft: NFTAsset,
+    ): Promise<ExchangeBlueprintOrPuzzleNFT | ExchangeMaterialNFT> => {
+      let result: ExchangeBlueprintOrPuzzleNFT | ExchangeMaterialNFT;
+      if (nft.type === NFTType.Material) {
+        const item = await this.materialItemRepository.findOneBy({
+          contractId: nft.contractId,
+        });
+        if (item) {
+          result = { ...nft, name: item.nameKr, imageUrl: item.imageUrl };
+        } else {
+          result = { ...nft };
+          Logger.warn(`Material NFT not found - contractId: ${nft.contractId}`);
+        }
+      } else if (
+        nft.type === NFTType.Blueprint ||
+        nft.type === NFTType.PuzzlePiece
+      ) {
+        const seasonZone = await this.seasonZoneRepository.findOne({
+          where: { id: nft.seasonZoneId },
+          relations: ['season', 'zone'],
+        });
+        if (seasonZone) {
+          result = {
+            ...nft,
+            seasonName: seasonZone.season.titleKr,
+            zoneName: seasonZone.zone.nameKr,
+            imageUrl:
+              nft.type === NFTType.PuzzlePiece
+                ? seasonZone.puzzleThumbnailUrl
+                : BLUEPRINT_ITEM_IMAGE_URL,
+          };
+        } else {
+          result = { ...nft };
+          Logger.warn(
+            `Blueprint or Puzzle NFT not found - seasonZoneId: ${nft.seasonZoneId}`,
+          );
+        }
+      }
+      return result;
+    };
+
+    const exchangeOfferIdsByRequestedNft = requestedNfts
+      ? await getExchangeOfferIds(requestedNfts, 'requestedNfts')
+      : [];
+
+    const exchangeOfferIdsByOfferNft = offeredNfts
+      ? await getExchangeOfferIds(offeredNfts, 'offeredNfts')
+      : [];
+
+    let offerorUserId: number | null = null;
+    if (offerorUser) {
+      const user = await this.userRepository.findOneBy({ name: offerorUser });
+      offerorUserId = user ? user.id : null;
+    } else {
+      offerorUserId = userId;
+    }
+
+    const queryBuilder = await this.nftExchangeOfferRepository
+      .createQueryBuilder('neo')
+      .innerJoinAndSelect('neo.offeror', 'user');
+
+    if (status) {
+      queryBuilder.andWhere('neo.status = :status', { status });
+    }
+    if (exchangeOfferIdsByRequestedNft.length > 0) {
+      queryBuilder.andWhere('neo.id IN (:...requestedNftIds)', {
+        requestedNftIds: exchangeOfferIdsByRequestedNft,
+      });
+    }
+    if (exchangeOfferIdsByOfferNft.length > 0) {
+      queryBuilder.andWhere('neo.id IN (:...offeredNftIds)', {
+        offeredNftIds: exchangeOfferIdsByOfferNft,
+      });
+    }
+    if (offerorUserId) {
+      queryBuilder.andWhere('neo.offerorUserId = :offerorUserId', {
+        offerorUserId,
+      });
+    }
+
+    queryBuilder
+      .offset(offset)
+      .limit(count)
+      .orderBy('CASE WHEN neo.status = :listedStatus THEN 0 ELSE 1 END', 'ASC')
+      .addOrderBy('neo.createdAt', 'DESC')
+      .setParameter('listedStatus', NftExchangeOfferStatus.LISTED);
+
+    const [query, total] = await Promise.all([
+      queryBuilder.getMany(),
+      queryBuilder.getCount(),
+    ]);
+
+    const list = await Promise.all(
+      query.map(async (e) => {
+        const [offeredNftsImage, requestedNftsImage] = await Promise.all([
+          Promise.all(e.offeredNfts.map(addNftInfo)),
+          Promise.all(e.requestedNfts.map(addNftInfo)),
+        ]);
+
+        return {
+          id: e.id,
+          offerorUser: {
+            walletAddress: e.offeror.walletAddress,
+            name: e.offeror?.name,
+            image: e.offeror?.image,
+          },
+          offeredNfts: offeredNftsImage,
+          requestedNfts: requestedNftsImage,
+          status: e.status,
+          createdAt: e.createdAt,
+        };
+      }),
+    );
+
+    const result: PaginatedList<NftExchangeListDto> = {
+      list,
+      total,
+    };
+
+    return result;
+  }
+
+  async deleteNftExchange(nftExchangeId: number): Promise<void> {
+    await this.nftExchangeOfferRepository.delete(nftExchangeId);
   }
 
   async getAvailableNFTsToOffer(

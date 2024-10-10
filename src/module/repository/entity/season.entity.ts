@@ -13,6 +13,10 @@ export class SeasonEntity extends BaseEntity {
   title: string;
 
   @ApiProperty()
+  @Column('varchar')
+  titleKr: string;
+
+  @ApiProperty()
   @Column('varchar', { nullable: true })
   thumbnailUrl: string | null;
 

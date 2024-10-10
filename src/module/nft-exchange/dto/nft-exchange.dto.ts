@@ -5,8 +5,17 @@ import {
   NFTAsset,
   NFTType,
 } from '../domain/nft-asset';
-import { IsArray, IsEnum, IsInt, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
+import { NftExchangeOfferStatus } from 'src/module/repository/enum/nft-exchange-status.enum';
+import { PaginationDto } from 'src/dto/request.dto';
 
 export class MaterialNFTDTO implements MaterialNFT {
   @ApiProperty({ enum: [NFTType.Material] })
@@ -81,4 +90,26 @@ export class PostNftExchangeRequest {
     keepDiscriminatorProperty: true,
   })
   requestedNfts: NFTAsset[];
+}
+
+export class NftExchangeListRequest extends PaginationDto {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsEnum(NftExchangeOfferStatus)
+  status?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  requestedNfts?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  offeredNfts?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  offerorUser?: string;
 }
