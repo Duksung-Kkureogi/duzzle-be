@@ -10,9 +10,10 @@ export class OfferorUserProfile {
   @Expose()
   walletAddress: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @Expose()
-  name: string;
+  name?: string = UNKNOWN_VALUE;
 
   @ApiProperty()
   @Expose()
@@ -24,12 +25,12 @@ export class ExchangeMaterialNFT {
   @Expose()
   contractId: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Expose()
   @IsOptional()
   name?: string = UNKNOWN_VALUE;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Expose()
   @IsOptional()
   imageUrl?: string = UNKNOWN_VALUE;
@@ -44,17 +45,17 @@ export class ExchangeBlueprintOrPuzzleNFT {
   @Expose()
   seasonZoneId: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Expose()
   @IsOptional()
   seasonName?: string = UNKNOWN_VALUE;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Expose()
   @IsOptional()
   zoneName?: string = UNKNOWN_VALUE;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Expose()
   @IsOptional()
   imageUrl?: string = UNKNOWN_VALUE;
