@@ -3,8 +3,10 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   UseGuards,
@@ -24,9 +26,13 @@ import {
   PostNftExchangeRequest,
 } from './dto/nft-exchange.dto';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
-import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
+import { AccessDenied, SelfAcceptForbidden } from 'src/types/error/application-exceptions/403-forbidden';
 import { ActionNotPermittedError } from 'src/types/error/application-exceptions/409-conflict';
 import { NftExchangeListDto } from './dto/nft-exchange-offer.dto';
+import {
+  InsufficientNFTError,
+  NFTBalanceChangedError,
+} from 'src/types/error/application-exceptions/400-bad-request';
 
 @Controller('nft-exchange')
 export class NftExchangeController {
@@ -90,7 +96,7 @@ export class NftExchangeController {
       required: true,
     },
     dataResponse: {
-      status: HttpStatus.OK,
+      status: HttpStatus.CREATED,
       schema: true,
     },
     exceptions: [ContentNotFoundError],
@@ -177,5 +183,33 @@ export class NftExchangeController {
     );
 
     return new ResponsesListDto(result.list, result.total);
+  }
+
+  @ApiDescription({
+    tags: 'NFT Exchange',
+    summary: 'NFT 교환 제안 수락',
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: true,
+    },
+    exceptions: [
+      ContentNotFoundError,
+      InsufficientNFTError,
+      NFTBalanceChangedError,
+      SelfAcceptForbidden
+    ],
+  })
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('accept/:id')
+  async acceptNftExchange(
+    @AuthenticatedUser() user: UserEntity,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<boolean> {
+    return this.nftExchangeService.acceptNftExchange(user.id, id);
   }
 }

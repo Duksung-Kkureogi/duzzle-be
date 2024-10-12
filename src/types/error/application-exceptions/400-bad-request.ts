@@ -37,7 +37,18 @@ export class InsufficientNFTError extends ApplicationException {
       name: string;
       required: number;
       available: number;
-    }[],
+    }[] = [
+      {
+        name: '붉은 벽돌',
+        required: 1,
+        available: 0,
+      },
+      {
+        name: '모래',
+        required: 2,
+        available: 1,
+      },
+    ],
   ) {
     super(
       ExceptionCode.InsufficientNFT,
@@ -51,8 +62,7 @@ export class NFTBalanceChangedError extends ApplicationException {
   constructor() {
     super(
       ExceptionCode.NFTBalanceChanged,
-      '거래 취소: 제안자의 NFT 보유량 부족\n\
-      현재 제안자가 제안한 NFT 를 보유하고 있지 않아서 거래 진행 불가',
+      '거래 취소: 현재 제안자가 제안한 NFT 를 보유하고 있지 않아서 거래 진행 불가',
     );
   }
 }
