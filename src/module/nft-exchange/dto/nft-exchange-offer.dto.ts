@@ -3,8 +3,6 @@ import { Expose } from 'class-transformer';
 import { IsEnum, IsOptional } from 'class-validator';
 import { NftExchangeOfferStatus } from 'src/module/repository/enum/nft-exchange-status.enum';
 
-const UNKNOWN_VALUE = 'unknown';
-
 export class OfferorUserProfile {
   @ApiProperty()
   @Expose()
@@ -13,7 +11,7 @@ export class OfferorUserProfile {
   @ApiProperty({ required: false })
   @IsOptional()
   @Expose()
-  name?: string = UNKNOWN_VALUE;
+  name?: string | null = null;
 
   @ApiProperty()
   @Expose()
@@ -25,15 +23,13 @@ export class ExchangeMaterialNFT {
   @Expose()
   contractId: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  @IsOptional()
-  name?: string = UNKNOWN_VALUE;
+  name: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  @IsOptional()
-  imageUrl?: string = UNKNOWN_VALUE;
+  imageUrl?: string;
 
   @ApiProperty()
   @Expose()
@@ -45,20 +41,17 @@ export class ExchangeBlueprintOrPuzzleNFT {
   @Expose()
   seasonZoneId: number;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  @IsOptional()
-  seasonName?: string = UNKNOWN_VALUE;
+  seasonName: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  @IsOptional()
-  zoneName?: string = UNKNOWN_VALUE;
+  zoneName: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty()
   @Expose()
-  @IsOptional()
-  imageUrl?: string = UNKNOWN_VALUE;
+  imageUrl?: string | null = null;
 
   @ApiProperty()
   @Expose()
