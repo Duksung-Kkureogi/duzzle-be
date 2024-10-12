@@ -27,6 +27,7 @@ import {
 } from 'src/module/nft-exchange/dto/nft-exchange-offer.dto';
 import { NftExchangeListRequest } from 'src/module/nft-exchange/dto/nft-exchange.dto';
 import { NftExchangeOfferStatus } from '../enum/nft-exchange-status.enum';
+import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 
 @Injectable()
 export class NftExchangeRepositoryService {
@@ -63,6 +64,21 @@ export class NftExchangeRepositoryService {
     });
 
     return nftExchange;
+  }
+
+  async getOfferById(id: number): Promise<NftExchangeOfferEntity> {
+    const offer = this.nftExchangeOfferRepository.findOne({
+      where: { id },
+      relations: {
+        offeror: true,
+        acceptor: true,
+      },
+    });
+    if (!offer) {
+      throw new ContentNotFoundError('NftExchangeOffer', id);
+    }
+
+    return offer;
   }
 
   async postNftExchange(
@@ -498,5 +514,9 @@ export class NftExchangeRepositoryService {
               availableQuantity: parseInt(result.availableQuantity),
             },
     }));
+  }
+
+  async save(entity: NftExchangeOfferEntity): Promise<NftExchangeOfferEntity> {
+    return this.nftExchangeOfferRepository.save(entity);
   }
 }

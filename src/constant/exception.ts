@@ -7,6 +7,7 @@ export enum ExceptionCode {
   NoOngoingQuest = 'NO_ONGOING_QUEST',
   InvalidFileNameExtension = 'FILE_NAME_EXTENSION',
   InvalidFilenameCharacters = 'FILE_NAME_CHARACTERS',
+  InsufficientNFT = 'INSUFFICIENT_NFT',
 
   // 401 (Unauthorized)
   MissingWeb3IdToken = 'MISSING_WEB3_ID_TOKEN',
@@ -30,6 +31,7 @@ export enum ExceptionCode {
   DuplicateValues = 'DUPLICATE_VALUE',
   LimitExceeded = 'LIMIT_EXCEEDED',
   ActionNotPermitted = 'ACTION_NOT_PERMITTED',
+  NFTBalanceChanged = 'NFT_BALANCE_CHANGED',
 
   // 500
   InternalServerError = 'INTERNAL_SERVER_ERROR',
@@ -40,6 +42,7 @@ export const CodeToStatus: {
   [key in ExceptionCode]: HttpStatus;
 } = {
   [ExceptionCode.InvalidParameter]: HttpStatus.BAD_REQUEST,
+  [ExceptionCode.InsufficientNFT]: HttpStatus.BAD_REQUEST,
   [ExceptionCode.LimitExceeded]: HttpStatus.CONFLICT,
   [ExceptionCode.MissingAuthToken]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.MissingWeb3IdToken]: HttpStatus.UNAUTHORIZED,
@@ -47,6 +50,7 @@ export const CodeToStatus: {
   [ExceptionCode.ContentNotFound]: HttpStatus.NOT_FOUND,
   [ExceptionCode.AlreadyExists]: HttpStatus.CONFLICT,
   [ExceptionCode.DuplicateValues]: HttpStatus.CONFLICT,
+  [ExceptionCode.NFTBalanceChanged]: HttpStatus.CONFLICT,
   [ExceptionCode.InternalServerError]: HttpStatus.INTERNAL_SERVER_ERROR,
   [ExceptionCode.InvalidAddress]: HttpStatus.UNAUTHORIZED,
   [ExceptionCode.InvalidLoginInfo]: HttpStatus.UNAUTHORIZED,

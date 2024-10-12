@@ -75,6 +75,19 @@ export class ItemRepositoryService {
     });
   }
 
+  async findUserMaterialItemsByContractId(
+    contractId: number,
+  ): Promise<UserMaterialItemEntity[]> {
+    return this.userMaterialItemRepository.find({
+      relations: {
+        materialItem: {
+          contract: true,
+        },
+      },
+      where: { materialItemId: contractId },
+    });
+  }
+
   async findUserBlueprintItems(
     userId: number,
   ): Promise<UserBlueprintItemsDto[]> {
@@ -92,6 +105,25 @@ export class ItemRepositoryService {
         .execute();
 
     return userBlueprintItems;
+  }
+
+  async findUserBlueprintItemsBySeasonZoneId(
+    userId: number,
+    seasonZoneId: number,
+  ): Promise<BlueprintItemEntity[]> {
+    return this.blueprintItemRepository.find({
+      relations: {
+        metadata: {
+          contract: true,
+        },
+      },
+      where: {
+        userId,
+        burned: false,
+        minted: true,
+        seasonZoneId,
+      },
+    });
   }
 
   private async nullifyBurnedTokenOwnershipOfBlueprint(tokenId: number) {

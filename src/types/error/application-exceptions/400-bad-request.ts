@@ -30,3 +30,29 @@ export class InvalidFileNameCharatersError extends ApplicationException {
     );
   }
 }
+
+export class InsufficientNFTError extends ApplicationException {
+  constructor(
+    details: {
+      name: string;
+      required: number;
+      available: number;
+    }[],
+  ) {
+    super(
+      ExceptionCode.InsufficientNFT,
+      `NFT 불충분: \
+    ${details.map((e) => `${e.name} ${e.required}개 필요, ${e.available}개 보유`).join(', ')}`,
+    );
+  }
+}
+
+export class NFTBalanceChangedError extends ApplicationException {
+  constructor() {
+    super(
+      ExceptionCode.NFTBalanceChanged,
+      '거래 취소: 제안자의 NFT 보유량 부족\n\
+      현재 제안자가 제안한 NFT 를 보유하고 있지 않아서 거래 진행 불가',
+    );
+  }
+}
