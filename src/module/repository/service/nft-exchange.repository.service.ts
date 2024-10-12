@@ -23,7 +23,7 @@ import { UserEntity } from '../entity/user.entity';
 import {
   ExchangeBlueprintOrPuzzleNFT,
   ExchangeMaterialNFT,
-  NftExchangeListDto,
+  NftExchangeOfferResponse,
 } from 'src/module/nft-exchange/dto/nft-exchange-offer.dto';
 import { NftExchangeListRequest } from 'src/module/nft-exchange/dto/nft-exchange.dto';
 import { NftExchangeOfferStatus } from '../enum/nft-exchange-status.enum';
@@ -93,7 +93,7 @@ export class NftExchangeRepositoryService {
   async getNftExchangeOffersPaginated(
     params: NftExchangeListRequest,
     userId?: number,
-  ): Promise<PaginatedList<NftExchangeListDto>> {
+  ): Promise<PaginatedList<NftExchangeOfferResponse>> {
     const { page, count } = params;
     const offset = page * count;
 
@@ -261,7 +261,7 @@ export class NftExchangeRepositoryService {
       }),
     );
 
-    const result: PaginatedList<NftExchangeListDto> = {
+    const result: PaginatedList<NftExchangeOfferResponse> = {
       list,
       total,
     };

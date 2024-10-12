@@ -69,7 +69,7 @@ export class ExchangeBlueprintOrPuzzleNFT {
   ExchangeMaterialNFT,
   ExchangeBlueprintOrPuzzleNFT,
 )
-export class NftExchangeListDto {
+export class NftExchangeOfferResponse {
   @ApiProperty()
   @Expose()
   id: number;

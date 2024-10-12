@@ -16,9 +16,9 @@ import { ContentNotFoundError } from 'src/types/error/application-exceptions/404
 import { NftExchangeOfferStatus } from '../repository/enum/nft-exchange-status.enum';
 import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
 import { ActionNotPermittedError } from 'src/types/error/application-exceptions/409-conflict';
-import { NftExchangeListDto } from './dto/nft-exchange-offer.dto';
 import { SelfAcceptForbidden } from 'src/types/error/application-exceptions/403-forbidden';
 import { NftExchangeMappingService } from './nft-exchange-mapping.service';
+import { NftExchangeOfferResponse } from './dto/nft-exchange-offer.dto';
 
 @Injectable()
 export class NftExchangeService {
@@ -115,7 +115,7 @@ export class NftExchangeService {
   async getNftExchangeList(
     params: NftExchangeListRequest,
     userId?: number,
-  ): Promise<PaginatedList<NftExchangeListDto>> {
+  ): Promise<PaginatedList<NftExchangeOfferResponse>> {
     return await this.nftExchangeRepositoryService.getNftExchangeOffersPaginated(
       params,
       userId,
