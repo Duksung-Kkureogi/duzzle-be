@@ -1,3 +1,4 @@
+import { NftExchangeRepositoryService } from './../repository/service/nft-exchange.repository.service';
 import { PuzzleRepositoryService } from './../repository/service/puzzle.repository.service';
 import { ItemRepositoryService } from './../repository/service/item.repository.service';
 import { Injectable } from '@nestjs/common';
@@ -11,12 +12,14 @@ import {
 import { UserMaterialItemEntity } from '../repository/entity/user-material-item.entity';
 import { BlueprintItemEntity } from '../repository/entity/blueprint-item.entity';
 import { PuzzlePieceEntity } from '../repository/entity/puzzle-piece.entity';
+import { NftExchangeOfferStatus } from '../repository/enum/nft-exchange-status.enum';
 
 @Injectable()
 export class NftExchangeMappingService {
   constructor(
     private readonly itemRepositoryService: ItemRepositoryService,
     private readonly puzzleRepositoryService: PuzzleRepositoryService,
+    private readonly nftExchangeRepositoryService: NftExchangeRepositoryService,
   ) {}
 
   // 제안 Entity 를 (스마트컨트랙트) nftSwap 함수에 전달하기 위한 데이터로 변환
@@ -71,6 +74,11 @@ export class NftExchangeMappingService {
       );
 
       if (!results.hasEnough) {
+        // 제안 취소
+        await this.nftExchangeRepositoryService.save({
+          ...offerEntity,
+          status: NftExchangeOfferStatus.SYSTEM_CANCELLED,
+        });
         throw new NFTBalanceChangedError();
       }
       nftContractsGivenByB.push(
