@@ -44,4 +44,8 @@ export class CacheService {
   async exists(...keys: string[]): Promise<number> {
     return await this.memory.exists(keys);
   }
+
+  async rpush(key: string, value: string): Promise<number> {
+    return await this.memory.rpush(key, value);
+  }
 }

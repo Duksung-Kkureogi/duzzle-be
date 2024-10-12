@@ -13,6 +13,7 @@ import { CollectRangeDto, EventTopic } from '../blockchain/dto/blockchain.dto';
 import { ContractKey, ContractType } from '../repository/enum/contract.enum';
 import { ApiRequestLimits, RPCProvider } from './constants/rpc-provider';
 import { ReportProvider } from 'src/provider/report.provider';
+import { EventTopicName } from '../repository/enum/transaction.enum';
 
 @Injectable()
 export class TransactionCollectionScheduler {
@@ -154,6 +155,14 @@ export class TransactionCollectionScheduler {
       const txLogsToUpsert: Partial<LogTransactionEntity>[] =
         await this.blockchainTransactionService.processLog(collectedLogs);
 
+      // Burned NFT 로그 추출, 거래 제안 취소를 위해 큐에 추가
+      const burnedLogs = txLogsToUpsert.filter(
+        (e) => e.topic === EventTopicName.Burn,
+      );
+      if (burnedLogs.length > 0) {
+        await this.queueBurnedNFTs(burnedLogs);
+      }
+
       await Promise.all([
         this.blockchainTransactionService.syncAllNftOwnersOfLogs(
           txLogsToUpsert,
@@ -209,5 +218,18 @@ export class TransactionCollectionScheduler {
     }
 
     return lastSyncedBlock;
+  }
+
+  private async queueBurnedNFTs(burnedLogs: Partial<LogTransactionEntity>[]) {
+    const burnedNFTsQueue = burnedLogs.map((log) => ({
+      from: log.from,
+      contractAddress: log.contractAddress,
+      tokenId: log.tokenId,
+    }));
+
+    await this.memory.rpush(
+      RedisKey.burnedNFTsQueue,
+      JSON.stringify(burnedNFTsQueue),
+    );
   }
 }

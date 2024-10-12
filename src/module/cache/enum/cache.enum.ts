@@ -3,6 +3,7 @@ export enum RedisKey {
   transactionCollectionInProgress = 'tx_collection_in_progress',
   AcidRainScore = 'quest:acidrain:score',
   DuksaeJumpScore = 'quest:duksaejump:score',
+  burnedNFTsQueue = 'burned_nfts_queue',
 }
 
 export enum RedisTTL {
