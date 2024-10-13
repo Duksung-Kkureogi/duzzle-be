@@ -76,7 +76,7 @@ export class QuestService {
   async getDuksaeJumpQuest(
     guestInfo: GuestInfo,
   ): Promise<StartRandomQuestResponse> {
-    const quest = await this.questRepositoryService.findQuestById(42);
+    const quest = await this.questRepositoryService.findQuestById(30);
 
     const log = await this.questRepositoryService.insertLog({
       questId: quest.id,
@@ -90,7 +90,7 @@ export class QuestService {
   async getAcidRainSpeedQuest(
     guestInfo: GuestInfo,
   ): Promise<StartRandomQuestResponse> {
-    const QUEST_IDS = [28, 2]; // speed, acid rain
+    const QUEST_IDS = [1, 10]; // speed, acid rain
     const lastQuestId = await this.memory.find('lastQuestId');
     let nextQuestId: number;
 
