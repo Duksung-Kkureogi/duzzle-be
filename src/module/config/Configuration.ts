@@ -74,6 +74,11 @@ export class EnvironmentVariables {
   @Expose()
   readonly DB_USE_SYNCHRONIZE: boolean;
 
+  @IsNotEmpty()
+  @IsString()
+  @Expose()
+  readonly DB_SSL_CA: string;
+
   // JWT
   @IsNotEmpty()
   @IsString()
