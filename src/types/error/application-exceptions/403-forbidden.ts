@@ -7,3 +7,11 @@ export class AccessDenied extends ApplicationException {
     super(ExceptionCode.AccessDenied, message);
   }
 }
+export class SelfAcceptForbidden extends ApplicationException {
+  constructor() {
+    super(
+      ExceptionCode.SelfAcceptForbidden,
+      '자신이 등록한 교환 거래는 승인 불가',
+    );
+  }
+}

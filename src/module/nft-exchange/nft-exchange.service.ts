@@ -1,3 +1,4 @@
+import { SmartContractInteractionService } from './../blockchain/smart-contract-interaction.service';
 import { Injectable } from '@nestjs/common';
 import { NftExchangeRepositoryService } from '../repository/service/nft-exchange.repository.service';
 import { PaginatedList } from 'src/dto/response.dto';
@@ -16,6 +17,8 @@ import { NftExchangeOfferStatus } from '../repository/enum/nft-exchange-status.e
 import { AccessDenied } from 'src/types/error/application-exceptions/403-forbidden';
 import { ActionNotPermittedError } from 'src/types/error/application-exceptions/409-conflict';
 import { NftExchangeListDto } from './dto/nft-exchange-offer.dto';
+import { SelfAcceptForbidden } from 'src/types/error/application-exceptions/403-forbidden';
+import { NftExchangeMappingService } from './nft-exchange-mapping.service';
 
 @Injectable()
 export class NftExchangeService {
@@ -25,6 +28,10 @@ export class NftExchangeService {
     private readonly nftRepositoryService: NftRepositoryService,
 
     private readonly nftExchangeRepositoryService: NftExchangeRepositoryService,
+
+    private readonly smartContractInteractionService: SmartContractInteractionService,
+
+    private readonly nftExchangeMappingService: NftExchangeMappingService,
   ) {}
 
   async getAvailableNFTsToOffer(
@@ -113,5 +120,55 @@ export class NftExchangeService {
       params,
       userId,
     );
+  }
+
+  async acceptNftExchange(
+    acceptorId: number,
+    exchangeOfferId: number,
+  ): Promise<boolean> {
+    const exchangeOffer =
+      await this.nftExchangeRepositoryService.getOfferById(exchangeOfferId);
+
+    if (exchangeOffer.offerorUserId === acceptorId) {
+      throw new SelfAcceptForbidden();
+    }
+
+    exchangeOffer.status = NftExchangeOfferStatus.MATCHED;
+    await this.nftExchangeRepositoryService.save(exchangeOffer);
+
+    const {
+      nftContractsGivenByA,
+      tokenIdsGivenByA,
+      nftContractsGivenByB,
+      tokenIdsGivenByB,
+      userA,
+      userB,
+    } = await this.nftExchangeMappingService.mapEntityToTokenIds(exchangeOffer);
+
+    // NFTSwap 컨트랙트의 executeNFTSwap 함수 호출
+    exchangeOffer.acceptorUserId = acceptorId;
+    exchangeOffer.status = NftExchangeOfferStatus.PENDING;
+    await this.nftExchangeRepositoryService.save(exchangeOffer);
+    const { success, transactionHash, failureReason } =
+      await this.smartContractInteractionService.nftSwap(
+        nftContractsGivenByA,
+        tokenIdsGivenByA,
+        nftContractsGivenByB,
+        tokenIdsGivenByB,
+        userA,
+        userB,
+      );
+
+    if (success) {
+      exchangeOffer.status = NftExchangeOfferStatus.COMPLETED;
+      exchangeOffer.transactionHash = transactionHash;
+    } else {
+      exchangeOffer.status = NftExchangeOfferStatus.FAILED;
+      exchangeOffer.failureReason = failureReason;
+    }
+
+    await this.nftExchangeRepositoryService.save(exchangeOffer);
+
+    return success;
   }
 }

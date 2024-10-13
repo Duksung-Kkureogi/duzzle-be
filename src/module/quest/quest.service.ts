@@ -14,6 +14,7 @@ import { NoOngoingQuestError } from 'src/types/error/application-exceptions/400-
 import { GuestInfo } from './rest/types/guest';
 import { QuestType } from '../repository/enum/quest.enum';
 import { CacheService } from '../cache/cache.service';
+import { SmartContractInteractionService } from '../blockchain/smart-contract-interaction.service';
 
 @Injectable()
 export class QuestService {
@@ -21,8 +22,8 @@ export class QuestService {
   constructor(
     private readonly questRepositoryService: QuestRepositoryService,
 
-    @Inject(BlockchainCoreService)
-    private readonly blockchainCoreService: BlockchainCoreService,
+    @Inject(SmartContractInteractionService)
+    private readonly smartContractInteraction: SmartContractInteractionService,
 
     @Inject(CacheService)
     private readonly memory: CacheService,
@@ -184,7 +185,7 @@ export class QuestService {
     // 성공 시, 토큰 지급(게스트는 제외)
     if (isSucceeded && !log.isGuestUser) {
       try {
-        await this.blockchainCoreService.mintDalToken(
+        await this.smartContractInteraction.mintDalToken(
           log.user.walletAddress,
           QuestTokenReward,
         );

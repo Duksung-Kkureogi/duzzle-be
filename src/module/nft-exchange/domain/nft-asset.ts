@@ -15,3 +15,8 @@ export interface BlueprintOrPuzzleNFT {
 export type NFTAsset = MaterialNFT | BlueprintOrPuzzleNFT;
 export { NFTType };
 
+export type NFTCheckResult = {
+  name: string;
+  required: number;
+  available: number;
+};

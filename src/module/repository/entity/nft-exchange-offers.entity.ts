@@ -25,17 +25,20 @@ export class NftExchangeOfferEntity extends BaseEntity {
   })
   status: NftExchangeOfferStatus;
 
-  @Column('jsonb')
+  @Column('jsonb', { comment: 'offeror 가 제공할 NFT 목록 = acceptor 에게 전송' })
   offeredNfts: NFTAsset[];
 
-  @Column('jsonb')
+  @Column('jsonb', { comment: 'offeror 가 요청한 NFT 목록 = acceptor 가 제공' })
   requestedNfts: NFTAsset[];
 
   @Column('int', { nullable: true })
   acceptorUserId: number;
 
-  @Column({ nullable: true })
-  transactionHash: string;
+  @Column('varchar', { nullable: true })
+  transactionHash: string | null;
+
+  @Column('varchar', { nullable: true })
+  failureReason: string | null;
 
   /**
    * 제안자가 탈퇴(hard-delete)한 경우

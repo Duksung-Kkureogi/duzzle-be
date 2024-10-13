@@ -1,12 +1,9 @@
 import { HttpClientService } from './../http-client/http-client.service';
-import { NftRepositoryService } from '../repository/service/nft.repository.service';
 import { Inject, Injectable } from '@nestjs/common';
-import { Contract, ethers, Filter, toBeHex } from 'ethers';
+import { ethers, Filter, toBeHex } from 'ethers';
 import 'dotenv/config';
 
-import { abi as DalAbi } from './abi/Dal.json';
 import { ConfigService } from '../config/config.service';
-import { Dal } from './typechain/contracts/erc-20';
 import {
   CollectRangeDto,
   EVMApiMethod,
@@ -14,7 +11,6 @@ import {
   JsonRpcSupportedVersion,
   MostRecentBlock,
 } from './dto/blockchain.dto';
-import { ContractKey } from '../repository/enum/contract.enum';
 import { RPCProvider } from '../scheduler/constants/rpc-provider';
 
 @Injectable()
@@ -22,13 +18,11 @@ export class BlockchainCoreService {
   private readonly provider: ethers.JsonRpcProvider;
   private readonly providersForCollectingTxLogs: ethers.JsonRpcProvider[] = [];
 
-  private readonly signer: ethers.Wallet;
   private readonly rpcUrl: string;
   private readonly rpcsUrlForCollectingTxLogs: string[] = [];
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly nftRepositoryService: NftRepositoryService,
     @Inject(HttpClientService)
     private readonly http: HttpClientService,
   ) {
@@ -54,21 +48,6 @@ export class BlockchainCoreService {
     this.providersForCollectingTxLogs = this.rpcsUrlForCollectingTxLogs.map(
       (e) => new ethers.JsonRpcProvider(e),
     );
-
-    this.signer = new ethers.Wallet(process.env.OWNER_PK_AMOY, this.provider);
-  }
-
-  async mintDalToken(to: string, count: number): Promise<void> {
-    const dalContractAddress: string = (
-      await this.nftRepositoryService.findContractByKey(ContractKey.DAL)
-    ).address;
-    const dalContract: Dal = new Contract(
-      dalContractAddress,
-      DalAbi,
-      this.signer,
-    ) as unknown as Dal;
-
-    await dalContract.mint(to, ethers.parseEther(String(count)));
   }
 
   /**

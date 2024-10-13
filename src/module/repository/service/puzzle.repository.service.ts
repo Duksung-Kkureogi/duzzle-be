@@ -256,4 +256,27 @@ export class PuzzleRepositoryService {
 
     return totalPieces;
   }
+
+  async getUserPiecesBySeasonZoneId(
+    userId: number,
+    seasonZoneId: number,
+  ): Promise<PuzzlePieceEntity[]> {
+    const userWalletAddress = (
+      await this.userRepositoryService.findUserById(userId)
+    ).walletAddress;
+
+    return this.puzzlePieceRepository.find({
+      where: {
+        holerWalletAddress: userWalletAddress,
+        seasonZone: {
+          id: seasonZoneId,
+        },
+      },
+      relations: {
+        metadata: {
+          contract: true,
+        },
+      },
+    });
+  }
 }
