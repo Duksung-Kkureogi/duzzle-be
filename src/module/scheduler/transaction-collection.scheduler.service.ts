@@ -161,16 +161,16 @@ export class TransactionCollectionScheduler {
         this.blockchainTransactionService.upsertTransactionLogs(txLogsToUpsert),
       ]);
 
-      ReportProvider.info(
-        'collectBlockchainTransaction',
-        { collectedLogs },
-        TransactionCollectionScheduler.name,
-        this.configService.get<string>('DISCORD_WEBHOOK_URL_TX_COLLECT'),
-      );
+      // ReportProvider.info(
+      //   'collectBlockchainTransaction',
+      //   { collectedLogs },
+      //   TransactionCollectionScheduler.name,
+      //   this.configService.get<string>('DISCORD_WEBHOOK_URL_TX_COLLECT'),
+      // );
     } catch (error) {
       Logger.error(error.stack);
       Logger.error(error);
-      ReportProvider.error(error, {}, TransactionCollectionScheduler.name);
+      // ReportProvider.error(error, {}, TransactionCollectionScheduler.name);
     } finally {
       await this.setEndFlag();
       console.timeEnd('collectBlockchainTransaction');
