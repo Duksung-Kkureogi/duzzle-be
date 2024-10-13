@@ -126,7 +126,7 @@ export class NftExchangeService {
     acceptorId: number,
     exchangeOfferId: number,
   ): Promise<boolean> {
-    const exchangeOffer =
+    let exchangeOffer =
       await this.nftExchangeRepositoryService.getOfferById(exchangeOfferId);
 
     if (exchangeOffer.offerorUserId === acceptorId) {
@@ -134,7 +134,8 @@ export class NftExchangeService {
     }
 
     exchangeOffer.status = NftExchangeOfferStatus.MATCHED;
-    await this.nftExchangeRepositoryService.save(exchangeOffer);
+    exchangeOffer.acceptorUserId = acceptorId;
+    exchangeOffer = await this.nftExchangeRepositoryService.save(exchangeOffer);
 
     const {
       nftContractsGivenByA,
@@ -146,7 +147,6 @@ export class NftExchangeService {
     } = await this.nftExchangeMappingService.mapEntityToTokenIds(exchangeOffer);
 
     // NFTSwap 컨트랙트의 executeNFTSwap 함수 호출
-    exchangeOffer.acceptorUserId = acceptorId;
     exchangeOffer.status = NftExchangeOfferStatus.PENDING;
     await this.nftExchangeRepositoryService.save(exchangeOffer);
     const { success, transactionHash, failureReason } =

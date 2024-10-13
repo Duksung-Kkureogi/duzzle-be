@@ -163,7 +163,9 @@ export class NftExchangeMappingService {
           });
       } else {
         insufficientNFT = {
-          name: (userNfts[0] as UserMaterialItemEntity).materialItem.nameKr,
+          name: userNfts.length
+            ? (userNfts[0] as UserMaterialItemEntity).materialItem.nameKr
+            : 'Material',
           required: nft.quantity,
           available: userNfts.length,
         };
@@ -186,9 +188,9 @@ export class NftExchangeMappingService {
           });
       } else {
         insufficientNFT = {
-          name:
-            (userNfts[0] as BlueprintItemEntity).metadata.metadata.name ??
-            'Blueprint', // TODO: 필요하면 더 자세한 정보로 변경
+          name: userNfts.length
+            ? (userNfts[0] as UserMaterialItemEntity).materialItem.nameKr
+            : 'Blueprint', // TODO: 필요하면 더 자세한 정보로 변경
           required: nft.quantity,
           available: userNfts.length,
         };
