@@ -200,7 +200,8 @@ export class NftExchangeController {
       ContentNotFoundError,
       InsufficientNFTError,
       NFTBalanceChangedError,
-      SelfAcceptForbidden
+      SelfAcceptForbidden,
+      ActionNotPermittedError,
     ],
   })
   @UseGuards(AuthGuard)

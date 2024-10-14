@@ -54,6 +54,11 @@ export class NftExchangeMappingService {
     );
 
     if (insufficientNFTsA.length > 0) {
+      await this.nftExchangeRepositoryService.save({
+        ...offerEntity,
+        offerorUserId: null,
+        status: NftExchangeOfferStatus.LISTED,
+      });
       throw new InsufficientNFTError(insufficientNFTsA);
     }
 

@@ -133,6 +133,14 @@ export class NftExchangeService {
       throw new SelfAcceptForbidden();
     }
 
+    if (exchangeOffer.status !== NftExchangeOfferStatus.LISTED) {
+      throw new ActionNotPermittedError(
+        '교환 제안 수락',
+        '교환 제안 상태',
+        exchangeOffer.status,
+      );
+    }
+
     exchangeOffer.status = NftExchangeOfferStatus.MATCHED;
     exchangeOffer.acceptorUserId = acceptorId;
     exchangeOffer = await this.nftExchangeRepositoryService.save(exchangeOffer);
