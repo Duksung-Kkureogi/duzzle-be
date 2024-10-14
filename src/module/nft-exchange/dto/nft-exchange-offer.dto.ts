@@ -1,7 +1,8 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { IsEnum, IsOptional } from 'class-validator';
 import { NftExchangeOfferStatus } from 'src/module/repository/enum/nft-exchange-status.enum';
+import { NFTType } from '../domain/nft-asset';
 
 export class OfferorUserProfile {
   @ApiProperty()
@@ -19,6 +20,11 @@ export class OfferorUserProfile {
 }
 
 export class ExchangeMaterialNFT {
+  @ApiProperty({ enum: [NFTType.Material] })
+  @Expose()
+  @IsEnum(NFTType)
+  type: NFTType.Material = NFTType.Material;
+
   @ApiProperty()
   @Expose()
   contractId: number;
@@ -37,6 +43,11 @@ export class ExchangeMaterialNFT {
 }
 
 export class ExchangeBlueprintOrPuzzleNFT {
+  @ApiProperty({ enum: [NFTType.Blueprint, NFTType.PuzzlePiece] })
+  @IsEnum(NFTType)
+  @Expose()
+  type: NFTType.Blueprint | NFTType.PuzzlePiece;
+
   @ApiProperty()
   @Expose()
   seasonZoneId: number;
