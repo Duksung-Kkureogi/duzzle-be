@@ -36,6 +36,7 @@ import {
   NFTBalanceChangedError,
 } from 'src/types/error/application-exceptions/400-bad-request';
 import { NftExchangeOfferResponse } from './dto/nft-exchange-offer.dto';
+import { NftExchangeOfferDetailResponse } from './dto/nft-exchange-offer-detail.dto';
 
 @Controller('nft-exchange')
 export class NftExchangeController {
@@ -215,5 +216,23 @@ export class NftExchangeController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<boolean> {
     return this.nftExchangeService.acceptNftExchange(user.id, id);
+  }
+
+  @ApiDescription({
+    tags: 'NFT Exchange',
+    summary: '교환 제안 상세 보기',
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: NftExchangeOfferDetailResponse,
+    },
+    exceptions: [ContentNotFoundError],
+  })
+  @Get(':id')
+  async getNftExchangeById(
+    @Param('id') id: number,
+  ): Promise<ResponsesDataDto<NftExchangeOfferDetailResponse>> {
+    const result = await this.nftExchangeService.getNftExchangeById(id);
+
+    return new ResponsesDataDto(result);
   }
 }

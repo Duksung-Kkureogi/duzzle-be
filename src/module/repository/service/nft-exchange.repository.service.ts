@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, Like, Repository } from 'typeorm';
+import { EntityManager, ILike, Repository } from 'typeorm';
 import {
   AvailableBlueprintOrPuzzleNFT,
   AvailableMaterialNFT,
@@ -20,13 +20,12 @@ import { AvailableNftsToRequestRequest } from 'src/module/nft-exchange/dto/avail
 import { NftExchangeOfferEntity } from '../entity/nft-exchange-offers.entity';
 import { NftExchangeOfferDto } from '../dto/nft-exchange.dto';
 import { UserEntity } from '../entity/user.entity';
-import {
-  ExchangeBlueprintOrPuzzleNFT,
-  ExchangeMaterialNFT,
-  NftExchangeOfferResponse,
-} from 'src/module/nft-exchange/dto/nft-exchange-offer.dto';
+import { NftExchangeOfferResponse } from 'src/module/nft-exchange/dto/nft-exchange-offer.dto';
 import { NftExchangeListRequest } from 'src/module/nft-exchange/dto/nft-exchange.dto';
 import { NftExchangeOfferStatus } from '../enum/nft-exchange-status.enum';
+import { NftExchangeOfferDetailResponse } from 'src/module/nft-exchange/dto/nft-exchange-offer-detail.dto';
+import { BLOCK_EXPLORER_URL } from 'src/constant/nft-exchange';
+import { NftMetadataEntity } from '../entity/nft-metadata.entity';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 
 @Injectable()
@@ -104,7 +103,7 @@ export class NftExchangeRepositoryService {
       type: 'requestedNfts' | 'offeredNfts',
     ) => {
       const materialItems = await this.materialItemRepository.findBy({
-        nameKr: Like(`%${name}%`),
+        nameKr: ILike(`%${name}%`),
       });
       const contractIds = materialItems.map((item) => item.contractId);
 
@@ -112,15 +111,17 @@ export class NftExchangeRepositoryService {
         .createQueryBuilder('sz')
         .innerJoinAndSelect('sz.season', 'season')
         .innerJoinAndSelect('sz.zone', 'zone')
-        .where('season.titleKr LIKE :titleKr', { titleKr: `%${name}%` })
-        .orWhere('zone.nameKr LIKE :nameKr', { nameKr: `%${name}%` })
+        .where('season.titleKr ILIKE :titleKr', { titleKr: `%${name}%` })
+        .orWhere('zone.nameKr ILIKE :nameKr', { nameKr: `%${name}%` })
         .select('sz.id')
         .getMany();
       const seasonZoneIds = seasonZones.map((zone) => zone.id);
 
       const queryBuilder =
         await this.nftExchangeOfferRepository.createQueryBuilder('neo');
-
+      if (contractIds.length === 0 && seasonZoneIds.length === 0) {
+        queryBuilder.where('false');
+      }
       if (contractIds.length > 0) {
         queryBuilder.orWhere(
           `EXISTS (
@@ -146,127 +147,243 @@ export class NftExchangeRepositoryService {
       return exchangeOfferIds.map((offer) => offer.id);
     };
 
-    const addNftInfo = async (
-      nft: NFTAsset,
-    ): Promise<ExchangeBlueprintOrPuzzleNFT | ExchangeMaterialNFT> => {
-      let result: ExchangeBlueprintOrPuzzleNFT | ExchangeMaterialNFT;
-      if (nft.type === NFTType.Material) {
-        const item = await this.materialItemRepository.findOneBy({
-          contractId: nft.contractId,
-        });
-        if (item) {
-          result = { ...nft, name: item.nameKr, imageUrl: item.imageUrl };
-        } else {
-          result = { ...nft };
-          Logger.warn(`Material NFT not found - contractId: ${nft.contractId}`);
-        }
-      } else if (
-        nft.type === NFTType.Blueprint ||
-        nft.type === NFTType.PuzzlePiece
-      ) {
-        const seasonZone = await this.seasonZoneRepository.findOne({
-          where: { id: nft.seasonZoneId },
-          relations: ['season', 'zone'],
-        });
-        if (seasonZone) {
-          result = {
-            ...nft,
-            seasonName: seasonZone.season.titleKr,
-            zoneName: seasonZone.zone.nameKr,
-            imageUrl:
-              nft.type === NFTType.PuzzlePiece
-                ? seasonZone.puzzleThumbnailUrl
-                : BLUEPRINT_ITEM_IMAGE_URL,
-          };
-        } else {
-          result = { ...nft };
-          Logger.warn(
-            `Blueprint or Puzzle NFT not found - seasonZoneId: ${nft.seasonZoneId}`,
-          );
-        }
-      }
-      return result;
-    };
-
-    const exchangeOfferIdsByRequestedNft = requestedNfts
-      ? await getExchangeOfferIds(requestedNfts, 'requestedNfts')
-      : [];
-
-    const exchangeOfferIdsByOfferNft = offeredNfts
-      ? await getExchangeOfferIds(offeredNfts, 'offeredNfts')
-      : [];
-
-    let offerorUserId: number | null = null;
-    if (offerorUser) {
-      const user = await this.userRepository.findOneBy({ name: offerorUser });
-      offerorUserId = user ? user.id : null;
-    } else {
-      offerorUserId = userId;
-    }
-
-    const queryBuilder = await this.nftExchangeOfferRepository
-      .createQueryBuilder('neo')
-      .innerJoinAndSelect('neo.offeror', 'user');
-
+    let condition: string[] = ['TRUE'];
     if (status) {
-      queryBuilder.andWhere('neo.status = :status', { status });
+      condition.push(`status = '${status}'`);
     }
-    if (exchangeOfferIdsByRequestedNft.length > 0) {
-      queryBuilder.andWhere('neo.id IN (:...requestedNftIds)', {
-        requestedNftIds: exchangeOfferIdsByRequestedNft,
-      });
+    if (requestedNfts) {
+      const offerIds = await getExchangeOfferIds(
+        requestedNfts,
+        'requestedNfts',
+      );
+      if (offerIds.length === 0) {
+        return { list: [], total: 0 };
+      }
+      condition.push(`id IN (${offerIds})`);
     }
-    if (exchangeOfferIdsByOfferNft.length > 0) {
-      queryBuilder.andWhere('neo.id IN (:...offeredNftIds)', {
-        offeredNftIds: exchangeOfferIdsByOfferNft,
-      });
+    if (offeredNfts) {
+      const offerIds = await getExchangeOfferIds(offeredNfts, 'offeredNfts');
+      if (offerIds.length === 0) {
+        return { list: [], total: 0 };
+      }
+      condition.push(`id IN (${offerIds})`);
     }
-    if (offerorUserId) {
-      queryBuilder.andWhere('neo.offerorUserId = :offerorUserId', {
-        offerorUserId,
+    if (offerorUser) {
+      const users = await this.userRepository.findBy({
+        name: ILike(`%${offerorUser}%`),
       });
+      const userWalletAddress = users
+        ? users.map((u) => `'${u.walletAddress}'`)
+        : [];
+      if (userWalletAddress.length === 0) {
+        return { list: [], total: 0 };
+      }
+      condition.push(`offerorUser->>'walletAddress' IN (${userWalletAddress})`);
+    }
+    if (userId) {
+      const user = await this.userRepository.findOneBy({ id: userId });
+      const walletAddress = user.walletAddress;
+      condition.push(`offerorUser->>'walletAddress' = '${walletAddress}'`);
     }
 
-    queryBuilder
-      .offset(offset)
-      .limit(count)
-      .orderBy('CASE WHEN neo.status = :listedStatus THEN 0 ELSE 1 END', 'ASC')
-      .addOrderBy('neo.createdAt', 'DESC')
-      .setParameter('listedStatus', NftExchangeOfferStatus.LISTED);
+    const innerQuery = this.getNftExchangeOffer();
 
-    const [query, total] = await Promise.all([
-      queryBuilder.getMany(),
-      queryBuilder.getCount(),
+    const query = `
+      SELECT * FROM (${innerQuery})
+      WHERE ${condition.join(' AND ')}
+      ORDER BY
+        CASE
+          WHEN status = '${NftExchangeOfferStatus.LISTED}' THEN 0
+          ELSE 1
+        END ASC,
+        "createdAt" DESC
+      LIMIT ${count} OFFSET ${offset}`;
+
+    const countQuery = `
+      SELECT COUNT(*) AS total FROM (${innerQuery}) 
+      WHERE ${condition.join(' AND ')}`;
+
+    const [list, total] = await Promise.all([
+      this.entityManager.query(query),
+      this.entityManager.query(countQuery),
     ]);
 
-    const list = await Promise.all(
-      query.map(async (e) => {
-        const [offeredNftsImage, requestedNftsImage] = await Promise.all([
-          Promise.all(e.offeredNfts.map(addNftInfo)),
-          Promise.all(e.requestedNfts.map(addNftInfo)),
-        ]);
-
-        return {
-          id: e.id,
-          offerorUser: {
-            walletAddress: e.offeror.walletAddress,
-            name: e.offeror?.name,
-            image: e.offeror?.image,
-          },
-          offeredNfts: offeredNftsImage,
-          requestedNfts: requestedNftsImage,
-          status: e.status,
-          createdAt: e.createdAt,
-        };
-      }),
-    );
-
-    const result: PaginatedList<NftExchangeOfferResponse> = {
+    return {
       list,
-      total,
+      total: parseInt(total[0].total),
+    };
+  }
+
+  async getNftExchangeOfferById(
+    offerId: number,
+  ): Promise<NftExchangeOfferDetailResponse> {
+    const getHistory = async (nft: NFTAsset, walletAddress: string) => {
+      const user = await this.userRepository.findOneBy({ walletAddress });
+      if (!user) return nft;
+
+      const userId = user.id;
+
+      const historyQuery = async (tokenId: string) => {
+        const result = await this.entityManager.query(
+          `
+            SELECT json_agg(json_build_object(
+              'event', lt.topic,
+              'date', lt.created_at,
+              'to', ut.name,
+              'toWalletAddress', lt.to,
+              'from', uf.name,
+              'fromWalletAddress', lt.from,
+              'blockExplorerUrl', concat($1::text, lt.transaction_hash)
+            ))
+            FROM log_transaction AS lt
+            LEFT JOIN "user" AS ut ON lt.to = ut.wallet_address
+            LEFT JOIN "user" AS uf ON lt.from = uf.wallet_address
+            WHERE lt.token_id = $2
+          `,
+          [BLOCK_EXPLORER_URL, tokenId],
+        );
+
+        return result[0].json_agg;
+      };
+
+      let query;
+
+      if (nft.type === NFTType.Material) {
+        query = this.userMaterialItemRepository
+          .createQueryBuilder('umi')
+          .select('umi.tokenId AS tokenId')
+          .innerJoin(MaterialItemEntity, 'mi', 'umi.materialItemId = mi.id')
+          .where('umi.userId = :userId', { userId })
+          .andWhere('mi.contractId = :contractId', {
+            contractId: nft.contractId,
+          });
+      } else if (nft.type === NFTType.Blueprint) {
+        query = this.blueprintItemRepository
+          .createQueryBuilder('bi')
+          .select('n.tokenId AS tokenId')
+          .innerJoin(NftMetadataEntity, 'n', 'bi.nftMetadataId = n.id')
+          .where('bi.userId = :userId', { userId });
+      } else if (nft.type === NFTType.PuzzlePiece) {
+        query = this.puzzlePieceRepository
+          .createQueryBuilder('pp')
+          .select('n.tokenId AS tokenId')
+          .innerJoin(NftMetadataEntity, 'n', 'pp.nftMetadataId = n.id')
+          .where('pp.holerWalletAddress = :walletAddress', { walletAddress });
+      }
+
+      const result = await query.execute();
+
+      return {
+        ...nft,
+        availableNfts: await Promise.all(
+          result.map(async (result) => {
+            const tokenId = result.tokenid;
+            const history = await historyQuery(tokenId);
+            return { tokenId, history };
+          }),
+        ),
+      };
     };
 
-    return result;
+    const innerQuery = this.getNftExchangeOffer();
+    const result = await this.entityManager
+      .createQueryBuilder()
+      .select('*')
+      .from(`(${innerQuery})`, 'offer')
+      .where('offer.id = :offerId', { offerId })
+      .getRawOne();
+
+    if (!result) {
+      throw new ContentNotFoundError('nftExchangeOffer', offerId);
+    }
+
+    return {
+      ...result,
+      offeredNfts: await Promise.all(
+        result.offeredNfts.map((nft) => {
+          return getHistory(nft, result.offerorUser.walletAddress);
+        }),
+      ),
+    };
+  }
+
+  private getNftExchangeOffer(): string {
+    const query = `
+      SELECT 
+        neo.id AS id,
+        neo.status,
+        neo.created_at AS "createdAt",
+        json_build_object(
+          'walletAddress', u.wallet_address,
+          'name', u.name,
+          'image', u.image
+        ) AS "offerorUser",
+        json_agg(
+          CASE
+            WHEN e_offeredNfts->>'type' = '${NFTType.Material}' THEN json_build_object(
+              'type', e_offeredNfts->>'type',
+              'contractId', mi.contract_id,
+              'name', mi.name_kr,
+              'imageUrl', mi.image_url,
+              'quantity', e_offeredNfts->>'quantity'
+            )
+            WHEN e_offeredNfts->>'type' IN ('${NFTType.Blueprint}', '${NFTType.PuzzlePiece}') THEN json_build_object(
+              'type', e_offeredNfts->>'type',
+              'seasonZoneId', sz.id,
+              'seasonName', s.title_kr,
+              'zoneName', z.name_kr,
+              'imageUrl', 
+                CASE
+                  WHEN e_offeredNfts->>'type' = 'puzzlePiece' THEN sz.puzzle_thumbnail_url
+                  WHEN e_offeredNfts->>'type' = 'blueprint' THEN '${BLUEPRINT_ITEM_IMAGE_URL}'
+                END,
+              'quantity', e_offeredNfts->>'quantity'
+            )
+          END
+        ) AS "offeredNfts",
+        json_agg(
+          CASE
+            WHEN e_requestedNfts->>'type' = '${NFTType.Material}' THEN json_build_object(
+              'type', e_requestedNfts->>'type',
+              'contractId', mi.contract_id,
+              'name', mi.name_kr,
+              'imageUrl', mi.image_url,
+              'quantity', e_requestedNfts->>'quantity'
+            )
+            WHEN e_requestedNfts->>'type' IN ('${NFTType.Blueprint}', '${NFTType.PuzzlePiece}') THEN json_build_object(
+              'type', e_requestedNfts->>'type',
+              'seasonZoneId', sz.id,
+              'seasonName', s.title_kr,
+              'zoneName', z.name_kr,
+              'imageUrl', 
+                CASE
+                  WHEN e_requestedNfts->>'type' = 'puzzlePiece' THEN sz.puzzle_thumbnail_url
+                  WHEN e_requestedNfts->>'type' = 'blueprint' THEN '${BLUEPRINT_ITEM_IMAGE_URL}'
+                END,
+              'quantity', e_requestedNfts->>'quantity'
+            )
+          END
+        ) AS "requestedNfts"
+      FROM nft_exchange_offers AS neo
+      LEFT JOIN "user" AS u ON neo.offeror_user_id = u.id
+      LEFT JOIN LATERAL (
+        SELECT e_offeredNfts
+        FROM jsonb_array_elements(neo.offered_nfts) AS e_offeredNfts
+      ) AS offered_nft_info ON TRUE
+      LEFT JOIN LATERAL (
+        SELECT e_requestedNfts
+        FROM jsonb_array_elements(neo.requested_nfts) AS e_requestedNfts
+      ) AS requested_nft_info ON TRUE
+      LEFT JOIN material_item AS mi ON CAST(offered_nft_info.e_offeredNfts->>'contractId' AS INTEGER) = mi.contract_id
+        OR CAST(requested_nft_info.e_requestedNfts->>'contractId' AS INTEGER) = mi.contract_id
+      LEFT JOIN season_zone AS sz ON CAST(offered_nft_info.e_offeredNfts->>'seasonZoneId' AS INTEGER) = sz.id
+        OR CAST(requested_nft_info.e_requestedNfts->>'seasonZoneId' AS INTEGER) = sz.id
+      LEFT JOIN season AS s ON sz.season_id = s.id
+      LEFT JOIN zone AS z ON sz.zone_id = z.id
+      GROUP BY neo.id, neo.status, neo.created_at, u.wallet_address, u.name, u.image
+    `;
+
+    return query;
   }
 
   async deleteNftExchange(nftExchangeId: number): Promise<void> {

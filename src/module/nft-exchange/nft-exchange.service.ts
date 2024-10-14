@@ -19,6 +19,7 @@ import { ActionNotPermittedError } from 'src/types/error/application-exceptions/
 import { SelfAcceptForbidden } from 'src/types/error/application-exceptions/403-forbidden';
 import { NftExchangeMappingService } from './nft-exchange-mapping.service';
 import { NftExchangeOfferResponse } from './dto/nft-exchange-offer.dto';
+import { NftExchangeOfferDetailResponse } from './dto/nft-exchange-offer-detail.dto';
 
 @Injectable()
 export class NftExchangeService {
@@ -185,5 +186,11 @@ export class NftExchangeService {
     await this.nftExchangeRepositoryService.save(exchangeOffer);
 
     return success;
+  }
+
+  async getNftExchangeById(
+    id: number,
+  ): Promise<NftExchangeOfferDetailResponse> {
+    return this.nftExchangeRepositoryService.getNftExchangeOfferById(id);
   }
 }
