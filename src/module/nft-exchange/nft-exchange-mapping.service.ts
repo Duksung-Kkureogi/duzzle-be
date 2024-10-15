@@ -54,11 +54,6 @@ export class NftExchangeMappingService {
     );
 
     if (insufficientNFTsA.length > 0) {
-      await this.nftExchangeRepositoryService.save({
-        ...offerEntity,
-        offerorUserId: null,
-        status: NftExchangeOfferStatus.LISTED,
-      });
       throw new InsufficientNFTError(insufficientNFTsA);
     }
 
@@ -154,6 +149,7 @@ export class NftExchangeMappingService {
     if (nft.type == NFTType.Material) {
       userNfts =
         await this.itemRepositoryService.findUserMaterialItemsByContractId(
+          userId,
           nft.contractId,
         );
       if (userNfts.length >= nft.quantity) {
@@ -163,7 +159,7 @@ export class NftExchangeMappingService {
           .map((item: UserMaterialItemEntity) => {
             return {
               contractAddress: item.materialItem.contract.address,
-              tokenId: item.id,
+              tokenId: item.tokenId,
             };
           });
       } else {
@@ -188,7 +184,7 @@ export class NftExchangeMappingService {
           .map((item: BlueprintItemEntity) => {
             return {
               contractAddress: item.metadata.contract.address,
-              tokenId: item.id,
+              tokenId: item.metadata.tokenId,
             };
           });
       } else {
@@ -213,7 +209,7 @@ export class NftExchangeMappingService {
           .map((piece: PuzzlePieceEntity) => {
             return {
               contractAddress: piece.metadata.contract.address,
-              tokenId: piece.id,
+              tokenId: piece.metadata.tokenId,
             };
           });
       } else {

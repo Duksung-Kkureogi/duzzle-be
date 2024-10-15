@@ -67,7 +67,7 @@ export class NftExchangeRepositoryService {
   }
 
   async getOfferById(id: number): Promise<NftExchangeOfferEntity> {
-    const offer = this.nftExchangeOfferRepository.findOne({
+    const offer = await this.nftExchangeOfferRepository.findOne({
       where: { id },
       relations: {
         offeror: true,
@@ -517,6 +517,13 @@ export class NftExchangeRepositoryService {
   }
 
   async save(entity: NftExchangeOfferEntity): Promise<NftExchangeOfferEntity> {
-    return this.nftExchangeOfferRepository.save(entity);
+    await this.nftExchangeOfferRepository.save(entity);
+    return this.nftExchangeOfferRepository.findOne({
+      relations: {
+        offeror: true,
+        acceptor: true,
+      },
+      where: { id: entity.id },
+    });
   }
 }

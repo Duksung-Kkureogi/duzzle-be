@@ -141,30 +141,37 @@ export class NftExchangeService {
       );
     }
 
-    exchangeOffer.status = NftExchangeOfferStatus.MATCHED;
-    exchangeOffer.acceptorUserId = acceptorId;
-    exchangeOffer = await this.nftExchangeRepositoryService.save(exchangeOffer);
+    exchangeOffer = await this.nftExchangeRepositoryService.save({
+      ...exchangeOffer,
+      acceptorUserId: acceptorId,
+      status: NftExchangeOfferStatus.MATCHED,
+    });
 
-    const {
-      nftContractsGivenByA,
-      tokenIdsGivenByA,
-      nftContractsGivenByB,
-      tokenIdsGivenByB,
-      userA,
-      userB,
-    } = await this.nftExchangeMappingService.mapEntityToTokenIds(exchangeOffer);
+    let contractParams;
+
+    try {
+      contractParams =
+        await this.nftExchangeMappingService.mapEntityToTokenIds(exchangeOffer);
+    } catch (error) {
+      await this.nftExchangeRepositoryService.save({
+        ...exchangeOffer,
+        status: NftExchangeOfferStatus.LISTED,
+        acceptorUserId: null,
+      });
+      throw error;
+    }
 
     // NFTSwap 컨트랙트의 executeNFTSwap 함수 호출
     exchangeOffer.status = NftExchangeOfferStatus.PENDING;
     await this.nftExchangeRepositoryService.save(exchangeOffer);
     const { success, transactionHash, failureReason } =
       await this.smartContractInteractionService.nftSwap(
-        nftContractsGivenByA,
-        tokenIdsGivenByA,
-        nftContractsGivenByB,
-        tokenIdsGivenByB,
-        userA,
-        userB,
+        contractParams.nftContractsGivenByA,
+        contractParams.tokenIdsGivenByA,
+        contractParams.nftContractsGivenByB,
+        contractParams.tokenIdsGivenByB,
+        contractParams.userA,
+        contractParams.userB,
       );
 
     if (success) {

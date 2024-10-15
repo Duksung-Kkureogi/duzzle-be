@@ -76,6 +76,7 @@ export class ItemRepositoryService {
   }
 
   async findUserMaterialItemsByContractId(
+    userId: number,
     contractId: number,
   ): Promise<UserMaterialItemEntity[]> {
     return this.userMaterialItemRepository.find({
@@ -84,7 +85,7 @@ export class ItemRepositoryService {
           contract: true,
         },
       },
-      where: { materialItemId: contractId },
+      where: { userId, materialItem: { contract: { id: contractId } } },
     });
   }
 
