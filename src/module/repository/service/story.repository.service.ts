@@ -90,10 +90,10 @@ export class StoryRepositoryService {
       .addSelect('z.nameUs as "zoneNameUs"')
       .innerJoin('s.contents', 'sc')
       .innerJoin('s.zone', 'z')
-      .groupBy('s.id')
-      .addGroupBy('z.id')
+      .groupBy('z.id')
       .addGroupBy('z.nameKr')
       .addGroupBy('z.nameUs')
+      .orderBy('z.id')
       .getRawMany();
 
     return results.map((result) => {
