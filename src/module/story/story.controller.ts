@@ -4,6 +4,8 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Param,
+  ParseIntPipe,
   Query,
 } from '@nestjs/common';
 import { StoryService } from './story.service';
@@ -12,7 +14,10 @@ import { StoryRequest, StoryResponse } from './dto/story.dto';
 import { ApiDescription } from 'src/decorator/api-description.decorator';
 import { InvalidParamsError } from 'src/types/error/application-exceptions/400-bad-request';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
-import { StoryProgressResponse } from '../user-story/dto/user-story.dto';
+import {
+  StoryProgressByZoneResponse,
+  StoryProgressResponse,
+} from '../user-story/dto/user-story.dto';
 import { ResponsesListDto } from 'src/dto/responses-list.dto';
 
 @Controller({
@@ -62,5 +67,23 @@ export class StoryController {
     ResponsesListDto<StoryProgressResponse>
   > {
     return new ResponsesListDto(await this.storyService.getStoryList());
+  }
+
+  @ApiDescription({
+    tags: 'Story',
+    summary: '진척도 없이 구역별 스토리 목록 조회(게스트용)',
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: StoryResponse,
+    },
+  })
+  @HttpCode(HttpStatus.OK)
+  @Get('all/:zoneId')
+  async getStoryListForGuestByZone(
+    @Param('zoneId', ParseIntPipe) zoneId: number,
+  ): Promise<ResponsesListDto<StoryProgressByZoneResponse>> {
+    return new ResponsesListDto(
+      await this.storyService.getStoriesByZone(zoneId),
+    );
   }
 }
