@@ -34,6 +34,10 @@ export class StoryResponse {
   @Expose()
   content: string;
 
+  @ApiProperty()
+  @Expose()
+  image: string;
+
   static from(entity: StoryContentEntity) {
     return plainToInstance(
       this,

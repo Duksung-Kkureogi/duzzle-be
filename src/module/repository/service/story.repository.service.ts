@@ -7,6 +7,7 @@ import { UserStoryEntity } from '../entity/user-story.entity';
 import { UpdateUserStoryDto } from '../dto/story.dto';
 import { StoryContentEntity } from '../entity/story-content.entity';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
+import { StoryProgressResponse } from 'src/module/user-story/dto/user-story.dto';
 
 @Injectable()
 export class StoryRepositoryService {
@@ -78,5 +79,31 @@ export class StoryRepositoryService {
     });
 
     await this.userStoryRepository.save(userStory);
+  }
+
+  async getStoryListForGuest(): Promise<StoryProgressResponse[]> {
+    const results = await this.storyRepository
+      .createQueryBuilder('s')
+      .select('z.id as "zoneId"')
+      .addSelect('count(*) as "totalStory"')
+      .addSelect('z.nameKr as "zoneNameKr"')
+      .addSelect('z.nameUs as "zoneNameUs"')
+      .innerJoin('s.contents', 'sc')
+      .innerJoin('s.zone', 'z')
+      .groupBy('s.id')
+      .addGroupBy('z.id')
+      .addGroupBy('z.nameKr')
+      .addGroupBy('z.nameUs')
+      .getRawMany();
+
+    return results.map((result) => {
+      return {
+        zoneId: result.zoneId,
+        totalStory: result.totalStory,
+        zoneNameKr: result.zoneNameKr,
+        zoneNameUs: result.zoneNameUs,
+        readStory: 0,
+      };
+    });
   }
 }

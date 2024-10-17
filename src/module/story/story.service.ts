@@ -16,4 +16,8 @@ export class StoryService {
 
     return StoryResponse.from(result);
   }
+
+  async getStoryList() {
+    return this.storyRepositoryService.getStoryListForGuest();
+  }
 }
