@@ -80,7 +80,7 @@ export class QuestDemoController {
         ipAddress: this.req.ip,
         userAgent: this.req.headers['user-agent'],
       },
-      QuestType.PictureQuiz,
+      QuestType.MusicQuiz,
     );
 
     return new ResponsesDataDto(quest);
