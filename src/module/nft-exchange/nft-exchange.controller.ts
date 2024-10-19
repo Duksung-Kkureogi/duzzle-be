@@ -106,7 +106,7 @@ export class NftExchangeController {
     exceptions: [ContentNotFoundError],
   })
   @UseGuards(AuthGuard)
-  @Post()
+  @Post('register')
   async postNftExchange(
     @AuthenticatedUser() user: UserEntity,
     @Body() dto: PostNftExchangeRequest,
@@ -134,7 +134,7 @@ export class NftExchangeController {
     exceptions: [ContentNotFoundError, AccessDenied, ActionNotPermittedError],
   })
   @UseGuards(AuthGuard)
-  @Delete(':id')
+  @Delete('cancel/:id')
   async deleteNftExchange(
     @AuthenticatedUser() user: UserEntity,
     @Param('id') nftExchangeId: number,
