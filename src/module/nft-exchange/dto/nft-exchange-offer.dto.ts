@@ -5,18 +5,20 @@ import { NftExchangeOfferStatus } from 'src/module/repository/enum/nft-exchange-
 import { NFTType } from '../domain/nft-asset';
 
 export class OfferorUserProfile {
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @Expose()
-  walletAddress: string;
+  walletAddress?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @Expose()
   name?: string | null = null;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @Expose()
-  image: string;
+  image?: string;
 }
 
 export class ExchangeMaterialNFT {
