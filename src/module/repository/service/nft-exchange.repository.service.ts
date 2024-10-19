@@ -27,6 +27,9 @@ import { NftExchangeOfferDetailResponse } from 'src/module/nft-exchange/dto/nft-
 import { BLOCK_EXPLORER_URL } from 'src/constant/nft-exchange';
 import { NftMetadataEntity } from '../entity/nft-metadata.entity';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
+import { ContractEntity } from '../entity/contract.entity';
+import { NftRepositoryService } from './nft.repository.service';
+import { ContractKey } from '../enum/contract.enum';
 
 @Injectable()
 export class NftExchangeRepositoryService {
@@ -51,6 +54,8 @@ export class NftExchangeRepositoryService {
 
     @InjectRepository(PuzzlePieceEntity)
     private puzzlePieceRepository: Repository<PuzzlePieceEntity>,
+
+    private readonly nftRepositoryService: NftRepositoryService,
 
     private readonly entityManager: EntityManager,
   ) {}
@@ -223,7 +228,7 @@ export class NftExchangeRepositoryService {
 
       const userId = user.id;
 
-      const historyQuery = async (tokenId: string) => {
+      const historyQuery = async (tokenId: string, contractAddress: string) => {
         const result = await this.entityManager.query(
           `
             SELECT json_agg(json_build_object(
@@ -238,9 +243,9 @@ export class NftExchangeRepositoryService {
             FROM log_transaction AS lt
             LEFT JOIN "user" AS ut ON lt.to = ut.wallet_address
             LEFT JOIN "user" AS uf ON lt.from = uf.wallet_address
-            WHERE lt.token_id = $2
+            WHERE lt.token_id = $2 and lt.contract_address = $3
           `,
-          [BLOCK_EXPLORER_URL, tokenId],
+          [BLOCK_EXPLORER_URL, tokenId, contractAddress],
         );
 
         return result[0].json_agg;
@@ -251,34 +256,56 @@ export class NftExchangeRepositoryService {
       if (nft.type === NFTType.Material) {
         query = this.userMaterialItemRepository
           .createQueryBuilder('umi')
-          .select('umi.tokenId AS tokenId')
+          .select([
+            'umi.tokenId AS "tokenId"',
+            'c.address as "contractAddress"',
+          ])
           .innerJoin(MaterialItemEntity, 'mi', 'umi.materialItemId = mi.id')
+          .innerJoin(ContractEntity, 'c', 'mi.contractId = c.id')
           .where('umi.userId = :userId', { userId })
           .andWhere('mi.contractId = :contractId', {
             contractId: nft.contractId,
           });
       } else if (nft.type === NFTType.Blueprint) {
+        const contractAddress = (
+          await this.nftRepositoryService.findContractByKey(
+            ContractKey.ITEM_BLUEPRINT,
+          )
+        ).address;
         query = this.blueprintItemRepository
           .createQueryBuilder('bi')
-          .select('n.tokenId AS tokenId')
+          .select([
+            'n.tokenId AS "tokenId"',
+            `${contractAddress} as "contractAddress"`,
+          ])
           .innerJoin(NftMetadataEntity, 'n', 'bi.nftMetadataId = n.id')
           .where('bi.userId = :userId', { userId });
       } else if (nft.type === NFTType.PuzzlePiece) {
+        const contractAddress = (
+          await this.nftRepositoryService.findContractByKey(
+            ContractKey.PUZZLE_PIECE,
+          )
+        ).address;
         query = this.puzzlePieceRepository
           .createQueryBuilder('pp')
-          .select('n.tokenId AS tokenId')
+          .select([
+            'n.tokenId AS "tokenId"',
+            `${contractAddress} as "contractAddress"`,
+          ])
           .innerJoin(NftMetadataEntity, 'n', 'pp.nftMetadataId = n.id')
           .where('pp.holerWalletAddress = :walletAddress', { walletAddress });
       }
 
       const result = await query.execute();
 
+      console.log('tokenId, contractAddress', JSON.stringify(result));
+
       return {
         ...nft,
         availableNfts: await Promise.all(
           result.map(async (result) => {
-            const tokenId = result.tokenid;
-            const history = await historyQuery(tokenId);
+            const { tokenId, contractAddress } = result;
+            const history = await historyQuery(tokenId, contractAddress);
             return { tokenId, history };
           }),
         ),
