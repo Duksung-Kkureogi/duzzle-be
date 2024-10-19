@@ -234,7 +234,7 @@ export class NftExchangeRepositoryService {
               'from', uf.name,
               'fromWalletAddress', lt.from,
               'blockExplorerUrl', concat($1::text, lt.transaction_hash)
-            ))
+            ) ORDER BY lt.created_at)
             FROM log_transaction AS lt
             LEFT JOIN "user" AS ut ON lt.to = ut.wallet_address
             LEFT JOIN "user" AS uf ON lt.from = uf.wallet_address
@@ -309,78 +309,89 @@ export class NftExchangeRepositoryService {
 
   private getNftExchangeOffer(): string {
     const query = `
-      SELECT 
-        neo.id AS id,
+      with requestedNfts as (
+        select
+          neo.id,
+          json_agg(
+            case
+              when nfts->>'type'='material' then json_build_object(
+                'type', nfts->>'type',
+                'contractId', nfts->>'contractId',
+                'name', mi.name_kr,
+                'image', mi.image_url,
+                'quantity', nfts->>'quantity'
+              )
+              when nfts->>'type' in('blueprint', 'puzzlePiece') then json_build_object(
+                'type', nfts->>'type',
+                'seasonZoneId', sz.id,
+                'seasonName', s.title_kr,
+                'zoneName', z.name_kr,
+                'image',
+                  case
+                    when nfts->>'type' = 'puzzlePiece' then sz.puzzle_thumbnail_url
+                    when nfts->>'type' = 'blueprint' then 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint-item.png'
+                  end,
+                'quantity', nfts->>'quantity'
+              )
+            end
+          ) as requestedNfts
+        from nft_exchange_offers as neo
+        left join jsonb_array_elements(neo.requested_nfts) as nfts on true
+        left join material_item as mi on cast(nfts->>'contractId' as integer) = mi.contract_id
+        left join season_zone as sz on cast(nfts->>'seasonZoneId' as integer) = sz.id
+        left join season as s on sz.season_id = s.id
+        left join zone as z on sz.zone_id = z.id
+        group by neo.id
+      ),
+      offeredNfts as (
+        select
+          neo.id,
+          json_agg(
+            case
+              when nfts->>'type'='material' then json_build_object(
+                'type', nfts->>'type',
+                'contractId', nfts->>'contractId',
+                'name', mi.name_kr,
+                'image', mi.image_url,
+                'quantity', nfts->>'quantity'
+              )
+              when nfts->>'type' in('blueprint', 'puzzlePiece') then json_build_object(
+                'type', nfts->>'type',
+                'seasonZoneId', sz.id,
+                'seasonName', s.title_kr,
+                'zoneName', z.name_kr,
+                'image',
+                  case
+                    when nfts->>'type' = 'puzzlePiece' then sz.puzzle_thumbnail_url
+                    when nfts->>'type' = 'blueprint' then 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint-item.png'
+                  end,
+                'quantity', nfts->>'quantity'
+              )
+            end
+          ) as offeredNfts
+        from nft_exchange_offers as neo
+        left join jsonb_array_elements(neo.offered_nfts) as nfts on true
+        left join material_item as mi on cast(nfts->>'contractId' as integer) = mi.contract_id
+        left join season_zone as sz on cast(nfts->>'seasonZoneId' as integer) = sz.id
+        left join season as s on sz.season_id = s.id
+        left join zone as z on sz.zone_id = z.id
+        group by neo.id
+      )
+      select 
+        neo.id,
         neo.status,
-        neo.created_at AS "createdAt",
+        neo.created_at as "createdAt",
         json_build_object(
           'walletAddress', u.wallet_address,
           'name', u.name,
           'image', u.image
-        ) AS "offerorUser",
-        json_agg(
-          CASE
-            WHEN e_offeredNfts->>'type' = '${NFTType.Material}' THEN json_build_object(
-              'type', e_offeredNfts->>'type',
-              'contractId', mi.contract_id,
-              'name', mi.name_kr,
-              'imageUrl', mi.image_url,
-              'quantity', e_offeredNfts->>'quantity'
-            )
-            WHEN e_offeredNfts->>'type' IN ('${NFTType.Blueprint}', '${NFTType.PuzzlePiece}') THEN json_build_object(
-              'type', e_offeredNfts->>'type',
-              'seasonZoneId', sz.id,
-              'seasonName', s.title_kr,
-              'zoneName', z.name_kr,
-              'imageUrl', 
-                CASE
-                  WHEN e_offeredNfts->>'type' = 'puzzlePiece' THEN sz.puzzle_thumbnail_url
-                  WHEN e_offeredNfts->>'type' = 'blueprint' THEN '${BLUEPRINT_ITEM_IMAGE_URL}'
-                END,
-              'quantity', e_offeredNfts->>'quantity'
-            )
-          END
-        ) AS "offeredNfts",
-        json_agg(
-          CASE
-            WHEN e_requestedNfts->>'type' = '${NFTType.Material}' THEN json_build_object(
-              'type', e_requestedNfts->>'type',
-              'contractId', mi.contract_id,
-              'name', mi.name_kr,
-              'imageUrl', mi.image_url,
-              'quantity', e_requestedNfts->>'quantity'
-            )
-            WHEN e_requestedNfts->>'type' IN ('${NFTType.Blueprint}', '${NFTType.PuzzlePiece}') THEN json_build_object(
-              'type', e_requestedNfts->>'type',
-              'seasonZoneId', sz.id,
-              'seasonName', s.title_kr,
-              'zoneName', z.name_kr,
-              'imageUrl', 
-                CASE
-                  WHEN e_requestedNfts->>'type' = 'puzzlePiece' THEN sz.puzzle_thumbnail_url
-                  WHEN e_requestedNfts->>'type' = 'blueprint' THEN '${BLUEPRINT_ITEM_IMAGE_URL}'
-                END,
-              'quantity', e_requestedNfts->>'quantity'
-            )
-          END
-        ) AS "requestedNfts"
-      FROM nft_exchange_offers AS neo
-      LEFT JOIN "user" AS u ON neo.offeror_user_id = u.id
-      LEFT JOIN LATERAL (
-        SELECT e_offeredNfts
-        FROM jsonb_array_elements(neo.offered_nfts) AS e_offeredNfts
-      ) AS offered_nft_info ON TRUE
-      LEFT JOIN LATERAL (
-        SELECT e_requestedNfts
-        FROM jsonb_array_elements(neo.requested_nfts) AS e_requestedNfts
-      ) AS requested_nft_info ON TRUE
-      LEFT JOIN material_item AS mi ON CAST(offered_nft_info.e_offeredNfts->>'contractId' AS INTEGER) = mi.contract_id
-        OR CAST(requested_nft_info.e_requestedNfts->>'contractId' AS INTEGER) = mi.contract_id
-      LEFT JOIN season_zone AS sz ON CAST(offered_nft_info.e_offeredNfts->>'seasonZoneId' AS INTEGER) = sz.id
-        OR CAST(requested_nft_info.e_requestedNfts->>'seasonZoneId' AS INTEGER) = sz.id
-      LEFT JOIN season AS s ON sz.season_id = s.id
-      LEFT JOIN zone AS z ON sz.zone_id = z.id
-      GROUP BY neo.id, neo.status, neo.created_at, u.wallet_address, u.name, u.image
+        ) as "offerorUser",
+        o.offeredNfts as "offeredNfts",
+        r.requestedNfts as "requestedNfts"
+      from nft_exchange_offers as neo
+      left join "user" as u on neo.offeror_user_id = u.id
+      left join requestedNfts as r on neo.id = r.id
+      left join offeredNfts as o on neo.id = o.id
     `;
 
     return query;
