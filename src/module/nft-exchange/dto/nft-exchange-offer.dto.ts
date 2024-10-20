@@ -29,10 +29,6 @@ export class ExchangeMaterialNFT {
 
   @ApiProperty()
   @Expose()
-  contractId: number;
-
-  @ApiProperty()
-  @Expose()
   name: string;
 
   @ApiProperty()
@@ -49,10 +45,6 @@ export class ExchangeBlueprintOrPuzzleNFT {
   @IsEnum(NFTType)
   @Expose()
   type: NFTType.Blueprint | NFTType.PuzzlePiece;
-
-  @ApiProperty()
-  @Expose()
-  seasonZoneId: number;
 
   @ApiProperty()
   @Expose()

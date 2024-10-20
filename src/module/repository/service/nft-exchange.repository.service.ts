@@ -20,7 +20,11 @@ import { AvailableNftsToRequestRequest } from 'src/module/nft-exchange/dto/avail
 import { NftExchangeOfferEntity } from '../entity/nft-exchange-offers.entity';
 import { NftExchangeOfferDto } from '../dto/nft-exchange.dto';
 import { UserEntity } from '../entity/user.entity';
-import { NftExchangeOfferResponse } from 'src/module/nft-exchange/dto/nft-exchange-offer.dto';
+import {
+  ExchangeBlueprintOrPuzzleNFT,
+  ExchangeMaterialNFT,
+  NftExchangeOfferResponse,
+} from 'src/module/nft-exchange/dto/nft-exchange-offer.dto';
 import { NftExchangeListRequest } from 'src/module/nft-exchange/dto/nft-exchange.dto';
 import { NftExchangeOfferStatus } from '../enum/nft-exchange-status.enum';
 import { NftExchangeOfferDetailResponse } from 'src/module/nft-exchange/dto/nft-exchange-offer-detail.dto';
@@ -224,7 +228,10 @@ export class NftExchangeRepositoryService {
   async getNftExchangeOfferById(
     offerId: number,
   ): Promise<NftExchangeOfferDetailResponse> {
-    const getHistory = async (nft: NFTAsset, walletAddress: string) => {
+    const getHistory = async (
+      nft: ExchangeBlueprintOrPuzzleNFT | ExchangeMaterialNFT,
+      walletAddress: string,
+    ) => {
       const user = await this.userRepository.findOneBy({ walletAddress });
       if (!user) return nft;
 
@@ -265,8 +272,8 @@ export class NftExchangeRepositoryService {
           .innerJoin(MaterialItemEntity, 'mi', 'umi.materialItemId = mi.id')
           .innerJoin(ContractEntity, 'c', 'mi.contractId = c.id')
           .where('umi.userId = :userId', { userId })
-          .andWhere('mi.contractId = :contractId', {
-            contractId: nft.contractId,
+          .andWhere('mi.nameKr = :name', {
+            name: nft.name,
           });
       } else if (nft.type === NFTType.Blueprint) {
         const contractAddress = (
@@ -343,14 +350,12 @@ export class NftExchangeRepositoryService {
             case
               when nfts->>'type'='${NFTType.Material}' then json_build_object(
                 'type', nfts->>'type',
-                'contractId', mi.contract_id,
                 'name', mi.name_kr,
                 'image', mi.image_url,
                 'quantity', (nfts->>'quantity')::integer
               )
               when nfts->>'type' in('${NFTType.Blueprint}', '${NFTType.PuzzlePiece}') then json_build_object(
                 'type', nfts->>'type',
-                'seasonZoneId', sz.id,
                 'seasonName', s.title_kr,
                 'zoneName', z.name_kr,
                 'image',
@@ -377,14 +382,12 @@ export class NftExchangeRepositoryService {
             case
               when nfts->>'type'='${NFTType.Material}' then json_build_object(
                 'type', nfts->>'type',
-                'contractId', mi.contract_id,
                 'name', mi.name_kr,
                 'image', mi.image_url,
                 'quantity', (nfts->>'quantity')::integer
               )
               when nfts->>'type' in('${NFTType.Blueprint}', '${NFTType.PuzzlePiece}') then json_build_object(
                 'type', nfts->>'type',
-                'seasonZoneId', sz.id,
                 'seasonName', s.title_kr,
                 'zoneName', z.name_kr,
                 'image',
