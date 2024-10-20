@@ -1,5 +1,5 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { IsEnum, IsOptional } from 'class-validator';
 import { NftExchangeOfferStatus } from 'src/module/repository/enum/nft-exchange-status.enum';
 import { NFTType } from '../domain/nft-asset';

@@ -183,18 +183,20 @@ export class NftExchangeRepositoryService {
       if (userWalletAddress.length === 0) {
         return { list: [], total: 0 };
       }
-      condition.push(`offerorUser->>'walletAddress' IN (${userWalletAddress})`);
+      condition.push(
+        `"offerorUser"->>'walletAddress' IN (${userWalletAddress})`,
+      );
     }
     if (userId) {
       const user = await this.userRepository.findOneBy({ id: userId });
       const walletAddress = user.walletAddress;
-      condition.push(`offerorUser->>'walletAddress' = '${walletAddress}'`);
+      condition.push(`"offerorUser"->>'walletAddress' = '${walletAddress}'`);
     }
 
     const innerQuery = this.getNftExchangeOffer();
 
     const query = `
-      SELECT * FROM (${innerQuery})
+      SELECT * FROM (${innerQuery}) AS offer
       WHERE ${condition.join(' AND ')}
       ORDER BY
         CASE
@@ -205,7 +207,7 @@ export class NftExchangeRepositoryService {
       LIMIT ${count} OFFSET ${offset}`;
 
     const countQuery = `
-      SELECT COUNT(*) AS total FROM (${innerQuery}) 
+      SELECT COUNT(*) AS total FROM (${innerQuery}) AS count_query
       WHERE ${condition.join(' AND ')}`;
 
     const [list, total] = await Promise.all([
@@ -298,8 +300,6 @@ export class NftExchangeRepositoryService {
 
       const result = await query.execute();
 
-      console.log('tokenId, contractAddress', JSON.stringify(result));
-
       return {
         ...nft,
         availableNfts: await Promise.all(
@@ -341,24 +341,24 @@ export class NftExchangeRepositoryService {
           neo.id,
           json_agg(
             case
-              when nfts->>'type'='material' then json_build_object(
+              when nfts->>'type'='${NFTType.Material}' then json_build_object(
                 'type', nfts->>'type',
-                'contractId', nfts->>'contractId',
+                'contractId', mi.contract_id,
                 'name', mi.name_kr,
                 'image', mi.image_url,
-                'quantity', nfts->>'quantity'
+                'quantity', (nfts->>'quantity')::integer
               )
-              when nfts->>'type' in('blueprint', 'puzzlePiece') then json_build_object(
+              when nfts->>'type' in('${NFTType.Blueprint}', '${NFTType.PuzzlePiece}') then json_build_object(
                 'type', nfts->>'type',
                 'seasonZoneId', sz.id,
                 'seasonName', s.title_kr,
                 'zoneName', z.name_kr,
                 'image',
                   case
-                    when nfts->>'type' = 'puzzlePiece' then sz.puzzle_thumbnail_url
-                    when nfts->>'type' = 'blueprint' then 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint-item.png'
+                    when nfts->>'type' = '${NFTType.PuzzlePiece}' then sz.puzzle_thumbnail_url
+                    when nfts->>'type' = '${NFTType.Blueprint}' then '${BLUEPRINT_ITEM_IMAGE_URL}'
                   end,
-                'quantity', nfts->>'quantity'
+                'quantity', (nfts->>'quantity')::integer
               )
             end
           ) as requestedNfts
@@ -375,24 +375,24 @@ export class NftExchangeRepositoryService {
           neo.id,
           json_agg(
             case
-              when nfts->>'type'='material' then json_build_object(
+              when nfts->>'type'='${NFTType.Material}' then json_build_object(
                 'type', nfts->>'type',
-                'contractId', nfts->>'contractId',
+                'contractId', mi.contract_id,
                 'name', mi.name_kr,
                 'image', mi.image_url,
-                'quantity', nfts->>'quantity'
+                'quantity', (nfts->>'quantity')::integer
               )
-              when nfts->>'type' in('blueprint', 'puzzlePiece') then json_build_object(
+              when nfts->>'type' in('${NFTType.Blueprint}', '${NFTType.PuzzlePiece}') then json_build_object(
                 'type', nfts->>'type',
                 'seasonZoneId', sz.id,
                 'seasonName', s.title_kr,
                 'zoneName', z.name_kr,
                 'image',
                   case
-                    when nfts->>'type' = 'puzzlePiece' then sz.puzzle_thumbnail_url
-                    when nfts->>'type' = 'blueprint' then 'https://duzzle-s3-bucket.s3.ap-northeast-2.amazonaws.com/metadata/blueprint-item.png'
+                    when nfts->>'type' = '${NFTType.PuzzlePiece}' then sz.puzzle_thumbnail_url
+                    when nfts->>'type' = '${NFTType.Blueprint}' then '${BLUEPRINT_ITEM_IMAGE_URL}'
                   end,
-                'quantity', nfts->>'quantity'
+                'quantity', (nfts->>'quantity')::integer
               )
             end
           ) as offeredNfts
