@@ -285,7 +285,7 @@ export class NftExchangeRepositoryService {
           .createQueryBuilder('bi')
           .select([
             'n.tokenId AS "tokenId"',
-            `${contractAddress} as "contractAddress"`,
+            `'${contractAddress}' as "contractAddress"`,
           ])
           .innerJoin(NftMetadataEntity, 'n', 'bi.nftMetadataId = n.id')
           .where('bi.userId = :userId', { userId });
@@ -299,7 +299,7 @@ export class NftExchangeRepositoryService {
           .createQueryBuilder('pp')
           .select([
             'n.tokenId AS "tokenId"',
-            `${contractAddress} as "contractAddress"`,
+            `'${contractAddress}' as "contractAddress"`,
           ])
           .innerJoin(NftMetadataEntity, 'n', 'pp.nftMetadataId = n.id')
           .where('pp.holerWalletAddress = :walletAddress', { walletAddress });
