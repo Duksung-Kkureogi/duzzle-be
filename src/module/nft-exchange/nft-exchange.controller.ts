@@ -26,13 +26,17 @@ import {
   PostNftExchangeRequest,
 } from './dto/nft-exchange.dto';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
-import { AccessDenied, SelfAcceptForbidden } from 'src/types/error/application-exceptions/403-forbidden';
+import {
+  AccessDenied,
+  SelfAcceptForbidden,
+} from 'src/types/error/application-exceptions/403-forbidden';
 import { ActionNotPermittedError } from 'src/types/error/application-exceptions/409-conflict';
-import { NftExchangeListDto } from './dto/nft-exchange-offer.dto';
 import {
   InsufficientNFTError,
   NFTBalanceChangedError,
 } from 'src/types/error/application-exceptions/400-bad-request';
+import { NftExchangeOfferResponse } from './dto/nft-exchange-offer.dto';
+import { NftExchangeOfferDetailResponse } from './dto/nft-exchange-offer-detail.dto';
 
 @Controller('nft-exchange')
 export class NftExchangeController {
@@ -102,7 +106,7 @@ export class NftExchangeController {
     exceptions: [ContentNotFoundError],
   })
   @UseGuards(AuthGuard)
-  @Post()
+  @Post('register')
   async postNftExchange(
     @AuthenticatedUser() user: UserEntity,
     @Body() dto: PostNftExchangeRequest,
@@ -130,7 +134,7 @@ export class NftExchangeController {
     exceptions: [ContentNotFoundError, AccessDenied, ActionNotPermittedError],
   })
   @UseGuards(AuthGuard)
-  @Delete(':id')
+  @Delete('cancel/:id')
   async deleteNftExchange(
     @AuthenticatedUser() user: UserEntity,
     @Param('id') nftExchangeId: number,
@@ -147,7 +151,7 @@ export class NftExchangeController {
       '페이지네이션 있음, 검색 조건: 거래 상태, 제안 nft, 요청 nft, 제안자(사용자명)',
     listResponse: {
       status: HttpStatus.OK,
-      schema: NftExchangeListDto,
+      schema: NftExchangeOfferResponse,
     },
   })
   @Get()
@@ -168,7 +172,7 @@ export class NftExchangeController {
     },
     listResponse: {
       status: HttpStatus.OK,
-      schema: NftExchangeListDto,
+      schema: NftExchangeOfferResponse,
     },
   })
   @UseGuards(AuthGuard)
@@ -212,5 +216,23 @@ export class NftExchangeController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<boolean> {
     return this.nftExchangeService.acceptNftExchange(user.id, id);
+  }
+
+  @ApiDescription({
+    tags: 'NFT Exchange',
+    summary: '교환 제안 상세 보기',
+    dataResponse: {
+      status: HttpStatus.OK,
+      schema: NftExchangeOfferDetailResponse,
+    },
+    exceptions: [ContentNotFoundError],
+  })
+  @Get(':id')
+  async getNftExchangeById(
+    @Param('id') id: number,
+  ): Promise<ResponsesDataDto<NftExchangeOfferDetailResponse>> {
+    const result = await this.nftExchangeService.getNftExchangeById(id);
+
+    return new ResponsesDataDto(result);
   }
 }

@@ -2,13 +2,34 @@ import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsEnum, IsOptional } from 'class-validator';
 import { NftExchangeOfferStatus } from 'src/module/repository/enum/nft-exchange-status.enum';
-
-const UNKNOWN_VALUE = 'unknown';
+import { NFTType } from '../domain/nft-asset';
 
 export class OfferorUserProfile {
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Expose()
+  walletAddress?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Expose()
+  name?: string | null = null;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Expose()
+  image?: string;
+}
+
+export class ExchangeMaterialNFT {
+  @ApiProperty({ enum: [NFTType.Material] })
+  @Expose()
+  @IsEnum(NFTType)
+  type: NFTType.Material = NFTType.Material;
+
   @ApiProperty()
   @Expose()
-  walletAddress: string;
+  contractId: number;
 
   @ApiProperty()
   @Expose()
@@ -16,23 +37,7 @@ export class OfferorUserProfile {
 
   @ApiProperty()
   @Expose()
-  image: string;
-}
-
-export class ExchangeMaterialNFT {
-  @ApiProperty()
-  @Expose()
-  contractId: number;
-
-  @ApiProperty()
-  @Expose()
-  @IsOptional()
-  name?: string = UNKNOWN_VALUE;
-
-  @ApiProperty()
-  @Expose()
-  @IsOptional()
-  imageUrl?: string = UNKNOWN_VALUE;
+  imageUrl?: string;
 
   @ApiProperty()
   @Expose()
@@ -40,24 +45,26 @@ export class ExchangeMaterialNFT {
 }
 
 export class ExchangeBlueprintOrPuzzleNFT {
+  @ApiProperty({ enum: [NFTType.Blueprint, NFTType.PuzzlePiece] })
+  @IsEnum(NFTType)
+  @Expose()
+  type: NFTType.Blueprint | NFTType.PuzzlePiece;
+
   @ApiProperty()
   @Expose()
   seasonZoneId: number;
 
   @ApiProperty()
   @Expose()
-  @IsOptional()
-  seasonName?: string = UNKNOWN_VALUE;
+  seasonName: string;
 
   @ApiProperty()
   @Expose()
-  @IsOptional()
-  zoneName?: string = UNKNOWN_VALUE;
+  zoneName: string;
 
   @ApiProperty()
   @Expose()
-  @IsOptional()
-  imageUrl?: string = UNKNOWN_VALUE;
+  imageUrl?: string | null = null;
 
   @ApiProperty()
   @Expose()
@@ -69,7 +76,7 @@ export class ExchangeBlueprintOrPuzzleNFT {
   ExchangeMaterialNFT,
   ExchangeBlueprintOrPuzzleNFT,
 )
-export class NftExchangeListDto {
+export class NftExchangeOfferResponse {
   @ApiProperty()
   @Expose()
   id: number;
