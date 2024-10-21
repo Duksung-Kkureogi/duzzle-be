@@ -7,11 +7,12 @@ import { QuestForGuestController } from './rest/quest-for-guest.controller';
 import { QuestAcidRainGateway } from './websocket/quest-acidrain.gateway';
 import { WebSocketModule } from '../websocket/websocket.module';
 import { QuestDemoController } from './rest/quest-demo.controller';
+import { QuestDuksaeJumpGateWay } from './websocket/quest-duksaejump.gateway';
 
 @Module({
   imports: [RepositoryModule, BlockchainModule, WebSocketModule],
   controllers: [QuestController, QuestForGuestController, QuestDemoController],
-  providers: [QuestService, QuestAcidRainGateway],
+  providers: [QuestService, QuestAcidRainGateway, QuestDuksaeJumpGateWay],
   exports: [QuestService],
 })
 export class QuestModule {}
