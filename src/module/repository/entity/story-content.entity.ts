@@ -16,6 +16,9 @@ export class StoryContentEntity extends BaseEntity {
   @Column('varchar', { nullable: true })
   image?: string;
 
+  @Column('varchar', { nullable: true })
+  audio?: string;
+
   @ManyToOne(() => StoryEntity, (story) => story.contents, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

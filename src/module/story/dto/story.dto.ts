@@ -34,9 +34,13 @@ export class StoryResponse {
   @Expose()
   content: string;
 
-  @ApiProperty()
+  @ApiProperty({ nullable: true })
   @Expose()
   image: string;
+
+  @ApiProperty({ nullable: true })
+  @Expose()
+  audio: string;
 
   static from(entity: StoryContentEntity) {
     return plainToInstance(
