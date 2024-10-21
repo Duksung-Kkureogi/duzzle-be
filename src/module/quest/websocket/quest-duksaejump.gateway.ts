@@ -152,6 +152,7 @@ export class QuestDuksaeJumpGateWay
   }
 
   @SubscribeMessage(MessagePattern.Inbound.Success)
+  @UseGuards(LogIdAccessTokenGuard)
   async handleSuccess(
     @ConnectedSocket()
     client: Socket,
