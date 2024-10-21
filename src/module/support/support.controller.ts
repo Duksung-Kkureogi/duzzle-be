@@ -61,11 +61,10 @@ export class SupportController {
       required: true,
     },
     dataResponse: {
-      status: HttpStatus.OK,
+      status: HttpStatus.CREATED,
       schema: true,
     },
   })
-  @HttpCode(HttpStatus.CREATED)
   @Post('qna')
   async postQuestion(
     @AuthenticatedUser() user: UserEntity,
