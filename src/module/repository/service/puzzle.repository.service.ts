@@ -62,7 +62,7 @@ export class PuzzleRepositoryService {
       throw new ContentNotFoundError('past seasonId', seasonId);
     }
 
-    return await this.seasonRepository.findOneBy({ id: seasonId });
+    return this.getSeasonById(seasonId);
   }
 
   async getAllSeasons(): Promise<SeasonEntity[]> {
