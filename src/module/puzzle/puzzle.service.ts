@@ -91,8 +91,8 @@ export class PuzzleService {
             puzzleMap.get(key)!.count++;
           } else {
             puzzleMap.set(key, {
-              season: puzzle.seasonZone.season.title,
-              zone: puzzle.seasonZone.zone.nameUs,
+              season: puzzle.seasonZone.season.titleKr,
+              zone: puzzle.seasonZone.zone.nameKr,
               image: puzzle.metadata.metadata.image,
               count: 1,
             });
