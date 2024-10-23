@@ -79,9 +79,14 @@ export class Minted {
   @Expose()
   tokenId: number;
 
+  // TODO: 사용하는 곳 없으면 삭제
   @ApiProperty({ description: 'NFT 썸네일 이미지 URL' })
   @Expose()
   nftThumbnailUrl: String;
+
+  @ApiProperty()
+  @Expose()
+  threeDModelUrl: String;
 
   static from(entity: PuzzlePieceEntity) {
     return plainToInstance(
@@ -94,6 +99,9 @@ export class Minted {
         },
         season: entity.seasonZone.season.title,
         nftThumbnailUrl: entity?.metadata.metadata?.image,
+        threeDModelUrl: entity?.metadata.metadata?.attributes?.find(
+          (e) => e.trait_type === 'threeDModel',
+        )?.value,
       },
       {
         excludeExtraneousValues: true,
