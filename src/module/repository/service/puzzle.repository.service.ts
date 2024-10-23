@@ -140,6 +140,7 @@ export class PuzzleRepositoryService {
     });
   }
 
+  // TODO: 최신 토큰 획득 시간 추가(puzzle_piece 테이블에 mintedAt, lastTransferedAt 컬럼 필요)
   async updateOwner(tokenId: number, walletAddress: string): Promise<void> {
     const userName = (
       await this.userRepositoryService.findUserByWalletAddress(walletAddress)

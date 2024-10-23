@@ -79,7 +79,6 @@ export class Minted {
   @Expose()
   tokenId: number;
 
-  // TODO: 사용하는 곳 없으면 삭제
   @ApiProperty({ description: 'NFT 썸네일 이미지 URL' })
   @Expose()
   nftThumbnailUrl: String;
@@ -88,11 +87,20 @@ export class Minted {
   @Expose()
   threeDModelUrl: String;
 
+  @ApiProperty()
+  @Expose()
+  description?: string;
+
+  @ApiProperty({ description: '건축가', nullable: true })
+  @Expose()
+  architect?: string;
+
   static from(entity: PuzzlePieceEntity) {
     return plainToInstance(
       this,
       {
         ...entity?.metadata,
+        description: entity?.metadata.metadata?.description,
         owner: {
           name: entity.holderName ?? NON_MEMBER_USER_NAME,
           walletAddress: entity.holerWalletAddress,
@@ -101,6 +109,9 @@ export class Minted {
         nftThumbnailUrl: entity?.metadata.metadata?.image,
         threeDModelUrl: entity?.metadata.metadata?.attributes?.find(
           (e) => e.trait_type === 'threeDModel',
+        )?.value,
+        architect: entity?.metadata.metadata?.attributes?.find(
+          (e) => e.trait_type === 'architect',
         )?.value,
       },
       {
