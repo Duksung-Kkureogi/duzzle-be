@@ -56,6 +56,9 @@ export class NftRepositoryService {
       contractId,
     });
 
-    return nftMetadata?.metadata;
+    return {
+      ...nftMetadata?.metadata,
+      name: `${nftMetadata?.metadata.name} #${nftMetadata?.tokenId}`,
+    };
   }
 }

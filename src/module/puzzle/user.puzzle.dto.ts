@@ -63,12 +63,11 @@ export class UserPuzzleResponse {
     // zone name
     const { nameKr, nameUs } = entity.seasonZone.zone;
 
-    const name: string = `${entity.metadata.metadata.name}#${entity.metadata.tokenId}`;
     return plainToInstance(
       this,
       {
         ...entity,
-        name,
+        name: entity.metadata.metadata.name,
         image: entity.metadata.metadata.image,
         zoneUs: nameUs,
         zoneKr: nameKr,
