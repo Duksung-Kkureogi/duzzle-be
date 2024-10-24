@@ -11,7 +11,6 @@ import {
   UserPuzzleResponse,
 } from './user.puzzle.dto';
 import { PaginatedList } from 'src/dto/response.dto';
-import { ContractKey } from '../repository/enum/contract.enum';
 import { PuzzlePieceEntity } from '../repository/entity/puzzle-piece.entity';
 import { PuzzlePieceDto, PuzzleResponse } from './dto/puzzle.dto';
 
@@ -19,7 +18,6 @@ import { PuzzlePieceDto, PuzzleResponse } from './dto/puzzle.dto';
 export class PuzzleService {
   constructor(
     private readonly puzzleRepositoryService: PuzzleRepositoryService,
-    private readonly nftRepositoryService: NftRepositoryService,
   ) {}
 
   async getNftHoldersBySeasonId(
@@ -130,16 +128,11 @@ export class PuzzleService {
     userId: number,
     puzzleId: number,
   ): Promise<UserPuzzleDetailResponse> {
-    const contractAddress = (
-      await this.nftRepositoryService.findContractByKey(
-        ContractKey.PUZZLE_PIECE,
-      )
-    ).address;
     const puzzle = await this.puzzleRepositoryService.getPuzzleByIdAndUserId(
       userId,
       puzzleId,
     );
 
-    return UserPuzzleDetailResponse.from(puzzle, contractAddress);
+    return UserPuzzleDetailResponse.from(puzzle);
   }
 }

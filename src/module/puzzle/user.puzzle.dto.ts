@@ -4,6 +4,7 @@ import { IsNumber, IsOptional } from 'class-validator';
 
 import { PuzzlePieceEntity } from '../repository/entity/puzzle-piece.entity';
 import { PaginationDto } from 'src/dto/request.dto';
+import { NON_MEMBER_USER_NAME, TokenOwner } from './dto/puzzle.dto';
 
 export class PuzzlePieces {
   @ApiProperty()
@@ -59,6 +60,10 @@ export class UserPuzzleResponse {
   @Expose()
   zoneKr: string;
 
+  @ApiProperty()
+  @Expose()
+  tokenId: string;
+
   static from(entity: PuzzlePieceEntity) {
     // zone name
     const { nameKr, nameUs } = entity.seasonZone.zone;
@@ -71,6 +76,7 @@ export class UserPuzzleResponse {
         image: entity.metadata.metadata.image,
         zoneUs: nameUs,
         zoneKr: nameKr,
+        tokenId: entity.metadata.tokenId,
       },
       { excludeExtraneousValues: true },
     );
@@ -93,63 +99,65 @@ export class UserPuzzlePathParams {
 export class UserPuzzleDetailResponse {
   @ApiProperty()
   @Expose()
-  name: string;
+  threeDModelUrl: string;
+
+  @ApiProperty()
+  @Expose()
+  zoneNameKr: string;
+
+  @ApiProperty()
+  @Expose()
+  zoneNameUs: string;
+
+  @ApiProperty()
+  @Expose()
+  season: string;
+
+  @ApiProperty()
+  @Expose()
+  owner: TokenOwner;
+
+  @ApiProperty()
+  @Expose()
+  nftThumbnailUrl: string;
 
   @ApiProperty()
   @Expose()
   tokenId: number;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
   @Expose()
-  contractAddress: string;
-
-  @ApiProperty()
-  @Expose()
-  collection: string;
+  description?: string;
 
   @ApiProperty({ required: false })
   @Expose()
   architect?: string;
 
-  @ApiProperty()
-  @Expose()
-  zone: string;
-
-  @ApiProperty({ required: false })
-  @Expose()
-  description?: string;
-
-  @ApiProperty()
-  @Expose()
-  readMoreLink: string;
-
-  @ApiProperty()
-  @Expose()
-  interactive3DModelLink: string;
-
-  // TODO: metadata.attributes 를 JSON key value 로 표현하기
-  static from(entity: PuzzlePieceEntity, contractAddress: string) {
-    const metadata = entity.metadata.metadata;
-    const architect = metadata.attributes.find(
-      (e) => e.trait_type === 'architect',
-    ).value;
+  static from(entity: PuzzlePieceEntity) {
     return plainToInstance(
       this,
       {
-        ...entity,
-        ...entity.metadata,
-        ...entity.metadata.metadata.attributes,
-        collection: entity.seasonZone.season.title,
-        contractAddress,
-        architect,
-        name: entity.metadata.metadata.name.concat(
-          `#${entity.metadata.tokenId}`,
-        ),
-        zone: `${entity.seasonZone.zone.nameKr}(${entity.seasonZone.zone.nameUs})`,
-        readMoreLink: '',
-        interactive3DModelLink: '',
+        zoneNameKr: entity.seasonZone.zone.nameKr,
+        zoneNameUs: entity.seasonZone.zone.nameUs,
+        ...entity?.metadata,
+        description: entity?.metadata.metadata?.description,
+        owner: {
+          name: entity.holderName ?? NON_MEMBER_USER_NAME,
+          walletAddress: entity.holerWalletAddress,
+        },
+        season: entity.seasonZone.season.title,
+        nftThumbnailUrl: entity?.metadata.metadata?.image,
+        threeDModelUrl: entity?.metadata.metadata?.attributes?.find(
+          (e) => e.trait_type === 'threeDModel',
+        )?.value,
+        architect: entity?.metadata.metadata?.attributes?.find(
+          (e) => e.trait_type === 'architect',
+        )?.value,
+        tokenId: entity.metadata.tokenId,
       },
-      { excludeExtraneousValues: true },
+      {
+        excludeExtraneousValues: true,
+      },
     );
   }
 }
