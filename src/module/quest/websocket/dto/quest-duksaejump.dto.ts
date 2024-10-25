@@ -7,6 +7,10 @@ export class StartDuksaeJumpMessageBody {
 
 export class ScoreMessageBody {
   score: number;
+
+  // log-id-access-token.guard 검증용 (삭제 예정)
+  logId: number;
+  gamePanelOffsetWidth: number;
 }
 
 export type DuksaeJumpQuestData = {
