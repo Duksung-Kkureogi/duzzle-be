@@ -66,7 +66,7 @@ export class UserNfts {
   puzzles: PuzzlePieces[];
 }
 
-export class UserHistory {
+export class UserRankingHistory {
   @ApiProperty({ description: '시즌 랭킹 1위' })
   @Expose()
   rankedFirst: number;
@@ -83,13 +83,20 @@ export class UserHistory {
 export class UserProfileResponse extends IntersectionType(
   UserInfoResponse,
   UserNftTotals,
-) {}
+) {
+  @ApiProperty({ type: UserRankingHistory })
+  @Expose()
+  history: UserRankingHistory;
+}
 
 export class OtherUserProfileResponse extends IntersectionType(
   UserInfoResponse,
   UserNfts,
-  UserHistory,
-) {}
+) {
+  @ApiProperty({ type: UserRankingHistory })
+  @Expose()
+  history: UserRankingHistory;
+}
 
 export class UpdateUserNameRequest {
   @ApiProperty()

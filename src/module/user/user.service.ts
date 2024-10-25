@@ -42,16 +42,29 @@ export class UserService {
   ) {}
 
   async getUserInfo(userId: number): Promise<UserProfileResponse> {
-    const [profile, totalItems, totalPieces] = await Promise.all([
+    const [
+      profile,
+      totalItems,
+      totalPieces,
+      { rankedFirst, rankedThird },
+      questStreak,
+    ] = await Promise.all([
       this.userRepositoryService.getUserById(userId),
       this.itemService.getUserItemTotals(userId),
       this.puzzleService.getTotalPiecesByUser(userId),
+      this.getTopRankCounts(userId),
+      this.getQuestStreak(userId),
     ]);
 
     const result: UserProfileResponse = {
       ...UserInfoResponse.from(profile),
       totalItems,
       totalPieces,
+      history: {
+        rankedFirst,
+        rankedThird,
+        questStreak,
+      },
     };
 
     return result;
@@ -61,41 +74,45 @@ export class UserService {
     userId: number | undefined,
     walletAddress: string,
   ): Promise<OtherUserProfileResponse> {
-    const profile =
+    const user =
       await this.userRepositoryService.getUserByWalletAddress(walletAddress);
 
-    if (profile.profileType === ProfileType.None)
-      throw new AccessDenied('profile', profile.id);
-    if (profile.profileType === ProfileType.Private && userId === undefined)
-      throw new LoginRequired(`Profile:${profile.profileType}`);
+    if (user.profileType === ProfileType.None)
+      throw new AccessDenied('profile', user.id);
+    if (user.profileType === ProfileType.Private && userId === undefined)
+      throw new LoginRequired(`Profile:${user.profileType}`);
 
     const [items, puzzles, { rankedFirst, rankedThird }, questStreak] =
       await Promise.all([
-        this.itemService.getUserItems(profile.id).then((res) => res.items),
+        this.itemService.getUserItems(user.id).then((res) => res.items),
         this.puzzleService
-          .getUserPiecesBySeason(profile.id)
+          .getUserPiecesBySeason(user.id)
           .then((res) => res.puzzles),
-        this.getTopRankCounts(walletAddress),
-        this.getQuestStreak(profile.id),
+        this.getTopRankCounts(user.id),
+        this.getQuestStreak(user.id),
       ]);
 
     const result: OtherUserProfileResponse = {
-      ...UserInfoResponse.from(profile),
+      ...UserInfoResponse.from(user),
       items,
       puzzles,
-      rankedFirst,
-      rankedThird,
-      questStreak,
+      history: {
+        rankedFirst,
+        rankedThird,
+        questStreak,
+      },
     };
 
     return result;
   }
 
   async getTopRankCounts(
-    walletAddress: string,
+    userId: number,
   ): Promise<{ rankedFirst: number; rankedThird: number }> {
-    const rankings =
-      await this.seasonHistoryService.getUserRankingHistory(walletAddress);
+    const user = await this.userRepositoryService.getUserById(userId);
+    const rankings = await this.seasonHistoryService.getUserRankingHistory(
+      user.walletAddress,
+    );
 
     let rankedFirst = 0;
     let rankedThird = 0;
