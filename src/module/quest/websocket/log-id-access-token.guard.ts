@@ -36,7 +36,7 @@ export class LogIdAccessTokenGuard implements CanActivate {
     if (!body?.logId) {
       throw new WsException('Missing logId');
     }
-    if (!body?.gamePanelOffsetHeight) {
+    if (!body?.gamePanelOffsetHeight && !body?.gamePanelOffsetWidth) {
       throw new WsException('Missing gamePanelOffsetHeight');
     }
   }
