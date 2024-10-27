@@ -62,11 +62,22 @@ export class UserPuzzleResponse {
 
   @ApiProperty()
   @Expose()
+  seasonUs: string;
+
+  @ApiProperty()
+  @Expose()
+  seasonKr: string;
+
+  @ApiProperty()
+  @Expose()
   tokenId: string;
 
   static from(entity: PuzzlePieceEntity) {
     // zone name
     const { nameKr, nameUs } = entity.seasonZone.zone;
+
+    // season name
+    const { title, titleKr } = entity.seasonZone.season;
 
     return plainToInstance(
       this,
@@ -77,6 +88,8 @@ export class UserPuzzleResponse {
         zoneUs: nameUs,
         zoneKr: nameKr,
         tokenId: entity.metadata.tokenId,
+        seasonKr: titleKr,
+        seasonUs: title,
       },
       { excludeExtraneousValues: true },
     );
