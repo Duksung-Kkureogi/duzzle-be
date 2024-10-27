@@ -369,8 +369,10 @@ export class NftExchangeRepositoryService {
           ) as requestedNfts
         from nft_exchange_offers as neo
         left join jsonb_array_elements(neo.requested_nfts) as nfts on true
-        left join material_item as mi on cast(nfts->>'contractId' as integer) = mi.contract_id
-        left join season_zone as sz on cast(nfts->>'seasonZoneId' as integer) = sz.id
+        left join (
+          select distinct on (contract_id) * from material_item
+        ) as mi on (nfts->>'contractId')::integer = mi.contract_id
+        left join season_zone as sz on (nfts->>'seasonZoneId')::integer = sz.id
         left join season as s on sz.season_id = s.id
         left join zone as z on sz.zone_id = z.id
         group by neo.id
@@ -401,8 +403,10 @@ export class NftExchangeRepositoryService {
           ) as offeredNfts
         from nft_exchange_offers as neo
         left join jsonb_array_elements(neo.offered_nfts) as nfts on true
-        left join material_item as mi on cast(nfts->>'contractId' as integer) = mi.contract_id
-        left join season_zone as sz on cast(nfts->>'seasonZoneId' as integer) = sz.id
+        left join (
+          select distinct on (contract_id) * from material_item
+        ) as mi on (nfts->>'contractId')::integer = mi.contract_id
+        left join season_zone as sz on (nfts->>'seasonZoneId')::integer = sz.id
         left join season as s on sz.season_id = s.id
         left join zone as z on sz.zone_id = z.id
         group by neo.id
