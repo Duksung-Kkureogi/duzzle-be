@@ -72,6 +72,10 @@ export class UserPuzzleResponse {
   @Expose()
   tokenId: string;
 
+  @ApiProperty()
+  @Expose()
+  threeDModelUrl: string;
+
   static from(entity: PuzzlePieceEntity) {
     // zone name
     const { nameKr, nameUs } = entity.seasonZone.zone;
@@ -90,6 +94,9 @@ export class UserPuzzleResponse {
         tokenId: entity.metadata.tokenId,
         seasonKr: titleKr,
         seasonUs: title,
+        threeDModelUrl: entity?.metadata.metadata?.attributes?.find(
+          (e) => e.trait_type === 'threeDModel',
+        )?.value,
       },
       { excludeExtraneousValues: true },
     );
