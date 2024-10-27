@@ -74,7 +74,7 @@ export class PuzzlePieceDto {
       {
         ...entity,
         zoneId: entity.seasonZone.zoneId,
-        pieceId: entity.id,
+        pieceId: entity.id, // TODO: offset 적용 필요할 예정(현재는 시즌 히스토리가 3밖에 없고, 그. 시즌3이 DB에서 첫 시즌이어서 괜찮은 것)
         zoneNameKr: entity.seasonZone.zone.nameKr,
         zoneNameUs: entity.seasonZone.zone.nameUs,
         data,

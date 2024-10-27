@@ -9,7 +9,7 @@ import {
 import { RequiredMaterialItemsEntity } from 'src/module/repository/entity/required-material-items.entity';
 
 export const NON_MEMBER_USER_NAME = 'Unknown';
-
+export const OFFSET_PUZZLE_PIECE_ID = 41;
 export class RequiredItem {
   @ApiProperty({ description: '아이템 이름' })
   @Expose()
@@ -171,7 +171,7 @@ export class PuzzlePieceDto {
       {
         ...entity,
         zoneId: entity.seasonZone.zoneId,
-        pieceId: entity.id,
+        pieceId: entity.id - OFFSET_PUZZLE_PIECE_ID, // TODO: 시즌별 offset 적용 필요함(or puzzle_piece 테이블에 piece_id 따로 추가)
         zoneNameKr: entity.seasonZone.zone.nameKr,
         zoneNameUs: entity.seasonZone.zone.nameUs,
         data,
