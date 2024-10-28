@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not, In, IsNull } from 'typeorm';
+import { Repository, Not, In, IsNull, FindOptionsWhere } from 'typeorm';
 
 import { QuestEntity } from '../entity/quest.entity';
 import { LogQuestEntity } from '../entity/log-quest.entity';
@@ -22,8 +22,8 @@ export class QuestRepositoryService {
     return quest;
   }
 
-  async findQuestByType(type: QuestType): Promise<QuestEntity> {
-    const quest = await this.questRepository.findOneBy({ type });
+  async findQuestByType(types: QuestType[]): Promise<QuestEntity[]> {
+    const quest = await this.questRepository.findBy({ type: In(types) });
 
     return quest;
   }
@@ -127,5 +127,10 @@ export class QuestRepositoryService {
     });
 
     return log;
+  }
+
+  // TODO: 시연용
+  async deleteLogs(where: FindOptionsWhere<LogQuestEntity>): Promise<void> {
+    await this.logRepository.delete(where);
   }
 }

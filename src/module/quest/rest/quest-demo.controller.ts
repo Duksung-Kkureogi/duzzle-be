@@ -12,11 +12,11 @@ import { Request } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
-import { ResponseData } from 'src/decorator/response-data.decorator';
-import { ExceptionCode } from 'src/constant/exception';
-import { ResponseException } from 'src/decorator/response-exception.decorator';
 import { QuestService } from '../quest.service';
-import { GetResultRequest, StartRandomQuestResponse } from './dto/quest.dto';
+import {
+  DeleteLogByType,
+  StartRandomQuestResponse,
+} from './dto/quest.dto';
 import { QuestType } from 'src/module/repository/enum/quest.enum';
 
 @Controller({
@@ -118,5 +118,25 @@ export class QuestDemoController {
     );
 
     return new ResponsesDataDto(quest);
+  }
+
+  // 시연용 API
+  // 특정 퀘스트 유형 로그 삭제하기
+  @ApiTags('시연용')
+  @ApiOperation({
+    summary: '특정 퀘스트 유형 로그 삭제하기',
+    description: `${Object.values(QuestType).join('\n\n')} \t 중 하나 이상 선택해서 삭제\n
+    (API 만든 이유: 완료한 퀘스트는 다시 등장하지 않음- 시연에서 불편함)
+    (예시)
+    - 덕새점프, 음악퀴즈만 나오게 하려면 
+    'ACID_RAIN', 'SPEED_QUIZ', 'PICTURE_QUIZ' 
+    를 선택해서 삭제하면 됨`,
+  })
+  @Post('delete-log')
+  @HttpCode(HttpStatus.OK)
+  async deleteLogByType(@Body() body: DeleteLogByType): Promise<boolean> {
+    await this.questService.deleteLogByType(body.walletAddress, body.types);
+
+    return true;
   }
 }

@@ -1,8 +1,9 @@
+import { UserRepositoryService } from './../repository/service/user.repository.service';
+import { In } from 'typeorm';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import dayjs from 'dayjs';
 
 import { QuestRepositoryService } from '../repository/service/quest.repository.service';
-import { BlockchainCoreService } from '../blockchain/blockchain.core.service';
 import {
   GetResultRequest,
   StartRandomQuestResponse,
@@ -15,6 +16,7 @@ import { GuestInfo } from './rest/types/guest';
 import { QuestType } from '../repository/enum/quest.enum';
 import { CacheService } from '../cache/cache.service';
 import { SmartContractInteractionService } from '../blockchain/smart-contract-interaction.service';
+import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
 
 @Injectable()
 export class QuestService {
@@ -27,6 +29,9 @@ export class QuestService {
 
     @Inject(CacheService)
     private readonly memory: CacheService,
+
+    // TODO: 시연용 API 를 위한 임시 코드
+    private readonly userRepositoryService: UserRepositoryService,
   ) {}
 
   async getRandomQuest(userId: number): Promise<StartRandomQuestResponse> {
@@ -77,15 +82,15 @@ export class QuestService {
     guestInfo: GuestInfo,
     type: QuestType,
   ): Promise<StartRandomQuestResponse> {
-    const quest = await this.questRepositoryService.findQuestByType(type);
+    const quest = await this.questRepositoryService.findQuestByType([type]);
 
     const log = await this.questRepositoryService.insertLog({
-      questId: quest.id,
+      questId: quest[0].id,
       isGuestUser: true,
       guestInfo,
     });
 
-    return StartRandomQuestResponse.from(quest, log.id);
+    return StartRandomQuestResponse.from(quest[0], log.id);
   }
 
   async isAlreadyOngoing(
@@ -177,5 +182,23 @@ export class QuestService {
   async completeLog(log: LogQuestEntity): Promise<void> {
     log.isCompleted = true;
     await this.questRepositoryService.updateLog(log);
+  }
+
+  async deleteLogByType(
+    walletAddress: string,
+    types: QuestType[],
+  ): Promise<void> {
+    const user =
+      await this.userRepositoryService.findUserByWalletAddress(walletAddress);
+
+    if (!user) {
+      throw new ContentNotFoundError('user', walletAddress);
+    }
+    const quests = await this.questRepositoryService.findQuestByType(types);
+
+    await this.questRepositoryService.deleteLogs({
+      questId: In(quests.map((e) => e.id)),
+      userId: user.id,
+    });
   }
 }
