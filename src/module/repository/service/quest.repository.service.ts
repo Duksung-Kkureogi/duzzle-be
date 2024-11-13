@@ -36,18 +36,41 @@ export class QuestRepositoryService {
     return this.questRepository.find();
   }
 
-  async findRewardReceivedLogsByUserId(
-    userId: number,
-  ): Promise<LogQuestEntity[]> {
-    const result = await this.logRepository.find({
-      where: {
-        userId,
-        rewardReceived: true,
-      },
-      relations: { quest: true },
-    });
+  /**
+   * 시도하지 않은 퀘스트
+   */
+  async findUnattemptedQuest(userId: number): Promise<QuestEntity> {
+    return this.questRepository
+      .createQueryBuilder('q')
+      .leftJoin(
+        LogQuestEntity,
+        'lq',
+        'lq.questId = q.id AND lq.userId = :userId',
+        { userId },
+      )
+      .where('lq.questId IS NULL')
+      .orderBy('random()')
+      .limit(1)
+      .getOne();
+  }
 
-    return result;
+  /**
+   * 성공하지 못한 퀘스트
+   */
+  async randomQuestFailed(userId: number): Promise<QuestEntity> {
+    return this.questRepository
+      .createQueryBuilder('q')
+      .leftJoin(
+        LogQuestEntity,
+        'lg',
+        'lq.questId = q.id AND lq.userId = :userId',
+        { userId },
+      )
+      .where('lq.questId IS NOT NULL')
+      .andWhere('lq.isSucceeded != true or isSucceeded IS NULL')
+      .orderBy('random()')
+      .limit(1)
+      .getOne();
   }
 
   async findNotCompletedLogsByUser(userId: number): Promise<LogQuestEntity[]> {
@@ -64,26 +87,6 @@ export class QuestRepositoryService {
       },
     });
 
-    return logs;
-  }
-
-  async findNotCompletedLogs(
-    userId: number,
-    questId: number,
-  ): Promise<LogQuestEntity[]> {
-    const logs = await this.logRepository.find({
-      where: {
-        userId,
-        questId,
-        isCompleted: IsNull(),
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      relations: {
-        quest: true,
-      },
-    });
     return logs;
   }
 
