@@ -17,6 +17,7 @@ import { QuestType } from '../repository/enum/quest.enum';
 import { CacheService } from '../cache/cache.service';
 import { SmartContractInteractionService } from '../blockchain/smart-contract-interaction.service';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
+import { QuestEntity } from '../repository/entity/quest.entity';
 
 @Injectable()
 export class QuestService {
@@ -35,24 +36,20 @@ export class QuestService {
   ) {}
 
   async getRandomQuest(userId: number): Promise<StartRandomQuestResponse> {
-    const logs =
-      await this.questRepositoryService.findRewardReceivedLogsByUserId(userId);
+    let quest: QuestEntity;
+    // 미시도 퀘스트 우선 조회
+    quest = await this.questRepositoryService.findUnattemptedQuest(userId);
 
-    let quests;
-    if (logs.length) {
-      quests = await this.questRepositoryService.findQuests(
-        logs.map((e) => e.quest?.id),
-      );
-    } else {
-      quests = await this.questRepositoryService.findQuests();
+    if (!quest) {
+      // 실패한 퀘스트에서 조회
+      const randomQuestFailed =
+        await this.questRepositoryService.randomQuestFailed(userId);
+      if (!randomQuestFailed) {
+        throw new LimitExceededError();
+      } else {
+        quest = randomQuestFailed;
+      }
     }
-
-    if (!quests.length) {
-      throw new LimitExceededError();
-    }
-
-    const randomQuestIndex = Math.floor(Math.random() * quests.length);
-    const quest = quests[randomQuestIndex];
 
     const log = await this.questRepositoryService.insertLog({
       userId,

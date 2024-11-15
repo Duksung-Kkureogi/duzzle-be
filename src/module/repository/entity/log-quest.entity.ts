@@ -4,12 +4,14 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   ManyToOne,
+  Index,
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { QuestEntity } from './quest.entity';
 import { BaseEntity } from './base.entity';
 import { GuestInfo } from 'src/module/quest/rest/types/guest';
 
+@Index(['questId', 'userId'])
 @Entity('log_quest')
 export class LogQuestEntity extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
