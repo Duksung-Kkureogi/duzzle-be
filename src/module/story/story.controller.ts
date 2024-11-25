@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -6,7 +7,9 @@ import {
   Inject,
   Param,
   ParseIntPipe,
+  Patch,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { StoryService } from './story.service';
 import { ResponsesDataDto } from 'src/dto/responses-data.dto';
@@ -14,11 +17,16 @@ import { StoryRequest, StoryResponse } from './dto/story.dto';
 import { ApiDescription } from 'src/decorator/api-description.decorator';
 import { InvalidParamsError } from 'src/types/error/application-exceptions/400-bad-request';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
+import { ResponsesListDto } from 'src/dto/responses-list.dto';
+import { AuthorizationToken } from 'src/constant/authorization-token';
+import { AuthGuard } from '../auth/auth.guard';
+import { AuthenticatedUser } from '../auth/decorators/authenticated-user.decorator';
+import { UserEntity } from '../repository/entity/user.entity';
 import {
   StoryProgressByZoneResponse,
   StoryProgressResponse,
-} from '../user-story/dto/user-story.dto';
-import { ResponsesListDto } from 'src/dto/responses-list.dto';
+  UpdateUserStoryProgressRequest,
+} from './dto/story-progress.dto';
 
 @Controller({
   path: 'story',
@@ -55,35 +63,70 @@ export class StoryController {
 
   @ApiDescription({
     tags: 'Story',
-    summary: '진척도 없이 스토리 목록 조회(게스트용)',
+    summary: '스토리 진척도 수정',
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
     dataResponse: {
       status: HttpStatus.OK,
-      schema: StoryResponse,
+      schema: true,
     },
+    exceptions: [InvalidParamsError],
   })
-  @HttpCode(HttpStatus.OK)
-  @Get('all')
-  async getStoryListForGuest(): Promise<
-    ResponsesListDto<StoryProgressResponse>
-  > {
-    return new ResponsesListDto(await this.storyService.getStoryList());
+  @UseGuards(AuthGuard)
+  @Patch('progress')
+  async updateUserStoryProgress(
+    @AuthenticatedUser() user: UserEntity,
+    @Body() dto: UpdateUserStoryProgressRequest,
+  ): Promise<ResponsesDataDto<boolean>> {
+    await this.storyService.updateUserStoryProgress(user.id, dto);
+
+    return new ResponsesDataDto(true);
   }
 
   @ApiDescription({
     tags: 'Story',
-    summary: '진척도 없이 구역별 스토리 목록 조회(게스트용)',
-    dataResponse: {
+    summary: '스토리 목록 조회(로그인시)',
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
+    listResponse: {
       status: HttpStatus.OK,
-      schema: StoryResponse,
+      schema: StoryProgressResponse,
     },
   })
-  @HttpCode(HttpStatus.OK)
-  @Get('all/:zoneId')
-  async getStoryListForGuestByZone(
+  @UseGuards(AuthGuard)
+  @Get('progress')
+  async getStoryProgress(
+    @AuthenticatedUser() user: UserEntity,
+  ): Promise<ResponsesListDto<StoryProgressResponse>> {
+    return new ResponsesListDto(
+      await this.storyService.getUserStoryProgress(user.id),
+    );
+  }
+
+  @ApiDescription({
+    tags: 'Story',
+    summary: '구역별 스토리 목록 조회(로그인시)',
+    auth: {
+      type: AuthorizationToken.BearerUserToken,
+      required: true,
+    },
+    listResponse: {
+      status: HttpStatus.OK,
+      schema: StoryProgressByZoneResponse,
+    },
+  })
+  @UseGuards(AuthGuard)
+  @Get('progress/:zoneId')
+  async getStoryProgressByZone(
+    @AuthenticatedUser() user: UserEntity,
     @Param('zoneId', ParseIntPipe) zoneId: number,
   ): Promise<ResponsesListDto<StoryProgressByZoneResponse>> {
     return new ResponsesListDto(
-      await this.storyService.getStoriesByZone(zoneId),
+      await this.storyService.getUserStoryProgressByZone(user.id, zoneId),
     );
   }
 }

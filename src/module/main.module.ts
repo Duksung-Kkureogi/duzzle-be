@@ -32,7 +32,6 @@ import { SchedulerModule } from './scheduler/scheduler.module';
 import { ItemModule } from './item/item.module';
 import { WebSocketModule } from 'src/module/websocket/websocket.module';
 import { WebSocketExceptionFilter } from 'src/filter/websocket-exception-filter';
-import { UserStoryModule } from './user-story/user-story.module';
 import { RankingsModule } from './rankings/rankings.module';
 import { SeasonHistoryModule } from './season-history/season-history.module';
 import { NftExchangeModule } from './nft-exchange/nft-exchange.module';
@@ -75,7 +74,6 @@ import { NftExchangeModule } from './nft-exchange/nft-exchange.module';
     CacheModule,
     PuzzleModule,
     StoryModule,
-    UserStoryModule,
     HttpClientModule,
     SchedulerModule,
     ItemModule,
