@@ -16,6 +16,9 @@ export class StoryEntity extends BaseEntity {
   id: number;
 
   @Column('int')
+  storyOrder: number;
+
+  @Column('int')
   zoneId: number;
 
   @Column('varchar', { nullable: true })
