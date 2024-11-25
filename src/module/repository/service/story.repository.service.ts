@@ -7,7 +7,10 @@ import { UserStoryEntity } from '../entity/user-story.entity';
 import { UpdateUserStoryDto } from '../dto/story.dto';
 import { StoryContentEntity } from '../entity/story-content.entity';
 import { ContentNotFoundError } from 'src/types/error/application-exceptions/404-not-found';
-import { StoryProgressResponse } from 'src/module/user-story/dto/user-story.dto';
+import {
+  StoryProgressByZoneResponse,
+  StoryProgressResponse,
+} from 'src/module/story/dto/story-progress.dto';
 
 @Injectable()
 export class StoryRepositoryService {
@@ -53,57 +56,88 @@ export class StoryRepositoryService {
     return story;
   }
 
-  async findStoryListByZone(zoneId: number): Promise<StoryEntity[]> {
-    const stories = await this.storyRepository.find({
-      where: { zoneId },
-      relations: ['contents'],
-    });
-
-    return stories;
-  }
-
-  async findStoryProgress(userId: number): Promise<UserStoryEntity[]> {
-    const userStories = await this.userStoryRepository.find({
-      where: { userId },
-      relations: ['story'],
-    });
-
-    return userStories;
-  }
-
-  async updateStoryProgress(dto: UpdateUserStoryDto): Promise<void> {
-    const userStory = this.userStoryRepository.create({
-      userId: dto.userId,
-      storyId: dto.storyId,
-      readPage: dto.readPage,
-    });
+  async updateUserStoryProgress(dto: UpdateUserStoryDto): Promise<void> {
+    const userStory = this.userStoryRepository.create(dto);
 
     await this.userStoryRepository.save(userStory);
   }
 
-  async getStoryListForGuest(): Promise<StoryProgressResponse[]> {
-    const results = await this.storyRepository
+  async getStoryProgress(): Promise<StoryProgressResponse[]> {
+    return await this.storyRepository
       .createQueryBuilder('s')
       .select('z.id as "zoneId"')
-      .addSelect('count(*) as "totalStory"')
       .addSelect('z.nameKr as "zoneNameKr"')
       .addSelect('z.nameUs as "zoneNameUs"')
-      .innerJoin('s.contents', 'sc')
+      .addSelect('count(*) as "totalStory"')
+      .addSelect('0 as "readStory"')
       .innerJoin('s.zone', 'z')
-      .groupBy('z.id')
-      .addGroupBy('z.nameKr')
-      .addGroupBy('z.nameUs')
+      .groupBy('z.id, z.nameKr, z.nameUs')
       .orderBy('z.id')
       .getRawMany();
+  }
 
-    return results.map((result) => {
-      return {
-        zoneId: result.zoneId,
-        totalStory: result.totalStory,
-        zoneNameKr: result.zoneNameKr,
-        zoneNameUs: result.zoneNameUs,
-        readStory: 0,
-      };
+  async getStoryProgressByZone(zoneId: number): Promise<StoryEntity[]> {
+    return await this.storyRepository.find({
+      where: { zoneId },
+      relations: ['zone', 'contents'],
+      order: { storyOrder: 'ASC' },
     });
+  }
+
+  async getUserStoryProgress(userId: number): Promise<StoryProgressResponse[]> {
+    return await this.storyRepository
+      .createQueryBuilder('s')
+      .select('z.id as "zoneId"')
+      .addSelect('z.nameKr as "zoneNameKr"')
+      .addSelect('z.nameUs as "zoneNameUs"')
+      .addSelect('count(*) as "totalStory"')
+      .addSelect(
+        `
+        sum(
+          case
+            when (
+              select count(*)
+              from story_content as sc
+              where sc.story_id = s.id
+            ) = us.read_page
+            then 1
+            else 0
+          end
+        ) as "readStory"
+      `,
+      )
+      .innerJoin('s.zone', 'z')
+      .leftJoin(
+        UserStoryEntity,
+        'us',
+        's.id = us.storyId and us.userId = :userId',
+        { userId },
+      )
+      .groupBy('z.id, z.nameKr, z.nameUs')
+      .orderBy('z.id')
+      .getRawMany();
+  }
+
+  async getUserStoryProgressByZone(
+    userId: number,
+    zoneId: number,
+  ): Promise<StoryProgressByZoneResponse[]> {
+    return await this.storyRepository
+      .createQueryBuilder('s')
+      .select('s.id as "storyId"')
+      .addSelect('s.title as "title"')
+      .addSelect('count(s.id) as "totalPage"')
+      .addSelect('coalesce(us.readPage, 0) as "readPage"')
+      .innerJoin('s.contents', 'sc')
+      .leftJoin(
+        UserStoryEntity,
+        'us',
+        's.id = us.storyId and us.userId = :userId',
+        { userId },
+      )
+      .where('s.zoneId = :zoneId', { zoneId })
+      .groupBy('s.id, s.title, us.readPage')
+      .orderBy('s.storyOrder')
+      .getRawMany();
   }
 }
